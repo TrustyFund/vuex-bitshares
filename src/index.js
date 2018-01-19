@@ -1,6 +1,6 @@
-import apis from './apis'
-import user from './user'
-import assets from './assets'
+import apis from './modules/apis'
+import user from './modules/user'
+import assets from './modules/assets'
 
 export default function install (store) {
   store.registerModule('apis', apis)
