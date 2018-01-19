@@ -16,7 +16,7 @@
     "dap",
     "blockchain"
   ],
-  "author": "Trusty.fund",
+  "author": "trusty",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/TrustyFund/vuex-bitshares/issues"
