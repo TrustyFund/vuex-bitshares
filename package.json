@@ -2,10 +2,10 @@
   "name": "vuex-bitshares",
   "version": "0.2.0",
   "description": "Vue way to build DAP's on bitshares net",
-  "main": "lib/cimpiled.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src --out-file build/compiled.js"
+    "build": "babel src -d lib"
   },
   "repository": {
     "type": "git",
