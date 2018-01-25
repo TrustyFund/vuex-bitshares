@@ -37,7 +37,11 @@
     "jasmine": "^2.9.0",
     "jest": "^22.1.4",
     "jsdom": "^11.5.1",
-    "jsdom-global": "^3.0.2"
+    "jsdom-global": "^3.0.2",
+    "vue": "^2.5.13",
+    "vue-template-compiler": "^2.5.13",
+    "vue-test-utils": "^1.0.0-beta.11",
+    "vuex": "^3.0.1"
   },
   "jest": {
     "transform": {
