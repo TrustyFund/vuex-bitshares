@@ -1,8 +1,8 @@
 {
   "name": "vuex-bitshares",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vue way to build DAP's on bitshares net",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
