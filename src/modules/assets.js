@@ -4,6 +4,8 @@ import * as getters from '../getters/assets';
 
 const initialState = {
   assets: null,
+  preferredAsset: 'USD',
+  baseMarket: '1.3.0',
   pending: false
 };
 
