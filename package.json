@@ -2,10 +2,9 @@
   "name": "vuex-bitshares",
   "version": "0.2.0",
   "description": "Vue way to build DAP's on bitshares net",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d lib"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -25,10 +24,5 @@
   "homepage": "https://github.com/TrustyFund/vuex-bitshares#readme",
   "dependencies": {
     "bitsharesjs-ws": "^1.3.1"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-minify": "^0.2.0"
   }
 }
