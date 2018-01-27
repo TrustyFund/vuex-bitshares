@@ -3,6 +3,8 @@ import * as actions from '../actions/assets';
 import * as getters from '../getters/assets';
 
 const initialState = {
+  defaultAssets: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
+    'OPEN.LTC', 'OPEN.EOS', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
   assets: {},
   preferredAsset: 'USD',
   baseMarket: '1.3.0',

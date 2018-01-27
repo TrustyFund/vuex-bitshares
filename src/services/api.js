@@ -19,6 +19,7 @@ export const getAssets = (assets) => {
   });
 };
 
+
 export const fetchStats = (base, quote, days, bucketSize) => {
   return new Promise((resolve, reject) => {
     const endDate = new Date();

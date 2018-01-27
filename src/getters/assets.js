@@ -2,6 +2,10 @@ export function getAssets({ assets }) {
   return assets || {};
 }
 
+export function getDefaultAssets({ defaultAssets }) {
+  return defaultAssets;
+}
+
 export function getAssetById({ assets }) {
   return (id) => ((assets && assets[id]) ? assets[id] : false);
 }
