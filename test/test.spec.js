@@ -1,5 +1,5 @@
-import {shallow, createLocalVue} from 'vue-test-utils';
-import Vuex from 'vuex'
+import { createLocalVue } from 'vue-test-utils';
+import Vuex from 'vuex';
 import wallet from '../src/modules/wallet.js';
 import assets from '../src/modules/assets.js';
 import apis from '../src/modules/apis.js';
@@ -7,7 +7,7 @@ import apis from '../src/modules/apis.js';
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-let store = new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     wallet,
     assets,
@@ -31,11 +31,10 @@ describe('wallet module', () => {
   const transfer_amount = 10;
   const owner_pubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
-  
   it('creates wallet', done => {
     store.dispatch('createWallet', {brainkey, password}).then(() => {
-      expect(store.getters.brainkey).toBe(brainkey);
-      const owner_key = store.getters.keys.owner;
+      expect(store.getters.getBrainkey).toBe(brainkey);
+      const owner_key = store.getters.getKeys.owner;
       const computed_owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
       expect(computed_owner_pubkey).toBe(owner_pubkey);
       done();
@@ -43,22 +42,22 @@ describe('wallet module', () => {
   }, 20000);
 
   it('validates password', done => {
-    expect(store.getters.validator(password)).toBe(true);
-    expect(store.getters.validator("wrong password")).toBe(false);
+    expect(store.getters.isValidPassword(password)).toBe(true);
+    expect(store.getters.isValidPassword("wrong password")).toBe(false);
     done()
   });
 
   it('locks wallet', done => {
-    expect(store.getters.locked).toBe(false);
+    expect(store.getters.isLocked).toBe(false);
     store.dispatch('lock').then(() => {
-      expect(store.getters.locked).toBe(true);
+      expect(store.getters.isLocked).toBe(true);
       done();
     })
   });
 
   it('unlocks wallet', done => {
     store.dispatch('unlock', password).then(() => {
-      const owner_key = store.getters.keys.owner;
+      const owner_key = store.getters.getKeys.owner;
       const computed_owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
       expect(computed_owner_pubkey.substr(3)).toBe(owner_pubkey.substr(3));
       done();

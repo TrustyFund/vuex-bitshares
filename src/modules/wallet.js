@@ -1,12 +1,10 @@
-import {ChainStore, PrivateKey, key, Aes} from "bitsharesjs/es";
 import * as actions from '../actions/wallet';
-import * as types from '../mutations'
+import * as types from '../mutations';
+import * as getters from '../getters/wallet';
 
-const ACTIVE_KEY_INDEX = 0;
-const OWNER_KEY_INDEX = 1;
 
-let state = {
-  //for password validation
+const initialState = {
+  //  for password validation
   password_pubkey: null,
   encrypted_brainkey: null,
   brainkey_backup_date: null,
@@ -16,14 +14,14 @@ let state = {
   user_id: null
 };
 
-let mutations = {
-  [types.WALLET_CREATED]: (state, {keys, user_id}) => {
-    state.password_pubkey = keys.password_pubkey;
-    state.encrypted_brainkey = keys.encrypted_brainkey;
-    state.encryption_key = keys.encryption_key;
-    state.aes_private = keys.aes_private;
+const mutations = {
+  [types.WALLET_CREATED]: (state, { keys, userId }) => {
+    state.password_pubkey = keys.passwordPubkey;
+    state.encrypted_brainkey = keys.encryptedBrainkey;
+    state.encryption_key = keys.encryptionKey;
+    state.aes_private = keys.aesPrivate;
     state.created = new Date();
-    state.user_id = user_id;
+    state.user_id = userId;
   },
   [types.WALLET_BRAINKEY_BACKUP]: (state) => {
     state.brainkey_backup_date = Date();
@@ -33,36 +31,13 @@ let mutations = {
     state.active_key = null;
     state.owner_key = null;
   },
-  [types.WALLET_UNLOCK]: (state, aes_private) => {
-    state.aes_private = aes_private;
-  }
-};
-
-const getters = {
-  brainkey: state => {
-    const brainkey = state.aes_private.decryptHexToText(state.encrypted_brainkey);
-    return brainkey;
-  },
-  keys: (state, {brainkey}) => {
-    return {
-      active: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
-      owner: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX)
-    }
-  },
-  validator: state => {
-    return (password) => {
-      const password_private = PrivateKey.fromSeed(password);
-      const password_pubkey = password_private.toPublicKey().toPublicKeyString();
-      return password_pubkey == state.password_pubkey;
-    }
-  },
-  locked: state => {
-    return state.aes_private == null;
+  [types.WALLET_UNLOCK]: (state, aesPrivate) => {
+    state.aes_private = aesPrivate;
   }
 };
 
 export default {
-  state,
+  state: initialState,
   mutations,
   actions,
   getters

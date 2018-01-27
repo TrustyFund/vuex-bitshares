@@ -1,44 +1,44 @@
-import {ChainStore, PrivateKey, key, Aes} from "bitsharesjs/es";
-import {Apis} from "bitsharesjs-ws";
-import * as types from '../mutations'
+import { PrivateKey, key, Aes } from 'bitsharesjs/es';
+import { Apis } from 'bitsharesjs-ws';
+import * as types from '../mutations';
 
-export const createWallet = ({ commit, store }, {brainkey, password}) => {
-  const password_aes = Aes.fromSeed(password);
-  const encryption_buffer = key.get_random_key().toBuffer();
-  const encryption_key = password_aes.encryptToHex(encryption_buffer);
-  const aes_private = Aes.fromSeed(encryption_buffer);
+export const createWallet = ({ commit }, { brainkey, password }) => {
+  const passwordAes = Aes.fromSeed(password);
+  const encryptionBuffer = key.get_random_key().toBuffer();
+  const encryptionKey = passwordAes.encryptToHex(encryptionBuffer);
+  const aesPrivate = Aes.fromSeed(encryptionBuffer);
 
-  brainkey = key.normalize_brainKey(brainkey);
-  const brainkey_private = PrivateKey.fromSeed(brainkey);
-  const encrypted_brainkey = aes_private.encryptToHex(brainkey);
-  const password_private = PrivateKey.fromSeed(password);
-  const password_pubkey = password_private.toPublicKey().toPublicKeyString();
+  const normalizedBrainkey = key.normalize_brainKey(brainkey);
+  // const brainkeyPrivate = PrivateKey.fromSeed(normalizedBrainkey);
+  const encryptedBrainkey = aesPrivate.encryptToHex(normalizedBrainkey);
+  const passwordPrivate = PrivateKey.fromSeed(password);
+  const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
 
-  //getting user id
-  const owner_key_index = 1;
-  const owner_key = key.get_brainPrivateKey(brainkey, owner_key_index);
-  const owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
+  // getting user id
+  const ownerKeyIndex = 1;
+  const ownerKey = key.get_brainPrivateKey(normalizedBrainkey, ownerKeyIndex);
+  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
 
   const keys = {
-    password_pubkey,
-    encryption_key,
-    encrypted_brainkey,
-    aes_private
+    passwordPubkey,
+    encryptionKey,
+    encryptedBrainkey,
+    aesPrivate
   };
 
-  return Apis.instance().db_api().exec("get_key_references", [[owner_pubkey]])
-    .then(([[user_id]]) => {
-      commit(types.WALLET_CREATED, {keys, user_id});
+  return Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]])
+    .then(([[userId]]) => {
+      commit(types.WALLET_CREATED, { keys, userId });
     });
-}
+};
 
-export const unlock = ({commit,state}, password) => {
-  const password_aes = Aes.fromSeed(password);
-  const encryption_plainbuffer = password_aes.decryptHexToBuffer(state.encryption_key);
-  const aes_private = Aes.fromSeed(encryption_plainbuffer);
-  commit(types.WALLET_UNLOCK, aes_private);
-}
+export const unlock = ({ commit, state }, password) => {
+  const passwordAes = Aes.fromSeed(password);
+  const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryption_key);
+  const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+  commit(types.WALLET_UNLOCK, aesPrivate);
+};
 
-export const lock = ({commit}) => {
+export const lock = ({ commit }) => {
   commit(types.WALLET_LOCK);
-}
+};
