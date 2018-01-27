@@ -49,14 +49,14 @@ describe('wallet module', () => {
 
   it('locks wallet', done => {
     expect(store.getters.isLocked).toBe(false);
-    store.dispatch('lock').then(() => {
+    store.dispatch('lockWallet').then(() => {
       expect(store.getters.isLocked).toBe(true);
       done();
     })
   });
 
   it('unlocks wallet', done => {
-    store.dispatch('unlock', password).then(() => {
+    store.dispatch('unlockWallet', password).then(() => {
       const owner_key = store.getters.getKeys.owner;
       const computed_owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
       expect(computed_owner_pubkey.substr(3)).toBe(owner_pubkey.substr(3));

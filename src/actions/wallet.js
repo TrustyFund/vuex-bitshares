@@ -32,13 +32,13 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
     });
 };
 
-export const unlock = ({ commit, state }, password) => {
+export const unlockWallet = ({ commit, state }, password) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryption_key);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
   commit(types.WALLET_UNLOCK, aesPrivate);
 };
 
-export const lock = ({ commit }) => {
+export const lockWallet = ({ commit }) => {
   commit(types.WALLET_LOCK);
 };
