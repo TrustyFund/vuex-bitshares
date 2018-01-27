@@ -14,6 +14,14 @@ export function getAssetFieldById({ assets }) {
   return (field, id) => ((assets && assets[id]) ? assets[id][field] : false);
 }
 
-export function getBaseMarket(state) {
-  return state.baseMarket;
+export function getBaseMarketId(state) {
+  return state.baseMarketId;
+}
+
+export function getPreferredAssetId(state) {
+  return state.preferredAssetId;
+}
+
+export function getAssetsPrices({ prices }) {
+  return prices;
 }

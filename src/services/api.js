@@ -31,11 +31,7 @@ export const fetchStats = (base, quote, days, bucketSize) => {
       'get_market_history',
       [base.id, quote.id, bucketSize, startDateISO, endDateISO]
     ).then((result) => {
-      if (result.length) {
-        resolve(result);
-      } else {
-        reject(new Error('No results'));
-      }
+      resolve(result);
     })
       .catch((error) => {
         reject(error);

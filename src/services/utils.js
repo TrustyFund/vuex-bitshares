@@ -1,11 +1,9 @@
 export const getPrices = (history) => {
+  if (!history.length) return { first: 0, last: 0 };
   const startElem = history[0];
   const endElem = history[history.length - 1];
   const startPrice = startElem.open_base / startElem.open_quote;
   const endPrice = endElem.close_base / endElem.close_quote;
-
-  console.log({ first: startPrice, last: endPrice });
-
   return { first: startPrice, last: endPrice };
 };
 
