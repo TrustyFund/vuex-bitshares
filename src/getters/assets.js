@@ -1,5 +1,5 @@
 export function getAssets({ assets }) {
-  return assets;
+  return assets || {};
 }
 
 export function getAssetById({ assets }) {

@@ -3,13 +3,13 @@ import { PrivateKey, key } from 'bitsharesjs/es';
 const ACTIVE_KEY_INDEX = 0;
 const OWNER_KEY_INDEX = 1;
 
-export const getBrainkey = state => state.aes_private.decryptHexToText(state.encrypted_brainkey);
+export const getBrainkey = state => state.aes_private &&
+  state.aes_private.decryptHexToText(state.encrypted_brainkey);
 
-// eslint-disable-next-line
-export const getKeys = (state, { getBrainkey }) => { 
+export const getKeys = (state, { brainKey }) => {
   return {
-    active: key.get_brainPrivateKey(getBrainkey, ACTIVE_KEY_INDEX),
-    owner: key.get_brainPrivateKey(getBrainkey, OWNER_KEY_INDEX)
+    active: brainKey && key.get_brainPrivateKey(brainKey, ACTIVE_KEY_INDEX),
+    owner: brainKey && key.get_brainPrivateKey(brainKey, OWNER_KEY_INDEX)
   };
 };
 

@@ -23,10 +23,6 @@ export const fetchStats = (base, quote, days, bucketSize) => {
   return new Promise((resolve, reject) => {
     const endDate = new Date();
     const startDate = new Date(endDate - (1000 * 60 * 60 * 24 * days));
-
-    console.log('START', startDate);
-    console.log('END', endDate);
-
     const endDateISO = endDate.toISOString().slice(0, -5);
     const startDateISO = startDate.toISOString().slice(0, -5);
 
