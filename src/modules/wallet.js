@@ -28,8 +28,6 @@ const mutations = {
   },
   [types.WALLET_LOCK]: (state) => {
     state.aes_private = null;
-    state.active_key = null;
-    state.owner_key = null;
   },
   [types.WALLET_UNLOCK]: (state, aesPrivate) => {
     state.aes_private = aesPrivate;
