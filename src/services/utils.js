@@ -13,8 +13,8 @@ export const formatPrices = (prices, base, quote) => {
   const precisionDiff = base.precision - quote.precision;
 
   if (precisionDiff > 0) {
-    prices.first = prices.first / (precisionDiff * 10);
-    prices.last = prices.last / (precisionDiff * 10);
+    prices.first /= (precisionDiff * 10);
+    prices.last /= (precisionDiff * 10);
   } else if (precisionDiff < 0) {
     prices.first = prices.first * 10 * precisionDiff;
     prices.last = prices.last * 10 * precisionDiff;
