@@ -4,8 +4,9 @@ import * as actions from '../actions/assets';
 import * as getters from '../getters/assets';
 
 const initialState = {
-  defaultAssets: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
+  defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
     'OPEN.LTC', 'OPEN.EOS', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
+  defaultAssetsIds: [],
   assets: {},
   prices: {},
   preferredAssetId: '1.3.121', // USD
@@ -25,14 +26,8 @@ const mutations = {
   [types.FETCH_ASSETS_ERROR](state) {
     state.pending = false;
   },
-  [types.FETCH_DEFAULT_ASSETS_REQUEST](state) {
-    state.pending = true;
-  },
-  [types.FETCH_DEFAULT_ASSETS_COMPLETE](state, { assets }) {
-    state.assets = assets;
-  },
-  [types.FETCH_DEFAULT_ASSETS_ERROR](state) {
-    state.pending = false;
+  [types.SAVE_DEFAULT_ASSETS_IDS](state, { ids }) {
+    state.defaultAssetsIds = ids;
   },
   [types.FETCH_ASSET_PRICE_REQUEST](state, { id }) {
     Vue.set(state.prices, id, { fetching: true });
