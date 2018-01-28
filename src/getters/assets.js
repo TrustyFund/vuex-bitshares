@@ -14,6 +14,7 @@ export function getAssetById({ assets }) {
   return (id) => ((assets && assets[id]) ? assets[id] : false);
 }
 
+// retrieves prices history for asset by id
 export function getAssetPricesById({ prices }) {
   return (id) => {
     if ((prices[id] && !prices[id].fetching)) return prices[id];
@@ -35,10 +36,12 @@ export function getPricesMultiplier(state) {
   };
 }
 
+// BTS by default
 export function getBaseMarketId(state) {
   return state.baseMarketId;
 }
 
+// retrieves whole prices history array
 export function getAssetsPrices({ prices }) {
   return prices;
 }

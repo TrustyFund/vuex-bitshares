@@ -33,7 +33,11 @@ export const fetchDefaultAssets = ({ commit, getters }) => {
   });
 };
 
-
+/**
+ * Fetches history prices for BASE:QUOTE data for 7 days for from bitsharesjs-ws.
+ * @param {Object} base - base asset object
+ * @param {Object} quote - quote asset object
+ */
 export const fetchAssetPrice = ({ commit }, { base, quote }) => {
   const { id } = quote;
   commit(types.FETCH_ASSET_PRICE_REQUEST, { id });
@@ -72,21 +76,11 @@ export const fetchAssetsPrices = (store, assets) => {
   // preferred asset = USD
   const preferredAssetId = getters.getPreferredAssetId;
   const preferredAsset = getters.getAssetById(preferredAssetId);
+  assets[preferredAssetId] = preferredAsset;
 
-  // fetch preferred asset first
-  fetchAssetPrice(store, { base, quote: preferredAsset }).then((result) => {
-    console.log('preferred asset ( USD ) history: ');
-    console.log(result.firstPrice, result.lastPrice);
-    console.log('first multiplier for BTS -> USD: ', 1 / result.firstPrice);
-    console.log('last multiplier for BTS -> USD ', 1 / result.lastPrice);
-
-    // fetch requested assets history prices data
-    Object.keys(assets).forEach(id => {
-      const quote = assets[id];
-      fetchAssetPrice(store, { base, quote }).then((result) => {
-
-      });
-    });
+  Object.keys(assets).forEach(id => {
+    const quote = assets[id];
+    fetchAssetPrice(store, { base, quote });
   });
 };
 
