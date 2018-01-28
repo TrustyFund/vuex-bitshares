@@ -10,6 +10,11 @@ const composeAssets = (assets) => {
   return composedAssets;
 };
 
+
+/**
+ * Fetches assets objects from bitsharesjs-ws
+ * @param {Array} assets - list of assets ids/symbold to fetch
+ */
 export const fetchAssets = ({ commit }, assets) => {
   commit(types.FETCH_ASSETS_REQUEST);
   return apis.getAssets(assets).then((result) => {
@@ -19,66 +24,47 @@ export const fetchAssets = ({ commit }, assets) => {
   });
 };
 
+/**
+ * Fetches default assets
+ * @param {Array} assets - list of assets ids/symbold to fetch
+ */
 export const fetchDefaultAssets = ({ commit, getters }) => {
   const defaultAssets = getters.getDefaultAssets;
   fetchAssets({ commit }, defaultAssets);
 };
 
-
+/**
+ * Fetches history prices data for 7 days from bitsharesjs-ws.
+   Prices are retrieved with base specified in store ( BTS by default )
+ * @param {Object} assets - objects containing assets by id { <id> : <asset-object> }
+ */
 export const fetchAssetsPrices = ({ commit, getters }, assets) => {
+  // base market = BTS
   const baseId = getters.getBaseMarketId;
-  const preferredAssetId = getters.getPreferredAssetId;
-  console.log(preferredAssetId);
   const base = getters.getAssetById(baseId);
+
+  // preferred asset = USD
+  const preferredAssetId = getters.getPreferredAssetId;
   const preferredAsset = getters.getAssetById(preferredAssetId);
 
-  // fetch base asset price in preferred asset
-  commit(types.UPDATE_ASSET_PRICE_REQUEST, { id: preferredAssetId });
-  commit(types.UPDATE_ASSET_PRICE_REQUEST, { id: baseId });
+  // add preferredAsset for fetching history prices data
+  assets[preferredAssetId] = preferredAsset;
 
-  apis.fetchStats(base, preferredAsset, 7, 3600).then((history) => {
-    const prices = utils.formatPrices(utils.getPrices(history), base, preferredAsset);
-    console.log(1 + base.symbol + ' = ' + 1 / prices.last + ' ' + preferredAsset.symbol);
-    console.log(prices);
-    commit(types.UPDATE_ASSET_PRICE_COMPLETE, {
-      id: preferredAssetId,
-      data: {
-        firstPrice: prices.first,
-        lastPrice: prices.last
-      }
-    });
-    commit(types.UPDATE_ASSET_PRICE_COMPLETE, {
-      id: baseId,
-      data: {
-        firstPrice: 1 / prices.first,
-        lastPrice: 1 / prices.last
-      }
-    });
-  });
-
-
-  // fetch requested assets prices
+  // fetch requested assets history prices data
   Object.keys(assets).forEach(id => {
-    if (id === baseId) return;
     const quote = assets[id];
-    commit(types.UPDATE_ASSET_PRICE_REQUEST, { id });
+    commit(types.FETCH_ASSET_PRICE_REQUEST, { id });
     apis.fetchStats(base, quote, 7, 3600).then((history) => {
       const prices = utils.formatPrices(utils.getPrices(history), base, quote);
-      // console.log(base.symbol, quote);
-      // console.log('PRICES', prices);
-      console.log({
-        id: quote.id,
-        symbol: quote.symbol,
-        firstPrice: prices.first,
-        lastPrice: prices.last
-      });
-      commit(types.UPDATE_ASSET_PRICE_COMPLETE, {
+      commit(types.FETCH_ASSET_PRICE_COMPLETE, {
         id: quote.id,
         data: {
           firstPrice: prices.first,
           lastPrice: prices.last
         }
       });
+    }, () => {
+      commit(types.FETCH_ASSET_PRICE_ERROR, { id });
     });
   });
 };

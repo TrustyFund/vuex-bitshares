@@ -34,16 +34,13 @@ const mutations = {
   [types.FETCH_DEFAULT_ASSETS_ERROR](state) {
     state.pending = false;
   },
-  [types.UPDATE_ASSET_PRICE_REQUEST](state, { id }) {
-    console.log(id);
+  [types.FETCH_ASSET_PRICE_REQUEST](state, { id }) {
     Vue.set(state.prices, id, { fetching: true });
   },
-  [types.UPDATE_ASSET_PRICE_COMPLETE](state, { id, data }) {
-    console.log(id, data);
+  [types.FETCH_ASSET_PRICE_COMPLETE](state, { id, data }) {
     Vue.set(state.prices, id, data);
   },
-  [types.UPDATE_ASSET_PRICE_ERROR](state, { id }) {
-    console.log(id);
+  [types.FETCH_ASSET_PRICE_ERROR](state, { id }) {
     Vue.set(state.prices[id], 'fetching', false);
   }
 };
