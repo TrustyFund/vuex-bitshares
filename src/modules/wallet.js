@@ -11,7 +11,8 @@ const initialState = {
   encryption_key: null,
   created: null,
   aes_private: null,
-  user_id: null
+  user_id: null,
+  valid: false
 };
 
 const mutations = {
@@ -22,6 +23,10 @@ const mutations = {
     state.aes_private = keys.aesPrivate;
     state.created = new Date();
     state.user_id = userId;
+    state.valid = true;
+  },
+  [types.WALLET_CREATE_ERROR]: (state) => {
+    state.valid = false;
   },
   [types.WALLET_BRAINKEY_BACKUP]: (state) => {
     state.brainkey_backup_date = Date();
@@ -31,7 +36,7 @@ const mutations = {
   },
   [types.WALLET_UNLOCK]: (state, aesPrivate) => {
     state.aes_private = aesPrivate;
-  }
+  },
 };
 
 export default {

@@ -1,4 +1,4 @@
-import { PrivateKey, key, Aes } from 'bitsharesjs/es';
+import { PrivateKey, key, Aes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import * as types from '../mutations';
 
@@ -28,7 +28,11 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
 
   return Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]])
     .then(([[userId]]) => {
-      commit(types.WALLET_CREATED, { keys, userId });
+      if (userId) {
+        commit(types.WALLET_CREATED, { keys, userId });
+      } else {
+        commit(types.WALLET_CREATE_ERROR);
+      }
     });
 };
 

@@ -1,4 +1,4 @@
-import { PrivateKey, key } from 'bitsharesjs/es';
+import { PrivateKey, key } from 'bitsharesjs';
 
 const ACTIVE_KEY_INDEX = 0;
 const OWNER_KEY_INDEX = 1;
