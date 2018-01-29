@@ -6,10 +6,10 @@ const OWNER_KEY_INDEX = 1;
 export const getBrainkey = state => state.aes_private &&
   state.aes_private.decryptHexToText(state.encrypted_brainkey);
 
-export const getKeys = (state, { brainKey }) => {
+export const getKeys = (state, { getBrainkey }) => {
   return {
-    active: brainKey && key.get_brainPrivateKey(brainKey, ACTIVE_KEY_INDEX),
-    owner: brainKey && key.get_brainPrivateKey(brainKey, OWNER_KEY_INDEX)
+    active: key.get_brainPrivateKey(getBrainkey, ACTIVE_KEY_INDEX),
+    owner: key.get_brainPrivateKey(getBrainkey, OWNER_KEY_INDEX)
   };
 };
 
