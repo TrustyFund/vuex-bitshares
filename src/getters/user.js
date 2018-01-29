@@ -9,4 +9,3 @@ export function getAccountObject({ account }) {
 export function getBalances({ balances }) {
   return balances;
 }
-
