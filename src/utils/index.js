@@ -9,4 +9,3 @@ export const arrayToObject = (array) => {
   });
   return obj;
 };
-

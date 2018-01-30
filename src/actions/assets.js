@@ -1,6 +1,5 @@
 import * as types from '../mutations';
 import * as apis from '../services/api';
-import * as utils from '../services/utils';
 import { arrayToObject } from '../utils';
 
 /**
@@ -32,55 +31,3 @@ export const fetchDefaultAssets = ({ commit, getters }) => {
     commit(types.SAVE_DEFAULT_ASSETS_IDS, { ids });
   });
 };
-
-/**
- * Fetches history prices for BASE:QUOTE data for 7 days for from bitsharesjs-ws.
- * @param {Object} base - base asset object
- * @param {Object} quote - quote asset object
- */
-export const fetchAssetPrice = ({ commit }, { base, quote }) => {
-  const { id } = quote;
-  commit(types.FETCH_ASSET_PRICE_REQUEST, { id });
-  return new Promise((resolve, reject) => {
-    apis.fetchStats(base, quote, 7, 3600).then((history) => {
-      const prices = utils.formatPrices(utils.getPrices(history), base, quote);
-      const result = {
-        firstPrice: prices.first,
-        lastPrice: prices.last
-      };
-      commit(types.FETCH_ASSET_PRICE_COMPLETE, {
-        id,
-        data: result
-      });
-      resolve(result);
-    }, () => {
-      commit(types.FETCH_ASSET_PRICE_ERROR, { id });
-      reject();
-    });
-  });
-};
-
-
-/**
- * Fetches history prices data for 7 days from bitsharesjs-ws.
-   Prices are retrieved with base specified in store ( BTS by default )
- * @param {Object} assets - objects containing assets by id { <id> : <asset-object> }
- */
-export const fetchAssetsPrices = (store, assets) => {
-  const { getters } = store;
-
-  // base market = BTS
-  const baseId = getters.getBaseMarketId;
-  const base = getters.getAssetById(baseId);
-
-  // preferred asset = USD
-  const preferredAssetId = getters.getPreferredAssetId;
-  const preferredAsset = getters.getAssetById(preferredAssetId);
-  assets[preferredAssetId] = preferredAsset;
-
-  Object.keys(assets).forEach(id => {
-    const quote = assets[id];
-    fetchAssetPrice(store, { base, quote });
-  });
-};
-

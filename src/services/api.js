@@ -1,5 +1,6 @@
 import { Apis } from 'bitsharesjs-ws';
 import * as User from './user';
+import * as utils from './utils';
 
 export const initApis = (statusCallback) => {
   const wsString = 'wss://bitshares.openledger.info/ws';
@@ -20,8 +21,9 @@ export const getAssets = (assets) => {
 };
 
 
-export const fetchStats = (base, quote, days, bucketSize) => {
+export const fetchAssetsPriceHistory = (base, quote, days) => {
   return new Promise((resolve, reject) => {
+    const bucketSize = 3600;
     const endDate = new Date();
     const startDate = new Date(endDate - (1000 * 60 * 60 * 24 * days));
     const endDateISO = endDate.toISOString().slice(0, -5);
@@ -31,7 +33,8 @@ export const fetchStats = (base, quote, days, bucketSize) => {
       'get_market_history',
       [base.id, quote.id, bucketSize, startDateISO, endDateISO]
     ).then((result) => {
-      resolve(result);
+      const prices = utils.formatPrices(utils.getPrices(result), base, quote);
+      resolve(prices);
     })
       .catch((error) => {
         reject(error);

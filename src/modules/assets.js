@@ -8,9 +8,6 @@ const initialState = {
     'OPEN.LTC', 'OPEN.EOS', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
   defaultAssetsIds: [],
   assets: {},
-  prices: {},
-  preferredAssetId: '1.3.121', // USD
-  baseMarketId: '1.3.0', // BTS
   pending: false
 };
 
@@ -28,15 +25,6 @@ const mutations = {
   },
   [types.SAVE_DEFAULT_ASSETS_IDS](state, { ids }) {
     state.defaultAssetsIds = ids;
-  },
-  [types.FETCH_ASSET_PRICE_REQUEST](state, { id }) {
-    Vue.set(state.prices, id, { fetching: true });
-  },
-  [types.FETCH_ASSET_PRICE_COMPLETE](state, { id, data }) {
-    Vue.set(state.prices, id, data);
-  },
-  [types.FETCH_ASSET_PRICE_ERROR](state, { id }) {
-    Vue.set(state.prices[id], 'fetching', false);
   }
 };
 

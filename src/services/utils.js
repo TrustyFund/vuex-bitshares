@@ -23,3 +23,24 @@ export const formatPrices = (prices, base, quote) => {
   prices.last = Math.abs(prices.last).toFixed(4);
   return prices;
 };
+
+/**
+ * Return object with balance in BTS, balance in currency and change
+ calculated given arguments
+ * @param {Array} array - array of data elements
+ */
+export const calcPortfolioData = ({
+  balance, prices, multiplier,
+  isBase, isCurrency
+}) => {
+  let checkedMultiplier = multiplier;
+  let checkedPrices = prices;
+  if (isCurrency) checkedMultiplier = { first: 1, last: 1 };
+  if (isBase) checkedPrices = { first: 1, last: 1 };
+  const balanceBTS = balance * checkedPrices.last;
+  const balanceCurrency = balanceBTS * checkedMultiplier.last;
+  let change = ((((checkedPrices.last * checkedMultiplier.last) /
+    (checkedPrices.first * checkedMultiplier.first)) * 100) - 100).toFixed(2);
+  if (checkedPrices.last === checkedPrices.first && !isBase) change = 0;
+  return { balanceBTS, balanceCurrency, change };
+};
