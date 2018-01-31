@@ -9,7 +9,6 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
   const aesPrivate = Aes.fromSeed(encryptionBuffer);
 
   const normalizedBrainkey = key.normalize_brainKey(brainkey);
-  // const brainkeyPrivate = PrivateKey.fromSeed(normalizedBrainkey);
   const encryptedBrainkey = aesPrivate.encryptToHex(normalizedBrainkey);
   const passwordPrivate = PrivateKey.fromSeed(password);
   const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
@@ -26,14 +25,7 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
     aesPrivate
   };
 
-  return Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]])
-    .then(([[userId]]) => {
-      if (userId) {
-        commit(types.WALLET_CREATED, { keys, userId });
-      } else {
-        commit(types.WALLET_CREATE_ERROR);
-      }
-    });
+  commit(types.WALLET_CREATED, keys);
 };
 
 export const unlockWallet = ({ commit, state }, password) => {

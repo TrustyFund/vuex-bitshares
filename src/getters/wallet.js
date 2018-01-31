@@ -24,3 +24,4 @@ export const isValidPassword = state => {
 export const isLocked = state => {
   return state.aes_private == null;
 };
+
