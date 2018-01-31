@@ -5,6 +5,8 @@ import assets from '../src/modules/assets.js';
 import apis from '../src/modules/apis.js';
 import account from '../src/modules/account.js';
 import * as AccountService from '../src/services/account.js'; 
+import * as WalletService from '../src/services/wallet.js'; 
+import dictionary from './brainkey_dictionary.js';
 
 const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
 const password = 'qwer1234';
@@ -93,7 +95,7 @@ describe('account module', () => {
     });
   });
   it('creates account', done => {
-    const brainkey = store.getters.suggestBrainkey(dictionary.en);
+    const brainkey = WalletService.suggestBrainkey(dictionary.en);
     store.dispatch('createWallet', {brainkey, password}).then(() => {
       const {owner, active} = store.getters.getKeys;
       const owner_pubkey = owner.toPublicKey().toPublicKeyString();
