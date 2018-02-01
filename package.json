@@ -4,7 +4,8 @@
   "description": "Vue way to build DAP's on bitshares net",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ./**/*.{vue,js}"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,13 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-vue": "latest",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-import-resolver-webpack": "^0.8.4",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-vue": "latest",
     "inject-loader": "^3.0.1",
     "jasmine": "^2.9.0",
     "jest": "^22.1.4",
