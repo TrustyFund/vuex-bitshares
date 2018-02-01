@@ -2,18 +2,18 @@ import * as actions from '../actions/account';
 import * as types from '../mutations';
 
 const initialState = {
-  user_id: null,
+  userId: null,
   name: null,
   error: null
 };
 
 const mutations = {
   [types.ACCOUNT_CREATED]: (state, { name, id }) => {
-    state.user_id = id;
+    state.userId = id;
     state.name = name;
   },
   [types.ACCOUNT_FETCHED]: (state, { name, id }) => {
-    state.user_id = id;
+    state.userId = id;
     state.name = name;
   },
   [types.ACCOUNT_FETCH_ERROR]: (state, error) => {

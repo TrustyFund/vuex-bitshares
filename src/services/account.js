@@ -1,39 +1,32 @@
 import { ChainValidation } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 
-export const getAccount = (name_or_id) => {
-  return new Promise((resolve,reject) => {
-    Apis.instance().db_api().exec('get_full_accounts', [[name_or_id], false])
-      .then(([res]) => {
-        if(res) {
-          const [_, {account}] = res;
-          resolve(account);
-        } else {
-          resolve(null);
-        }
-      })
-  });
-}
+export const getAccount = (nameOrId) => {
+  return Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false])
+    .then(([res]) => {
+      if (res) {
+        const [, { account }] = res;
+        return account;
+      }
+      return null;
+    });
+};
 
 export const isUsernameExists = (name) => {
-  return new Promise((resolve, reject) => {
-    getAccount(name).then(account => {
-      if(account) resolve(true);
-      else resolve(false);
-    }).catch(reject);
-  });
-}
-
-export const getAccountIdByOwnerPubkey = (owner_pubkey) => {
-  return new Promise((resolve, reject) => {
-    Apis.instance().db_api().exec('get_key_references', [[owner_pubkey]])
-      .then(([[user_id]]) => {
-        resolve(user_id);
-      });
+  return getAccount(name).then(account => {
+    if (account) return true;
+    return false;
   });
 };
 
-export const isUsernameValid =  (name) => {
+export const getAccountIdByOwnerPubkey = (ownerPubkey) => {
+  return Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]])
+    .then(([[userId]]) => {
+      return userId;
+    });
+};
+
+export const isUsernameValid = (name) => {
   return ChainValidation.is_account_name(name, false);
 };
 

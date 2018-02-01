@@ -1,5 +1,4 @@
 import { PrivateKey, key, Aes } from 'bitsharesjs';
-import { Apis } from 'bitsharesjs-ws';
 import * as types from '../mutations';
 
 export const createWallet = ({ commit }, { brainkey, password }) => {
@@ -12,11 +11,6 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
   const encryptedBrainkey = aesPrivate.encryptToHex(normalizedBrainkey);
   const passwordPrivate = PrivateKey.fromSeed(password);
   const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
-
-  // getting user id
-  const ownerKeyIndex = 1;
-  const ownerKey = key.get_brainPrivateKey(normalizedBrainkey, ownerKeyIndex);
-  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
 
   const keys = {
     passwordPubkey,
