@@ -1,6 +1,9 @@
 import { Apis } from 'bitsharesjs-ws';
 import * as utils from '../utils';
 
+/**
+ * Fetches array of assets from bitsharesjs-ws
+ */
 const fetch = async (assets) => {
   try {
     const result = await Apis.instance().db_api().exec('lookup_asset_symbols', [assets]);
@@ -12,6 +15,12 @@ const fetch = async (assets) => {
 };
 
 
+/**
+ * Returns prices bistory between base and quote assets from the last specified number of days
+ * @param {Object} base - base asset object
+ * @param {Object} quote - quote asset object
+ * @param {number} days - number of days
+ */
 const fetchPriceHistory = async (base, quote, days) => {
   try {
     const bucketSize = 3600;
