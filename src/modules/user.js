@@ -2,15 +2,6 @@ import * as types from '../mutations';
 import * as actions from '../actions/user';
 import * as getters from '../getters/user';
 
-const balancesToObject = (balancesArr) => {
-  const obj = {};
-  balancesArr.forEach(item => {
-    obj[item.asset_type] = item;
-  });
-  return obj;
-};
-
-
 const initialState = {
   account: null,
   balances: [],
@@ -25,7 +16,7 @@ const mutations = {
   },
   [types.FETCH_USER_COMPLETE](state, result) {
     state.account = result.account;
-    state.balances = balancesToObject(result.balances);
+    state.balances = result.balances;
     state.pending = false;
   },
   [types.FETCH_USER_ERROR](state) {
