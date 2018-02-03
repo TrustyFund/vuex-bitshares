@@ -19,6 +19,7 @@ const mutations = {
     Object.keys(assets).forEach(id => {
       Vue.set(state.assets, id, assets[id]);
     });
+    state.pending = false;
   },
   [types.FETCH_ASSETS_ERROR](state) {
     state.pending = false;

@@ -1,3 +1,7 @@
+/**
+ * Returns array containing first and last history prices of asset.
+ * @param {Array} history - array with asset's history data
+ */
 export const getPrices = (history) => {
   if (!history.length) return { first: 0, last: 0 };
   const startElem = history[0];
@@ -7,6 +11,14 @@ export const getPrices = (history) => {
   return { first: startPrice, last: endPrice };
 };
 
+/**
+ * Returns formatted prices for array calculated taking precision щf assets into account
+ * @param {Object} prices - object with asset's history prices
+ * @param {number} prices.first - first price of asset history
+ * @param {number} prices.last - last price of asset history (current)
+ * @param {Object} base - base asset object
+ * @param {Object} quote - quote asset object
+ */
 export const formatPrices = (prices, base, quote) => {
   const precisionDiff = base.precision - quote.precision;
 
@@ -25,22 +37,45 @@ export const formatPrices = (prices, base, quote) => {
 };
 
 /**
- * Return object with balance in BTS, balance in currency and change
- calculated given arguments
- * @param {Array} array - array of data elements
+ * Returns amount of change by percent, calculated by prices history and exchange multiplier
+ * @param {Object} object.prices - object with asset's history prices
+ * @param {number} object.prices.first - first price of asset history
+ * @param {number} object.prices.last - last price of asset history (current)
+ * @param {Object} object.multiplier - object with base -> fiat exchange rates
+ * @param {number} object.multiplier.first - multiplier for first history price
+ * @param {number} object.multiplier.last - multiplier for last history price (current)
+ */
+export const calcPercentChange = (prices, multiplier) => {
+  return ((((prices.last * multiplier.last) /
+      (prices.first * multiplier.first)) * 100) - 100).toFixed(2);
+};
+
+
+/**
+ * Returns object with balance in base currency, balance in fiat currency
+  and change by percent
+ * @param {Object} object - object containing data for calculation
+ * @param {number} object.balance - balance of asset
+ * @param {Object} object.assetPrices - object with asset's history prices
+ * @param {number} object.assetPrices.first - first price of asset history
+ * @param {number} object.assetPrices.last - last price of asset history (current)
+ * @param {Object} object.fiatMultiplier - object with base -> fiat exchange rates
+ * @param {number} object.fiatMultiplier.first - multiplier for first history price
+ * @param {number} object.fiatMultiplier.last - multiplier for last history price (current)
+ * @param {Boolean} object.isBase - the asset for calculation is base asset
+ * @param {Boolean} object.isFiat - the asset for calculation is fiat asset
  */
 export const calcPortfolioData = ({
-  balance, prices, multiplier,
-  isBase, isCurrency
+  balance, assetPrices, fiatMultiplier,
+  isBase, isFiat
 }) => {
-  let checkedMultiplier = multiplier;
-  let checkedPrices = prices;
-  if (isCurrency) checkedMultiplier = { first: 1, last: 1 };
-  if (isBase) checkedPrices = { first: 1, last: 1 };
-  const balanceBTS = balance * checkedPrices.last;
-  const balanceCurrency = balanceBTS * checkedMultiplier.last;
-  let change = ((((checkedPrices.last * checkedMultiplier.last) /
-    (checkedPrices.first * checkedMultiplier.first)) * 100) - 100).toFixed(2);
-  if (checkedPrices.last === checkedPrices.first && !isBase) change = 0;
-  return { balanceBTS, balanceCurrency, change };
+  let multiplier = fiatMultiplier;
+  let prices = assetPrices;
+  if (isFiat) multiplier = { first: 1, last: 1 };
+  if (isBase) prices = { first: 1, last: 1 };
+  const balanceBase = balance * prices.last;
+  const balanceFiat = balanceBase * multiplier.last;
+  let change = calcPercentChange(prices, multiplier);
+  if (prices.last === prices.first && !isBase) change = 0;
+  return { balanceBase, balanceFiat, change };
 };

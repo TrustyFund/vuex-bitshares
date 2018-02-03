@@ -3,16 +3,16 @@ import * as apis from '../services/api';
 import * as utils from '../services/utils';
 
 /**
- * Fetches data for portfolio
+ * Fetches and processes data for portfolio
  * @param {Object} balances - object with balances by key as id of asset
  */
-export const fetchPortfolioData = ({ commit, getters }, { balances }) => {
+export const fetchPortfolioData = async ({ commit, getters }, {
+  balances, baseId, fiatId, days
+}) => {
   const assets = getters.getAssets;
   const defaultAssetsIds = getters.getDefaultAssetsIds;
-  const baseId = getters.getPortfolioBaseId;
   const base = assets[baseId];
-  const currencyId = getters.getPortfolioCurrencyId;
-  const currencyAsset = assets[currencyId];
+  const fiatAsset = assets[fiatId];
   const userAssetsIds = Object.keys(balances);
 
   // balance + default assets without duplication
@@ -20,48 +20,41 @@ export const fetchPortfolioData = ({ commit, getters }, { balances }) => {
     return userAssetsIds.indexOf(id) < 0;
   }));
 
-  // fetch currency asset prices history first to calc multiplier
-  const promise = new Promise((resolve) => {
-    apis.fetchAssetsPriceHistory(base, currencyAsset, 7).then((prices) => {
-      resolve({
-        first: 1 / prices.first,
-        last: 1 / prices.last
-      });
-    }, () => {
-      console.log('error fetching currency asset');
+    // fetch currency asset prices history first to calc multiplier
+    // (to calculate fiat value of each asset)
+  const fiatPrices = await apis.fetchAssetsPriceHistory(base, fiatAsset, days);
+  const fiatMultiplier = {
+    first: 1 / fiatPrices.first,
+    last: 1 / fiatPrices.last
+  };
+
+    // fetch and calculate prices for each asset
+  filteredAssetsIdsList.forEach(async (id) => {
+    let balance = (balances[id] && balances[id].balance) || 0;
+    balance = balance / (10 ** assets[id].precision);
+    const name = assets[id].symbol;
+    commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
+    const prices = await apis.fetchAssetsPriceHistory(base, assets[id], 7);
+
+    const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
+      balance,
+      assetPrices: prices,
+      fiatMultiplier,
+      isBase: id === baseId,
+      isFiat: id === fiatId
     });
-  });
 
-  // after fetching currency asset fetch all others history and calc needed data
-  promise.then((currencyMultiplier) => {
-    filteredAssetsIdsList.forEach(id => {
-      commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol });
-      apis.fetchAssetsPriceHistory(base, assets[id], 7).then((prices) => {
-        const name = assets[id].symbol;
-        let balance = (balances[id] && balances[id].balance) || 0;
-        balance = balance / (10 ** assets[id].precision);
-
-        const { balanceBTS, balanceCurrency, change } = utils.calcPortfolioData({
-          balance,
-          prices,
-          multiplier: currencyMultiplier,
-          isBase: id === baseId,
-          isCurrency: id === currencyId
-        });
-
-        commit(types.FETCH_PORTFOLIO_ASSET_COMPLETE, {
-          id,
-          data: {
-            name, balance, balanceBTS, balanceCurrency, change
-          }
-        });
-      }, () => {
-        commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
-      });
+    commit(types.FETCH_PORTFOLIO_ASSET_COMPLETE, {
+      id,
+      data: {
+        name, balance, balanceBase, balanceFiat, change
+      }
     });
+    // }, () => {
+    // commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
+    // });
   });
 };
-
 /**
  * Resets portfolio state to initial
  */

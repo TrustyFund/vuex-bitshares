@@ -4,9 +4,7 @@ import * as actions from '../actions/portfolio';
 import * as getters from '../getters/portfolio';
 
 const initialState = {
-  list: {},
-  currencyId: '1.3.121', // USD
-  baseId: '1.3.0', // BTS
+  list: {}
 };
 
 const mutations = {
@@ -15,8 +13,8 @@ const mutations = {
       name,
       fetching: true,
       balance: 0,
-      balanceBTS: 0,
-      balanceCurrency: 0,
+      balanceBase: 0,
+      balanceFiat: 0,
       change: 0
     });
   },
