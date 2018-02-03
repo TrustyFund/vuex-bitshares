@@ -1,5 +1,5 @@
 import * as types from '../mutations';
-import * as apis from '../services/api';
+import { Assets } from '../services/api';
 import { arrayToObject } from '../utils';
 
 /**
@@ -8,7 +8,7 @@ import { arrayToObject } from '../utils';
  */
 export const fetchAssets = async ({ commit }, assets) => {
   commit(types.FETCH_ASSETS_REQUEST);
-  const result = await apis.getAssets(assets);
+  const result = await Assets.fetch(assets);
   const composedResult = arrayToObject(result);
   commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
   return composedResult;

@@ -1,6 +1,6 @@
 import * as types from '../mutations';
-import * as apis from '../services/api';
-import * as utils from '../services/utils';
+import { Assets } from '../services/api';
+import * as utils from '../utils';
 
 /**
  * Fetches and processes data for portfolio
@@ -11,7 +11,7 @@ export const fetchPortfolioData = async ({ commit, getters }, {
 }) => {
   const assets = getters.getAssets;
   const defaultAssetsIds = getters.getDefaultAssetsIds;
-  const base = assets[baseId];
+  const baseAsset = assets[baseId];
   const fiatAsset = assets[fiatId];
   const userAssetsIds = Object.keys(balances);
 
@@ -22,7 +22,7 @@ export const fetchPortfolioData = async ({ commit, getters }, {
 
     // fetch currency asset prices history first to calc multiplier
     // (to calculate fiat value of each asset)
-  const fiatPrices = await apis.fetchAssetsPriceHistory(base, fiatAsset, days);
+  const fiatPrices = await Assets.fetchPriceHistory(baseAsset, fiatAsset, days);
   const fiatMultiplier = {
     first: 1 / fiatPrices.first,
     last: 1 / fiatPrices.last
@@ -34,7 +34,7 @@ export const fetchPortfolioData = async ({ commit, getters }, {
     balance = balance / (10 ** assets[id].precision);
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
-    const prices = await apis.fetchAssetsPriceHistory(base, assets[id], 7);
+    const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], 7);
 
     const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
       balance,
@@ -55,6 +55,7 @@ export const fetchPortfolioData = async ({ commit, getters }, {
     // });
   });
 };
+
 /**
  * Resets portfolio state to initial
  */
