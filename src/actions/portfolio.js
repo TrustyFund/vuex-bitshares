@@ -6,11 +6,11 @@ import * as utils from '../utils';
  * Fetches and processes data for portfolio
  * @param {Object} balances - object with balances by key as id of asset
  */
-export const fetchPortfolioData = async ({ commit, getters }, {
+export const fetchPortfolioData = async ({ commit, rootGetters }, {
   balances, baseId, fiatId, days
 }) => {
-  const assets = getters.getAssets;
-  const defaultAssetsIds = getters.getDefaultAssetsIds;
+  const assets = rootGetters['assets/getAssets'];
+  const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
   const baseAsset = assets[baseId];
   const fiatAsset = assets[fiatId];
   const userAssetsIds = Object.keys(balances);
