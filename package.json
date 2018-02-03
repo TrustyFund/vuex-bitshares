@@ -39,6 +39,7 @@
     "eslint-config-vue": "latest",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-import-resolver-webpack": "^0.8.4",
+    "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-vue": "latest",
     "inject-loader": "^3.0.1",
