@@ -1,5 +1,5 @@
 import { Apis } from 'bitsharesjs-ws';
-import * as User from './user';
+import User from './user';
 import Assets from './assets';
 
 export const initApis = (statusCallback) => {
