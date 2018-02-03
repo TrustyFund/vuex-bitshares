@@ -9,14 +9,13 @@ import { arrayToObject } from '../utils';
 export const fetchAssets = async ({ commit }, assets) => {
   commit(types.FETCH_ASSETS_REQUEST);
   const result = await Assets.fetch(assets);
-  const composedResult = arrayToObject(result);
-  commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
-  return composedResult;
-  // }, () => {
-  // commit(types.FETCH_ASSETS_ERROR);
-  // reject();
-  // });
-  // };
+  if (result) {
+    const composedResult = arrayToObject(result);
+    commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
+    return composedResult;
+  }
+  commit(types.FETCH_ASSETS_ERROR);
+  return null;
 };
 
 /**
@@ -26,6 +25,8 @@ export const fetchAssets = async ({ commit }, assets) => {
 export const fetchDefaultAssets = async ({ commit, getters }) => {
   const defaultAssetsNames = getters.getDefaultAssetsNames;
   const assets = await fetchAssets({ commit }, defaultAssetsNames);
-  const ids = Object.keys(assets);
-  commit(types.SAVE_DEFAULT_ASSETS_IDS, { ids });
+  if (assets) {
+    const ids = Object.keys(assets);
+    commit(types.SAVE_DEFAULT_ASSETS_IDS, { ids });
+  }
 };

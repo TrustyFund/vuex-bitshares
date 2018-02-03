@@ -8,14 +8,14 @@ const initialState = {
 };
 
 const mutations = {
-  [types.FETCH_PORTFOLIO_ASSET_REQUEST](state, { id, name }) {
+  [types.FETCH_PORTFOLIO_ASSET_REQUEST](state, { id, name, balance }) {
     Vue.set(state.list, id, {
       name,
-      fetching: true,
-      balance: 0,
+      balance,
       balanceBase: 0,
       balanceFiat: 0,
-      change: 0
+      change: 0,
+      fetching: true
     });
   },
   [types.FETCH_PORTFOLIO_ASSET_ERROR](state, { id }) {

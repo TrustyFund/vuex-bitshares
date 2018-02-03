@@ -35,24 +35,24 @@ export const fetchPortfolioData = async ({ commit, getters }, {
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
     const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], 7);
+    if (prices) {
+      const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
+        balance,
+        assetPrices: prices,
+        fiatMultiplier,
+        isBase: id === baseId,
+        isFiat: id === fiatId
+      });
 
-    const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
-      balance,
-      assetPrices: prices,
-      fiatMultiplier,
-      isBase: id === baseId,
-      isFiat: id === fiatId
-    });
-
-    commit(types.FETCH_PORTFOLIO_ASSET_COMPLETE, {
-      id,
-      data: {
-        name, balance, balanceBase, balanceFiat, change
-      }
-    });
-    // }, () => {
-    // commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
-    // });
+      commit(types.FETCH_PORTFOLIO_ASSET_COMPLETE, {
+        id,
+        data: {
+          name, balance, balanceBase, balanceFiat, change
+        }
+      });
+    } else {
+      commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
+    }
   });
 };
 
