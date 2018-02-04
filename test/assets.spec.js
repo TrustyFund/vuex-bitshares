@@ -9,7 +9,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 
-describe('assets module', () => {
+describe('Assets module', () => {
   let store;
 
   beforeEach(() => {
