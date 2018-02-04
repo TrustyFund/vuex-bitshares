@@ -7,7 +7,6 @@ import * as utils from '../utils';
 const fetch = async (assets) => {
   try {
     const result = await Apis.instance().db_api().exec('lookup_asset_symbols', [assets]);
-    console.log(result);
     return result;
   } catch (error) {
     console.log(error);

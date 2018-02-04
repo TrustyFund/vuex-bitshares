@@ -11,7 +11,6 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
 }) => {
   const assets = rootGetters['assets/getAssets'];
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
-  console.log(defaultAssetsIds);
   const baseAsset = assets[baseId];
   const fiatAsset = assets[fiatId];
   const userAssetsIds = Object.keys(balances);
