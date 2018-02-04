@@ -1,12 +1,14 @@
 const assetsData = {
   1: {
-    name: 'bts'
+    name: 'BTS',
+    id: '1.3.0'
   },
   2: {
-    name: 'usd'
+    name: 'USD',
+    id: '1.2'
   },
   3: {
-    name: 'cny'
+    name: 'CNY'
   }
 };
 
@@ -14,7 +16,12 @@ const fetch = (assetsArray) => {
   return new Promise((resolve, reject) => {
     process.nextTick(() => {
       try {
-        const result = assetsArray.map((assetId => assetsData[assetId]));
+        const result = assetsArray.map((assetId => {
+          return {
+            id: assetsData[assetId].id,
+            symbol: assetsData[assetId].name
+          };
+        }));
         resolve(result);
       } catch (error) {
         reject(new Error());
@@ -24,7 +31,6 @@ const fetch = (assetsArray) => {
 };
 
 export default {
-  fetch,
-  MOCKED: true
+  fetch
 };
 

@@ -42,6 +42,5 @@ const fetchPriceHistory = async (base, quote, days) => {
 
 export default {
   fetch,
-  fetchPriceHistory,
-  MOCKED: false
+  fetchPriceHistory
 };
