@@ -33,9 +33,9 @@ describe('wallet module', () => {
   const owner_pubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
   it('creates wallet', done => {
-    store.dispatch('createWallet', {brainkey, password}).then(() => {
-      expect(store.getters.getBrainkey).toBe(brainkey);
-      const owner_key = store.getters.getKeys.owner;
+    store.dispatch('wallet/createWallet', {brainkey, password}).then(() => {
+      expect(store.getters['wallet/getBrainkey']).toBe(brainkey);
+      const owner_key = store.getters['wallet/getKeys'].owner;
       const computed_owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
       expect(computed_owner_pubkey).toBe(owner_pubkey);
       done();
@@ -43,22 +43,22 @@ describe('wallet module', () => {
   }, 20000);
 
   it('validates password', done => {
-    expect(store.getters.isValidPassword(password)).toBe(true);
-    expect(store.getters.isValidPassword("wrong password")).toBe(false);
+    expect(store.getters['wallet/isValidPassword'](password)).toBe(true);
+    expect(store.getters['wallet/isValidPassword']("wrong password")).toBe(false);
     done()
   });
 
   it('locks wallet', done => {
-    expect(store.getters.isLocked).toBe(false);
-    store.dispatch('lockWallet').then(() => {
-      expect(store.getters.isLocked).toBe(true);
+    expect(store.getters['wallet/isLocked']).toBe(false);
+    store.dispatch('wallet/lockWallet').then(() => {
+      expect(store.getters['wallet/isLocked']).toBe(true);
       done();
     })
   });
 
   it('unlocks wallet', done => {
-    store.dispatch('unlockWallet', password).then(() => {
-      const owner_key = store.getters.getKeys.owner;
+    store.dispatch('wallet/unlockWallet', password).then(() => {
+      const owner_key = store.getters['wallet/getKeys'].owner;
       const computed_owner_pubkey = owner_key.toPublicKey().toPublicKeyString();
       expect(computed_owner_pubkey.substr(3)).toBe(owner_pubkey.substr(3));
       done();
