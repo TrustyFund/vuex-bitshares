@@ -23,5 +23,8 @@ const fetch = (assetsArray) => {
   });
 };
 
-export default { fetch };
+export default {
+  fetch,
+  MOCKED: true
+};
 
