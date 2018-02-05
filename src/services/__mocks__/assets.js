@@ -653,7 +653,6 @@ const fetch = (assetsArray) => {
         }
         resolve(result);
       } catch (error) {
-        // console.log(error);
         resolve(null);
       }
     });
