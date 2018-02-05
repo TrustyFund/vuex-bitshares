@@ -77,7 +77,6 @@ describe('Assets module: actions and getters', () => {
   });
 
   test('fetches default assets', done => {
-    // store.state.assets = Object.assign({}, initialState);
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchDefaultAssets').then(() => {
