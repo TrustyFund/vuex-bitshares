@@ -8,11 +8,13 @@ jest.mock('../src/services/assets.js');
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
+const initialState = Object.assign({}, assets.state);
 
-describe('Assets module', () => {
+describe('Assets module: actions and getters', () => {
   let store;
 
   beforeEach(() => {
+    // doesn't work somewhy.......
     store = new Vuex.Store({
       modules: {
         assets
@@ -20,7 +22,7 @@ describe('Assets module', () => {
     });
   });
 
-  it('has correct initial state', () => {
+  test('has correct initial state', () => {
     expect(store.state.assets.assets).toEqual({});
     expect(store.state.assets.defaultAssetsIds).toEqual([]);
     expect(store.state.assets.defaultAssetsNames).toEqual(['BTS', 'OPEN.EOS', 'USD',
@@ -28,7 +30,7 @@ describe('Assets module', () => {
     expect(store.state.assets.pending).toBeFalsy();
   });
 
-  it('has correct getters', () => {
+  test('has correct getters', () => {
     expect(store.getters['assets/getAssets']).toEqual({});
     expect(store.getters['assets/getDefaultAssetsIds']).toEqual([]);
     expect(store.getters['assets/getDefaultAssetsNames']).toEqual(['BTS', 'OPEN.EOS', 'USD',
@@ -52,7 +54,9 @@ describe('Assets module', () => {
     expect(store.getters['assets/getAssetById']('aaaa')).toBeFalsy();
   });
 
-  it('fetches assets', done => {
+  test('fetches assets', done => {
+    store.state.assets.assets = {};
+    expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchAssets', ['1.3.0', '1.3.113']).then(() => {
       const recievedAssets = store.state.assets.assets;
       expect(recievedAssets).toBeDefined();
@@ -63,7 +67,19 @@ describe('Assets module', () => {
     });
   });
 
-  it('fetches default assets', done => {
+  test('handles bad assets fetch request', done => {
+    store.state.assets.assets = {};
+    store.dispatch('assets/fetchAssets', null).then(response => {
+      expect(response).toBeNull();
+      expect(store.state.assets.assets).toEqual({});
+      done();
+    });
+  });
+
+  test('fetches default assets', done => {
+    // store.state.assets = Object.assign({}, initialState);
+    store.state.assets.assets = {};
+    expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchDefaultAssets').then(() => {
       const testDefaultAssetsIds = ['1.3.0', '1.3.113', '1.3.1999', '1.3.121', '1.3.2001',
         '1.3.859', '1.3.1893', '1.3.861', '1.3.2220', '1.3.2379'];
@@ -79,3 +95,34 @@ describe('Assets module', () => {
     });
   });
 });
+
+describe('Assets module: mutations', () => {
+  let state;
+
+  beforeEach(() => {
+    state = Object.assign({}, initialState);
+  });
+
+  test('FETCH_ASSETS_REQUEST', () => {
+    assets.mutations.FETCH_ASSETS_REQUEST(state);
+    expect(state.pending).toBeTruthy();
+  });
+  test('FETCH_ASSETS_ERROR', () => {
+    assets.mutations.FETCH_ASSETS_ERROR(state);
+    expect(state.pending).toBeFalsy();
+  });
+  test('FETCH_ASSETS_COMPLETE', () => {
+    const testAsset = {
+      a: { name: 'bts' },
+      b: { name: 'zxy' },
+    };
+    assets.mutations.FETCH_ASSETS_COMPLETE(state, { assets: testAsset });
+    expect(state.pending).toBeFalsy();
+    expect(state.assets).toEqual(testAsset);
+  });
+  test('SAVE_DEFAULT_ASSETS_IDS', () => {
+    assets.mutations.SAVE_DEFAULT_ASSETS_IDS(state, { ids: ['a', 'b', 'c'] });
+    expect(state.defaultAssetsIds).toEqual(['a', 'b', 'c']);
+  });
+});
+
