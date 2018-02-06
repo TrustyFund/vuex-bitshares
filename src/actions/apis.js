@@ -1,7 +1,10 @@
 import * as apis from '../services/api';
 import * as types from '../mutations';
 
-
+/**
+ * Inits main APIs
+ * @param {function} callback - callback for status update
+ */
 export const initApis = ({ commit }, callback) => {
   const connectionStatus = (status) => {
     switch (status) {

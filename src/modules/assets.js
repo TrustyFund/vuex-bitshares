@@ -1,9 +1,13 @@
+import Vue from 'vue';
 import * as types from '../mutations';
 import * as actions from '../actions/assets';
 import * as getters from '../getters/assets';
 
 const initialState = {
-  assets: null,
+  defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
+    'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
+  defaultAssetsIds: [],
+  assets: {},
   pending: false
 };
 
@@ -12,19 +16,16 @@ const mutations = {
     state.pending = true;
   },
   [types.FETCH_ASSETS_COMPLETE](state, { assets }) {
-    state.assets = assets;
+    Object.keys(assets).forEach(id => {
+      Vue.set(state.assets, id, assets[id]);
+    });
+    state.pending = false;
   },
   [types.FETCH_ASSETS_ERROR](state) {
     state.pending = false;
   },
-  [types.FETCH_DEFAULT_ASSETS_REQUEST](state) {
-    state.pending = true;
-  },
-  [types.FETCH_DEFAULT_ASSETS_COMPLETE](state, { assets }) {
-    state.assets = assets;
-  },
-  [types.FETCH_DEFAULT_ASSETS_ERROR](state) {
-    state.pending = false;
+  [types.SAVE_DEFAULT_ASSETS_IDS](state, { ids }) {
+    state.defaultAssetsIds = ids;
   }
 };
 
@@ -32,5 +33,6 @@ export default {
   state: initialState,
   actions,
   mutations,
-  getters
+  getters,
+  namespaced: true
 };

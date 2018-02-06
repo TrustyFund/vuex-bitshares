@@ -1,33 +1,32 @@
 import * as types from '../mutations';
-import * as apis from '../services/api';
+import { Assets } from '../services/api';
+import { arrayToObject } from '../utils';
 
-const composeAssets = (assets) => {
-  const composedAssets = {};
-  assets.forEach((asset) => {
-    composedAssets[asset.id] = asset;
-  });
-  return composedAssets;
-};
-
-export const fetchAssets = ({ commit }, assets) => {
+/**
+ * Fetches assets objects from bitsharesjs-ws
+ * @param {Array} assets - list of assets ids/symbold to fetch
+ */
+export const fetchAssets = async ({ commit }, assets) => {
   commit(types.FETCH_ASSETS_REQUEST);
-  apis.getAssets(assets).then((result) => {
-    commit(types.FETCH_ASSETS_COMPLETE, { assets: composeAssets(result) });
-  }, () => {
-    commit(types.FETCH_ASSETS_ERROR);
-  });
+  const result = await Assets.fetch(assets);
+  if (result) {
+    const composedResult = arrayToObject(result);
+    commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
+    return composedResult;
+  }
+  commit(types.FETCH_ASSETS_ERROR);
+  return null;
 };
 
-export const fetchDefaultAssets = ({ commit }) => {
-  //  TODO MOVE TO CONFIG DEFAULT ASSETS
-  const defaultAssets = ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
-    'OPEN.LTC', 'OPEN.EOS', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'];
-  commit(types.FETCH_DEFAULT_ASSETS_REQUEST);
-  apis.getAssets(defaultAssets).then((result) => {
-    commit(types.FETCH_DEFAULT_ASSETS_COMPLETE, {
-      assets: composeAssets(result)
-    });
-  }, () => {
-    commit(types.FETCH_DEFAULT_ASSETS_ERROR);
-  });
+/**
+ * Fetches default assets objects via fetchAssets function
+ to save default assets ids
+ */
+export const fetchDefaultAssets = async ({ commit, getters }) => {
+  const defaultAssetsNames = getters.getDefaultAssetsNames;
+  const assets = await fetchAssets({ commit }, defaultAssetsNames);
+  if (assets) {
+    const ids = Object.keys(assets);
+    commit(types.SAVE_DEFAULT_ASSETS_IDS, { ids });
+  }
 };
