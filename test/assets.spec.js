@@ -10,11 +10,12 @@ localVue.use(Vuex);
 
 const initialState = Object.assign({}, assets.state);
 
-describe('Assets module: actions and getters', () => {
+
+describe('Assets module: getters', () => {
   let store;
 
   beforeEach(() => {
-    // doesn't work somewhy.......
+    // todo: doesn't work somewhy, debug
     store = new Vuex.Store({
       modules: {
         assets
@@ -52,6 +53,49 @@ describe('Assets module: actions and getters', () => {
     expect(store.getters['assets/getAssets']).toEqual(testAssets);
     expect(store.getters['assets/getAssetById']('1.3.0')).toEqual(testAssets['1.3.0']);
     expect(store.getters['assets/getAssetById']('aaaa')).toBeFalsy();
+  });
+});
+
+describe('Assets module: mutations', () => {
+  let state;
+
+  beforeEach(() => {
+    state = Object.assign({}, initialState);
+  });
+
+  test('FETCH_ASSETS_REQUEST', () => {
+    assets.mutations.FETCH_ASSETS_REQUEST(state);
+    expect(state.pending).toBeTruthy();
+  });
+  test('FETCH_ASSETS_ERROR', () => {
+    assets.mutations.FETCH_ASSETS_ERROR(state);
+    expect(state.pending).toBeFalsy();
+  });
+  test('FETCH_ASSETS_COMPLETE', () => {
+    const testAsset = {
+      a: { name: 'bts' },
+      b: { name: 'zxy' },
+    };
+    assets.mutations.FETCH_ASSETS_COMPLETE(state, { assets: testAsset });
+    expect(state.pending).toBeFalsy();
+    expect(state.assets).toEqual(testAsset);
+  });
+  test('SAVE_DEFAULT_ASSETS_IDS', () => {
+    assets.mutations.SAVE_DEFAULT_ASSETS_IDS(state, { ids: ['a', 'b', 'c'] });
+    expect(state.defaultAssetsIds).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('Assets module: actions', () => {
+  let store;
+
+  beforeEach(() => {
+    // doesn't work somewhy.......
+    store = new Vuex.Store({
+      modules: {
+        assets
+      }
+    });
   });
 
   test('fetches assets', done => {
@@ -94,34 +138,3 @@ describe('Assets module: actions and getters', () => {
     });
   });
 });
-
-describe('Assets module: mutations', () => {
-  let state;
-
-  beforeEach(() => {
-    state = Object.assign({}, initialState);
-  });
-
-  test('FETCH_ASSETS_REQUEST', () => {
-    assets.mutations.FETCH_ASSETS_REQUEST(state);
-    expect(state.pending).toBeTruthy();
-  });
-  test('FETCH_ASSETS_ERROR', () => {
-    assets.mutations.FETCH_ASSETS_ERROR(state);
-    expect(state.pending).toBeFalsy();
-  });
-  test('FETCH_ASSETS_COMPLETE', () => {
-    const testAsset = {
-      a: { name: 'bts' },
-      b: { name: 'zxy' },
-    };
-    assets.mutations.FETCH_ASSETS_COMPLETE(state, { assets: testAsset });
-    expect(state.pending).toBeFalsy();
-    expect(state.assets).toEqual(testAsset);
-  });
-  test('SAVE_DEFAULT_ASSETS_IDS', () => {
-    assets.mutations.SAVE_DEFAULT_ASSETS_IDS(state, { ids: ['a', 'b', 'c'] });
-    expect(state.defaultAssetsIds).toEqual(['a', 'b', 'c']);
-  });
-});
-
