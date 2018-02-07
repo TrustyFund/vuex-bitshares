@@ -16,7 +16,7 @@ describe('Portfolio module: getters', () => {
   let store;
 
   beforeEach(() => {
-    // todo: doesn't work somewhy, debug
+    // todo: debug module clone
     store = new Vuex.Store({
       modules: {
         portfolio: Object.assign({}, portfolio)
@@ -190,6 +190,7 @@ describe('Portfolio module: actions', () => {
         name: 'OPEN.LTC',
       }
     };
+    //  todo: remove
     store.state.portfolio.list = {};
     await store.dispatch('assets/fetchDefaultAssets');
     await store.dispatch('assets/fetchAssets', assetsIds);

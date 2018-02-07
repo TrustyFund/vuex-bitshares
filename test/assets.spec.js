@@ -15,7 +15,7 @@ describe('Assets module: getters', () => {
   let store;
 
   beforeEach(() => {
-    // todo: doesn't work somewhy, debug
+    // todo: debug deep clone module
     store = new Vuex.Store({
       modules: {
         assets
@@ -90,7 +90,7 @@ describe('Assets module: actions', () => {
   let store;
 
   beforeEach(() => {
-    // doesn't work somewhy.......
+    // todo: debug deep clone module
     store = new Vuex.Store({
       modules: {
         assets
@@ -99,19 +99,80 @@ describe('Assets module: actions', () => {
   });
 
   test('fetches assets', done => {
+    // todo: remove
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchAssets', ['1.3.0', '1.3.113']).then(() => {
       const recievedAssets = store.state.assets.assets;
       expect(recievedAssets).toBeDefined();
       expect(Object.keys(recievedAssets).length).toBe(2);
-      expect(recievedAssets['1.3.0'].symbol).toBe('BTS');
-      expect(recievedAssets['1.3.113'].symbol).toBe('CNY');
+      expect(recievedAssets['1.3.0']).toEqual({
+        id: '1.3.0',
+        symbol: 'BTS',
+        precision: 5,
+        issuer: '1.2.3',
+        options: {
+          max_supply: '360057050210207',
+          market_fee_percent: 0,
+          max_market_fee: '1000000000000000',
+          issuer_permissions: 0,
+          flags: 0,
+          core_exchange_rate: {
+            base: {
+              amount: 1,
+              asset_id: '1.3.0'
+            },
+            quote: {
+              amount: 1,
+              asset_id: '1.3.0'
+            }
+          },
+          whitelist_authorities: [],
+          blacklist_authorities: [],
+          whitelist_markets: [],
+          blacklist_markets: [],
+          description: '',
+          extensions: []
+        },
+        dynamic_asset_data_id: '2.3.0'
+      });
+      expect(recievedAssets['1.3.113']).toEqual({
+        id: '1.3.113',
+        symbol: 'CNY',
+        precision: 4,
+        issuer: '1.2.0',
+        options: {
+          max_supply: '1000000000000000',
+          market_fee_percent: 0,
+          max_market_fee: '1000000000000000',
+          issuer_permissions: 511,
+          flags: 128,
+          core_exchange_rate: {
+            base: {
+              amount: 835,
+              asset_id: '1.3.113'
+            },
+            quote: {
+              amount: 4543,
+              asset_id: '1.3.0'
+            }
+          },
+          whitelist_authorities: [],
+          blacklist_authorities: [],
+          whitelist_markets: [],
+          blacklist_markets: [],
+          description: '1 Chinese yuan',
+          extensions: []
+        },
+        dynamic_asset_data_id: '2.3.113',
+        bitasset_data_id: '2.4.13'
+      });
       done();
     });
   });
 
   test('handles bad assets fetch request', done => {
+    // todo: remove
     store.state.assets.assets = {};
     store.dispatch('assets/fetchAssets', null).then(response => {
       expect(response).toBeNull();
@@ -121,6 +182,7 @@ describe('Assets module: actions', () => {
   });
 
   test('fetches default assets', done => {
+    // todo: remove
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchDefaultAssets').then(() => {

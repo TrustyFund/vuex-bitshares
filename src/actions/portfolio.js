@@ -29,7 +29,6 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
   };
 
     // fetch and calculate prices for each asset
-  const promises = [];
   return Promise.all(filteredAssetsIdsList.map(async (id) => {
     let balance = (balances[id] && balances[id].balance) || 0;
     balance = balance / (10 ** assets[id].precision);
