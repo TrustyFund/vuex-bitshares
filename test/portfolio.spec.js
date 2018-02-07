@@ -4,8 +4,6 @@ import Vuex from 'vuex';
 import assets from '../src/modules/assets.js';
 import portfolio from '../src/modules/portfolio.js';
 
-// console.log(JSON.parse(JSON.stringify(portfolio)));
-
 jest.mock('../src/services/assets.js');
 
 const localVue = createLocalVue();
