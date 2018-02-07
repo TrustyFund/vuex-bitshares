@@ -29,11 +29,13 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
   };
 
     // fetch and calculate prices for each asset
-  filteredAssetsIdsList.forEach(async (id) => {
+  const promises = [];
+  return Promise.all(filteredAssetsIdsList.map(async (id) => {
     let balance = (balances[id] && balances[id].balance) || 0;
     balance = balance / (10 ** assets[id].precision);
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
+
     const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], 7);
     if (prices) {
       const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
@@ -53,7 +55,7 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
     } else {
       commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
     }
-  });
+  }));
 };
 
 /**

@@ -33,7 +33,6 @@ const fetchPriceHistory = async (base, quote, days) => {
       [base.id, quote.id, bucketSize, startDateISO, endDateISO]
     );
     const prices = utils.formatPrices(utils.getPrices(history), base, quote);
-    console.log(base.id + ' : ' + quote.id + ' = ' + quote.symbol, prices);
     return prices;
   } catch (error) {
     console.log(error);
