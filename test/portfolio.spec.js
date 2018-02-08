@@ -9,7 +9,7 @@ jest.mock('../src/services/assets.js');
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-const initialState = Object.assign({}, portfolio.state);
+const initialState = { ...portfolio.state };
 
 
 describe('Portfolio module: getters', () => {
@@ -19,7 +19,7 @@ describe('Portfolio module: getters', () => {
     // todo: debug module clone
     store = new Vuex.Store({
       modules: {
-        portfolio: Object.assign({}, portfolio)
+        portfolio: { ...portfolio }
       }
     });
   });
@@ -35,10 +35,10 @@ describe('Portfolio module: getters', () => {
 
 describe('Portfolio module: mutations', () => {
   let state;
-  const portfolioModule = Object.assign({}, portfolio);
+  const portfolioModule = { ...portfolio };
 
   beforeEach(() => {
-    state = Object.assign({}, initialState);
+    state = { ...initialState };
   });
 
   test('FETCH_PORTFOLIO_ASSET_REQUEST', () => {
@@ -100,8 +100,8 @@ describe('Portfolio module: actions', () => {
   });
 
   beforeEach(() => {
-    store.state.assets = Object.assign({}, assets.state);
-    store.state.portfolio = Object.assign({}, portfolio.state);
+    store.state.assets = { ...assets.state };
+    store.state.portfolio = { ...portfolio.state };
   });
 
   test('fetches portfolio data', async (done) => {

@@ -8,7 +8,7 @@ jest.mock('../src/services/assets.js');
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-const initialState = Object.assign({}, assets.state);
+const initialState = { ...assets.state };
 
 
 describe('Assets module: getters', () => {
@@ -60,7 +60,7 @@ describe('Assets module: mutations', () => {
   let state;
 
   beforeEach(() => {
-    state = Object.assign({}, initialState);
+    state = { ...initialState };
   });
 
   test('FETCH_ASSETS_REQUEST', () => {
