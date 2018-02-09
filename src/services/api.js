@@ -1,22 +1,15 @@
 import { Apis } from 'bitsharesjs-ws';
-import * as User from './user';
+import User from './user';
+import Assets from './assets';
 
+/**
+ * Initializes bitshares apis
+ * @param {function} statusCallback - callback function for status update
+ */
 export const initApis = (statusCallback) => {
   const wsString = 'wss://bitshares.openledger.info/ws';
   Apis.setRpcConnectionStatusCallback(statusCallback);
   return Apis.instance(wsString, true).init_promise;
 };
 
-export const getAssets = (assets) => {
-  return new Promise((resolve, reject) => {
-    Apis.instance().db_api().exec('lookup_asset_symbols', [assets])
-      .then(assetObjects => {
-        resolve(assetObjects);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
-};
-
-export { User };
+export { User, Assets };

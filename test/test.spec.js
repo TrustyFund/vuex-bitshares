@@ -1,4 +1,5 @@
 /* eslint-env jest */
+
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import wallet from '../src/modules/wallet.js';
@@ -39,9 +40,9 @@ beforeAll(done => {
 
 describe('wallet module', () => {
   it('creates wallet', done => {
-    store.dispatch('createWallet', { brainkey, password }).then(() => {
-      expect(store.getters.getBrainkey).toBe(brainkey);
-      const ownerKey = store.getters.getKeys.owner;
+    store.dispatch('wallet/createWallet', { brainkey, password }).then(() => {
+      expect(store.getters['wallet/getBrainkey']).toBe(brainkey);
+      const ownerKey = store.getters['wallet/getKeys'].owner;
       const computedOwnerPubkey = ownerKey.toPublicKey().toPublicKeyString();
       expect(computedOwnerPubkey).toBe(ownerPubkey);
       done();
@@ -49,22 +50,22 @@ describe('wallet module', () => {
   });
 
   it('validates password', done => {
-    expect(store.getters.isValidPassword(password)).toBe(true);
-    expect(store.getters.isValidPassword('wrong password')).toBe(false);
+    expect(store.getters['wallet/isValidPassword'](password)).toBe(true);
+    expect(store.getters['wallet/isValidPassword']('wrong password')).toBe(false);
     done();
   });
 
   it('locks wallet', done => {
-    expect(store.getters.isLocked).toBe(false);
-    store.dispatch('lockWallet').then(() => {
-      expect(store.getters.isLocked).toBe(true);
+    expect(store.getters['wallet/isLocked']).toBe(false);
+    store.dispatch('wallet/lockWallet').then(() => {
+      expect(store.getters['wallet/isLocked']).toBe(true);
       done();
     });
   });
 
   it('unlocks wallet', done => {
-    store.dispatch('unlockWallet', password).then(() => {
-      const ownerKey = store.getters.getKeys.owner;
+    store.dispatch('wallet/unlockWallet', password).then(() => {
+      const ownerKey = store.getters['wallet/getKeys'].owner;
       const computedOwnerPubkey = ownerKey.toPublicKey().toPublicKeyString();
       expect(computedOwnerPubkey.substr(3)).toBe(ownerPubkey.substr(3));
       done();
@@ -85,7 +86,7 @@ describe('account module', () => {
     });
   });
   it('fetches wallet user', done => {
-    const { owner } = store.getters.getKeys;
+    const { owner } = store.getters['wallet/getKeys'];
     const walletOwnerPubkey = owner.toPublicKey().toPublicKeyString();
     store.dispatch('fetchAccount', walletOwnerPubkey).then(() => {
       expect(store.state.account.userId).toBe(testAccount);
@@ -95,8 +96,8 @@ describe('account module', () => {
   });
   it('creates account', done => {
     const generatedBrainkey = WalletService.suggestBrainkey(dictionary.en);
-    store.dispatch('createWallet', { generatedBrainkey, password }).then(() => {
-      const { owner, active } = store.getters.getKeys;
+    store.dispatch('wallet/createWallet', { brainkey: generatedBrainkey, password }).then(() => {
+      const { owner, active } = store.getters['wallet/getKeys'];
       const walletOwnerPubkey = owner.toPublicKey().toPublicKeyString();
       const activePubkey = active.toPublicKey().toPublicKeyString();
       const name = hobbitAccountName;

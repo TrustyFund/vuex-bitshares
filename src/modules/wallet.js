@@ -37,5 +37,6 @@ export default {
   state: initialState,
   mutations,
   actions,
-  getters
+  getters,
+  namespaced: true
 };
