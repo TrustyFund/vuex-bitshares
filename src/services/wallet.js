@@ -1,4 +1,3 @@
-import { ChainValidation } from 'bitsharesjs';
 import { key } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 

@@ -40,12 +40,12 @@ export const lockWallet = ({ commit }) => {
   commit(types.WALLET_LOCK);
 };
 
-export const createAccount = async ({ commit, state, getters }, {
+export const createAccount = async ({ commit, getters }, {
   name,
   referrer,
   faucetUrl = 'https://faucet.bitshares.eu/onboarding'
 }) => {
-  const { active, owner } = getters['getKeys'];
+  const { active, owner } = getters.getKeys;
   try {
     const response = await fetch(faucetUrl + '/api/v1/accounts', {
       method: 'post',
@@ -64,7 +64,7 @@ export const createAccount = async ({ commit, state, getters }, {
           referrer
         }
       })
-    })
+    });
     const result = response.json();
     if (result.error) {
       const { error: { base: [errorText] } } = result.error;
