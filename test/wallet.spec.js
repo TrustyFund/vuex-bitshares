@@ -11,8 +11,8 @@ jest.mock('bitsharesjs-ws');
 // eslint-disable-next-line max-len
 const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
 const password = 'qwer1234';
-const testAccount = '1.2.383374';
-const testAccountName = 'anlopan364test2';
+// const testAccount = '1.2.383374';
+// const testAccountName = 'anlopan364test2';
 const hobbitAccount = '1.2.512210';
 const hobbitAccountName = 'hobb1t';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
@@ -56,9 +56,9 @@ describe('wallet module', () => {
   });
 
   it('checks existing accounts', async done => {
-    const acc = await getAccount(hobbitAccountName)
+    const acc = await getAccount(hobbitAccountName);
     expect(acc).not.toBe(null);
-    const nonExistingAcc = await getAccount('definitely not existing account')
+    const nonExistingAcc = await getAccount('definitely not existing account');
     expect(nonExistingAcc).toBe(null);
     done();
   });
