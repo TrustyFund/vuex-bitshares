@@ -1,5 +1,5 @@
 import * as types from '../mutations';
-import { Assets } from '../services/api';
+import API from '../services/api';
 import * as utils from '../utils';
 
 /**
@@ -22,7 +22,7 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
 
     // fetch currency asset prices history first to calc multiplier
     // (to calculate fiat value of each asset)
-  const fiatPrices = await Assets.fetchPriceHistory(baseAsset, fiatAsset, days);
+  const fiatPrices = await API.Assets.fetchPriceHistory(baseAsset, fiatAsset, days);
   const fiatMultiplier = {
     first: 1 / fiatPrices.first,
     last: 1 / fiatPrices.last
@@ -35,7 +35,7 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
 
-    const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], 7);
+    const prices = await API.Assets.fetchPriceHistory(baseAsset, assets[id], 7);
     if (prices) {
       const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
         balance,

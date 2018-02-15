@@ -1,4 +1,4 @@
-import * as apis from '../services/api';
+import API from '../services/api';
 import * as types from '../mutations';
 
 /**
@@ -18,7 +18,7 @@ export const initApis = ({ commit }, callback) => {
     }
   };
 
-  apis.initApis(connectionStatus).then(() => {
+  API.initApis(connectionStatus).then(() => {
     commit(types.WS_CONNECTED);
     callback();
   });

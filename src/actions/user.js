@@ -1,5 +1,5 @@
 import * as types from '../mutations';
-import { User } from '../services/api';
+import API from '../services/api';
 
 /**
  * Function to convert array of balances to object with keys as assets ids
@@ -19,7 +19,7 @@ const balancesToObject = (balancesArr) => {
  */
 export const fetchUser = async ({ commit }, username) => {
   commit(types.FETCH_USER_REQUEST);
-  const result = await User.Get(username);
+  const result = await API.User.Get(username);
   if (result) {
     const user = result[0][1];
     user.balances = balancesToObject(user.balances);
