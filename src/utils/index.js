@@ -58,8 +58,8 @@ export const formatPrices = (prices, base, quote) => {
  * @param {number} object.multiplier.last - multiplier for last history price (current)
  */
 export const calcPercentChange = (prices, multiplier) => {
-  return ((((prices.last * multiplier.last) /
-      (prices.first * multiplier.first)) * 100) - 100).toFixed(2);
+  return ((((prices.first * multiplier.first) /
+      (prices.last * multiplier.last)) * 100) - 100);
 };
 
 

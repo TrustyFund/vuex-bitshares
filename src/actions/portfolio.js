@@ -35,7 +35,7 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
 
-    const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], 7);
+    const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], days);
     if (prices) {
       const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
         balance,
