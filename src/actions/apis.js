@@ -7,6 +7,7 @@ import * as types from '../mutations';
  */
 export const initApis = ({ commit }, callback) => {
   const connectionStatus = (status) => {
+    console.log('connection status : ', status);
     switch (status) {
       case 'closed':
         commit(types.WS_DISCONNECTED);
@@ -19,6 +20,7 @@ export const initApis = ({ commit }, callback) => {
   };
 
   API.initApis(connectionStatus).then(() => {
+    console.log('then initApis');
     commit(types.WS_CONNECTED);
     callback();
   });
