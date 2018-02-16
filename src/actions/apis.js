@@ -20,7 +20,6 @@ export const initApis = ({ commit }, callback) => {
   };
 
   API.connectWs(connectionStatus).then(() => {
-    console.log('then initApis');
     commit(types.WS_CONNECTED);
     callback();
   });

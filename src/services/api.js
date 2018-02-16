@@ -29,7 +29,7 @@ const API = {
     'wss://sg.nodes.bitshares.ws': { location: 'Singapore - BitShares Infrastructure Program' },
     'wss://ws.winex.pro': { location: 'Singapore' }
   },
-  defaultWsNodeUrl: 'wss://openledger.hk/ws',
+  defaultWsNodeUrl: 'wss://bitshares.openledger.info/ws',
   /**
    * Initializes bitshares apis
    * @param {function} statusCallback - callback function for status update
@@ -48,7 +48,12 @@ const API = {
     });
   },
   getLocalStorageCachedData() {
-    const cachedWsData = JSON.parse(localStorage.getItem('TRUSTY_WS_PINGS'));
+    let cachedWsData;
+    try {
+      cachedWsData = JSON.parse(localStorage.getItem('TRUSTY_WS_PINGS'));
+    } catch (error) {
+      return;
+    }
     if (typeof (cachedWsData) === 'object') {
       Object.keys(this.wsNodes).forEach(url => {
         const cachedNode = cachedWsData[url];
@@ -86,8 +91,8 @@ const API = {
     Object.keys(this.wsNodes).forEach((url) => {
       const node = this.wsNodes[url];
       const defaultNode = this.wsNodes[this.defaultWsNodeUrl];
-      if (node.ping) {
-        if (node.ping < (defaultNode.ping || 10000)) this.defaultWsNodeUrl = url;
+      if (node.ping && node.ping < (defaultNode.ping || 10000)) {
+        this.defaultWsNodeUrl = url;
       }
     });
   },
