@@ -40,6 +40,14 @@ const API = {
    * @param {function} statusCallback - callback function for status update
    */
   initApis(statusCallback) {
+    const cachedWsDataString = localStorage.getItem('TRUSTY_WS_PINGS');
+    if (cachedWsDataString) {
+      const cachedWsData = JSON.parse(cachedWsDataString);
+      this.wsNodeList = cachedWsData;
+      this.selectDefaultNodeIndex();
+    }
+
+
     const wsString = this.wsNodeList[this.defaultWsNodeIndex].url;
     Apis.setRpcConnectionStatusCallback(statusCallback);
     this.testWsPings();
@@ -47,15 +55,15 @@ const API = {
   },
   testWsPings() {
     Promise.all(this.wsNodeList.map(async (node, index) => {
-      const ping = await this.tryWsServer(node.url);
+      const ping = await this.pingWsNode(node.url);
       this.wsNodeList[index].ping = ping;
     })).then(() => {
       console.table(this.wsNodeList);
-      console.log(JSON.stringify(this.wsNodeList));
+      localStorage.setItem('TRUSTY_WS_PINGS', JSON.stringify(this.wsNodeList));
       this.selectDefaultNodeIndex();
     });
   },
-  tryWsServer(url) {
+  pingWsNode(url) {
     return new Promise((resolve) => {
       const date = new Date();
       const socket = new WebSocket(url);
@@ -68,14 +76,12 @@ const API = {
     });
   },
   selectDefaultNodeIndex() {
-    let closestNodeIndex = 0;
     this.wsNodeList.forEach((node, index) => {
-      if (node.ping && node.ping < (this.wsNodeList[closestNodeIndex].ping || 10000)) {
-        closestNodeIndex = index;
+      if (node.ping && node.ping < (this.wsNodeList[this.defaultWsNodeIndex].ping || 10000)) {
+        this.defaultWsNodeIndex = index;
       }
     });
-    this.defaultWsNodeIndex = closestNodeIndex;
-    const node = this.wsNodeList[closestNodeIndex];
+    const node = this.wsNodeList[this.defaultWsNodeIndex];
     console.log('Closest node id : ', node.location + ' : ' + node.ping);
   },
   User,
