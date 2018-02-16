@@ -3,64 +3,70 @@ import User from './user';
 import Assets from './assets';
 
 const API = {
-  wsNodeList: [
-    { url: 'wss://bitshares.openledger.info/ws', location: 'Nuremberg, Germany' },
-    { url: 'wss://eu.openledger.info/ws', location: 'Berlin, Germany' },
-    { url: 'wss://bit.btsabc.org/ws', location: 'Hong Kong' },
-    { url: 'wss://bts.ai.la/ws', location: 'Hong Kong' },
-    { url: 'wss://bitshares.apasia.tech/ws', location: 'Bangkok, Thailand' },
-    { url: 'wss://japan.bitshares.apasia.tech/ws', location: 'Tokyo, Japan' },
-    { url: 'wss://bitshares.dacplay.org/ws', location: 'Hangzhou, China' },
-    { url: 'wss://bitshares-api.wancloud.io/ws', location: 'China' },
-    { url: 'wss://openledger.hk/ws', location: 'Hong Kong' },
-    { url: 'wss://bitshares.crypto.fans/ws', location: 'Munich, Germany' },
-    { url: 'wss://ws.gdex.top', location: 'China' },
-    { url: 'wss://dex.rnglab.org', location: 'Netherlands' },
-    { url: 'wss://dexnode.net/ws', location: 'Dallas, USA' },
-    { url: 'wss://kc-us-dex.xeldal.com/ws', location: 'Kansas City, USA' },
-    { url: 'wss://btsza.co.za:8091/ws', location: 'Cape Town, South Africa' },
-    { url: 'wss://api.bts.blckchnd.com', location: 'Falkenstein, Germany' },
-    {
-      url: 'wss://eu.nodes.bitshares.ws',
+  wsNodes: {
+    'wss://bitshares.openledger.info/ws': { location: 'Nuremberg, Germany' },
+    'wss://eu.openledger.info/ws': { location: 'Berlin, Germany' },
+    'wss://bit.btsabc.org/ws': { location: 'Hong Kong' },
+    'wss://bts.ai.la/ws': { location: 'Hong Kong' },
+    'wss://bitshares.apasia.tech/ws': { location: 'Bangkok, Thailand' },
+    'wss://japan.bitshares.apasia.tech/ws': { location: 'Tokyo, Japan' },
+    'wss://bitshares.dacplay.org/ws': { location: 'Hangzhou, China' },
+    'wss://bitshares-api.wancloud.io/ws': { location: 'China' },
+    'wss://openledger.hk/ws': { location: 'Hong Kong' },
+    'wss://bitshares.crypto.fans/ws': { location: 'Munich, Germany' },
+    'wss://ws.gdex.top': { location: 'China' },
+    'wss://dex.rnglab.org': { location: 'Netherlands' },
+    'wss://dexnode.net/ws': { location: 'Dallas, USA' },
+    'wss://kc-us-dex.xeldal.com/ws': { location: 'Kansas City, USA' },
+    'wss://btsza.co.za:8091/ws': { location: 'Cape Town, South Africa' },
+    'wss://api.bts.blckchnd.com': { location: 'Falkenstein, Germany' },
+    'wss://eu.nodes.bitshares.ws': {
       location: 'Central Europe - BitShares Infrastructure Program'
     },
-    {
-      url: 'wss://us.nodes.bitshares.ws',
+    'wss://us.nodes.bitshares.ws': {
       location: 'U.S. West Coast - BitShares Infrastructure Program'
     },
-    {
-      url: 'wss://sg.nodes.bitshares.ws',
-      location: 'Singapore - BitShares Infrastructure Program'
-    },
-    { url: 'wss://ws.winex.pro', location: 'Singapore' }
-  ],
-  defaultWsNodeIndex: 8,
+    'wss://sg.nodes.bitshares.ws': { location: 'Singapore - BitShares Infrastructure Program' },
+    'wss://ws.winex.pro': { location: 'Singapore' }
+  },
+  defaultWsNodeUrl: 'wss://openledger.hk/ws',
   /**
    * Initializes bitshares apis
    * @param {function} statusCallback - callback function for status update
    */
-  initApis(statusCallback) {
-    const cachedWsDataString = localStorage.getItem('TRUSTY_WS_PINGS');
-    if (cachedWsDataString) {
-      const cachedWsData = JSON.parse(cachedWsDataString);
-      this.wsNodeList = cachedWsData;
-      this.selectDefaultNodeIndex();
-    }
-
-
-    const wsString = this.wsNodeList[this.defaultWsNodeIndex].url;
+  connectWs(statusCallback) {
+    this.getLocalStorageCachedData();
+    this.selectDefaultNodeUrl();
+    const defaultNode = this.wsNodes[this.defaultWsNodeUrl];
+    console.log(defaultNode.location + ' ' + defaultNode.ping + ' ' + this.defaultWsNodeUrl);
     Apis.setRpcConnectionStatusCallback(statusCallback);
-    this.testWsPings();
-    return Apis.instance(wsString, true).init_promise;
+    return new Promise((resolve) => {
+      Apis.instance(this.defaultWsNodeUrl, true).init_promise.then(() => {
+        resolve();
+        this.testWsPings();
+      });
+    });
+  },
+  getLocalStorageCachedData() {
+    const cachedWsData = JSON.parse(localStorage.getItem('TRUSTY_WS_PINGS'));
+    if (typeof (cachedWsData) === 'object') {
+      Object.keys(this.wsNodes).forEach(url => {
+        const cachedNode = cachedWsData[url];
+        if (cachedNode && cachedNode.ping && typeof (cachedNode.ping) === 'number') {
+          this.wsNodes[url].ping = cachedNode.ping;
+        }
+      });
+    }
   },
   testWsPings() {
-    Promise.all(this.wsNodeList.map(async (node, index) => {
-      const ping = await this.pingWsNode(node.url);
-      this.wsNodeList[index].ping = ping;
+    Promise.all(Object.keys(this.wsNodes).map(async (url) => {
+      if (url !== this.defaultWsNodeUrl) {
+        this.wsNodes[url].ping = await this.pingWsNode(url);
+      }
     })).then(() => {
-      console.table(this.wsNodeList);
-      localStorage.setItem('TRUSTY_WS_PINGS', JSON.stringify(this.wsNodeList));
-      this.selectDefaultNodeIndex();
+      console.table(this.wsNodes);
+      localStorage.setItem('TRUSTY_WS_PINGS', JSON.stringify(this.wsNodes));
+      this.selectDefaultNodeUrl();
     });
   },
   pingWsNode(url) {
@@ -68,6 +74,7 @@ const API = {
       const date = new Date();
       const socket = new WebSocket(url);
       socket.onopen = () => {
+        socket.close();
         resolve(new Date() - date);
       };
       socket.onerror = () => {
@@ -75,14 +82,14 @@ const API = {
       };
     });
   },
-  selectDefaultNodeIndex() {
-    this.wsNodeList.forEach((node, index) => {
-      if (node.ping && node.ping < (this.wsNodeList[this.defaultWsNodeIndex].ping || 10000)) {
-        this.defaultWsNodeIndex = index;
+  selectDefaultNodeUrl() {
+    Object.keys(this.wsNodes).forEach((url) => {
+      const node = this.wsNodes[url];
+      const defaultNode = this.wsNodes[this.defaultWsNodeUrl];
+      if (node.ping) {
+        if (node.ping < (defaultNode.ping || 10000)) this.defaultWsNodeUrl = url;
       }
     });
-    const node = this.wsNodeList[this.defaultWsNodeIndex];
-    console.log('Closest node id : ', node.location + ' : ' + node.ping);
   },
   User,
   Assets
