@@ -36,15 +36,21 @@ const API = {
    * @param {function} statusCallback - callback function for status update
    */
   connectWs(statusCallback) {
+    this.statusCallback = statusCallback;
     this.getCachedNodesData();
     this.selectDefaultNodeUrl();
     const defaultNode = this.wsNodes[this.defaultWsNodeUrl];
     console.log(defaultNode.location + ' ' + defaultNode.ping + ' ' + this.defaultWsNodeUrl);
-    Apis.setRpcConnectionStatusCallback(statusCallback);
     return new Promise((resolve) => {
       Apis.instance(this.defaultWsNodeUrl, true).init_promise.then(() => {
+        Apis.setRpcConnectionStatusCallback(statusCallback);
+        statusCallback('open');
+        console.log('init_promise resolved');
         resolve();
         this.testWsPings();
+      }).catch(error => {
+        console.log('error', error);
+        this.connectWs(statusCallback);
       });
     });
   },
@@ -73,9 +79,10 @@ const API = {
   pingWsNode(url) {
     return new Promise((resolve) => {
       const date = new Date();
-      const socket = new WebSocket(url);
+      let socket = new WebSocket(url);
       socket.onopen = () => {
         socket.close();
+        socket = null;
         resolve(new Date() - date);
       };
       socket.onerror = () => {
