@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { Apis } from 'bitsharesjs-ws';
 import User from './user';
 import Assets from './assets';
@@ -35,7 +36,7 @@ const API = {
    * @param {function} statusCallback - callback function for status update
    */
   connectWs(statusCallback) {
-    this.getLocalStorageCachedData();
+    this.getCachedNodesData();
     this.selectDefaultNodeUrl();
     const defaultNode = this.wsNodes[this.defaultWsNodeUrl];
     console.log(defaultNode.location + ' ' + defaultNode.ping + ' ' + this.defaultWsNodeUrl);
@@ -47,13 +48,8 @@ const API = {
       });
     });
   },
-  getLocalStorageCachedData() {
-    let cachedWsData;
-    try {
-      cachedWsData = JSON.parse(localStorage.getItem('TRUSTY_WS_PINGS'));
-    } catch (error) {
-      return;
-    }
+  getCachedNodesData() {
+    const cachedWsData = Cookies.getJSON('BITSHARES_NODES');
     if (typeof (cachedWsData) === 'object') {
       Object.keys(this.wsNodes).forEach(url => {
         const cachedNode = cachedWsData[url];
@@ -70,7 +66,7 @@ const API = {
       }
     })).then(() => {
       console.table(this.wsNodes);
-      localStorage.setItem('TRUSTY_WS_PINGS', JSON.stringify(this.wsNodes));
+      Cookies.set('BITSHARES_NODES', this.wsNodes);
       this.selectDefaultNodeUrl();
     });
   },
