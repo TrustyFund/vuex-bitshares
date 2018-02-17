@@ -1,5 +1,6 @@
 import * as types from '../mutations';
 import * as actions from '../actions/apis';
+import * as getters from '../getters/apis';
 
 const initialState = {
   connected: false
@@ -19,6 +20,8 @@ const mutations = {
 
 export default {
   state: initialState,
+  getters,
   actions,
-  mutations
+  mutations,
+  namespaced: true
 };

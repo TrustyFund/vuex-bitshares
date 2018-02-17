@@ -65,7 +65,7 @@ const API = {
         this.wsNodes[url].ping = await this.pingWsNode(url);
       }
     })).then(() => {
-      console.table(this.wsNodes);
+      // console.table(this.wsNodes);
       Cookies.set('BITSHARES_NODES', this.wsNodes);
       this.selectDefaultNodeUrl();
     });
