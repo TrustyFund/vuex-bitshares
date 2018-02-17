@@ -2,10 +2,10 @@ import API from '../services/api';
 import * as types from '../mutations';
 
 /**
- * Inits main APIs
+ * Inits main connection to Bitsharesjs-WS
  * @param {function} callback - callback for status update
  */
-export const initApis = ({ commit, getters }) => {
+export const initConnection = ({ commit, getters }) => {
   const connectionStatus = (status) => {
     const prevStatus = getters.getRpcStatus;
     const wsConnected = getters.isWsConnected;
