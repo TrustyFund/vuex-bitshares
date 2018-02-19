@@ -1,5 +1,5 @@
 /* eslint no-underscore-dangle: ['error', { 'allow': ['_nodes', '_selectedNodeUrl',
-  '_pingNode', '_retrieveCachedNodesData', '_selectFastestNodeUrl'] }] */
+  '_pingNode', '_retrieveCachedNodesData', '_selectFastestNode'] }] */
 
 import Cookies from 'js-cookie';
 
@@ -51,7 +51,7 @@ class NodesManager {
   }
 
   // selects node with minimum ping
-  _selectFastestNodeUrl() {
+  _selectFastestNode() {
     Object.keys(this._nodes).forEach((url) => {
       const node = this._nodes[url];
       const selectedNode = this._nodes[this._selectedNodeUrl];
@@ -95,13 +95,13 @@ class NodesManager {
   // retrieves nodes data from cache, selects fastest & returns it's url
   getInitialNodeUrl() {
     this._retrieveCachedNodesData();
-    return this._selectFastestNodeUrl();
+    return this._selectFastestNode();
   }
 
   // changes selected node to next in speed & return it's url
   getAnotherNodeUrl() {
     this._nodes[this._selectedNodeUrl].ping = null;
-    return this._selectFastestNodeUrl();
+    return this._selectFastestNode();
   }
 }
 
