@@ -2,8 +2,7 @@ import API from '../services/api';
 import * as types from '../mutations';
 
 /**
- * Inits main connection to Bitsharesjs-WS
- * @param {function} callback - callback for status update
+ * Initializes connection to Bitsharesjs-WS
  */
 export const initConnection = ({ commit, getters }) => {
   const updateConnectionStatus = (status) => {
