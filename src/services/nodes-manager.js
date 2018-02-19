@@ -99,7 +99,7 @@ class NodesManager {
   }
 
   // changes selected node to next in speed & return it's url
-  changeNode() {
+  getAnotherNodeUrl() {
     this._nodes[this._selectedNodeUrl].ping = null;
     return this._selectFastestNodeUrl();
   }
