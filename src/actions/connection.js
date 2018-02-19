@@ -6,7 +6,7 @@ import * as types from '../mutations';
  * @param {function} callback - callback for status update
  */
 export const initConnection = ({ commit, getters }) => {
-  const connectionStatus = (status) => {
+  const updateConnectionStatus = (status) => {
     const prevStatus = getters.getRpcStatus;
     const wsConnected = getters.isWsConnected;
     console.log('rpc status : ', status);
@@ -15,8 +15,6 @@ export const initConnection = ({ commit, getters }) => {
     if (!wsConnected && status === 'open') commit(types.WS_CONNECTED);
   };
 
-  API.connectWs(connectionStatus).then(() => {
-    // commit(types.WS_READY);
-  });
+  API.connect(updateConnectionStatus);
 };
 
