@@ -9,11 +9,9 @@ const initialState = {
 
 const mutations = {
   [types.WS_CONNECTED](state) {
-    console.log('ws connected');
     state.wsConnected = true;
   },
   [types.WS_DISCONNECTED](state) {
-    console.log('ws disconnected');
     state.wsConnected = false;
   },
   [types.RPC_STATUS_UPDATE](state, { status }) {
