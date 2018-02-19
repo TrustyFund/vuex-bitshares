@@ -18,3 +18,10 @@ export function getAccountObject({ account }) {
 export function getBalances({ balances }) {
   return balances;
 }
+
+/**
+ * User fetching in progress indicator
+ */
+export function isFetching(state) {
+  return state.fetching;
+}
