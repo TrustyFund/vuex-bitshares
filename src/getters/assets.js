@@ -6,13 +6,6 @@ export function getAssets({ assets }) {
 }
 
 /**
- * Returns array with default assets names
- */
-export function getDefaultAssetsNames({ defaultAssetsNames }) {
-  return defaultAssetsNames;
-}
-
-/**
  * Returns array with default assets ids
  */
 export function getDefaultAssetsIds({ defaultAssetsIds }) {
