@@ -20,10 +20,8 @@ const API = {
       nodesManager.testNodesPings();
     }).catch(error => {
       console.log('Connection error : ', error);
-      // tests pings & connect to another node
-      nodesManager.testNodesPings().then(() => {
-        this.connect(statusCallback, true);
-      });
+      // connect to another node
+      this.connect(statusCallback, true);
     });
   },
   User,

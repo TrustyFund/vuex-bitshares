@@ -72,10 +72,12 @@ class NodesManager {
     return this._selectFastestNode();
   }
 
-  // changes selected node to next in speed & return it's url
-  getAnotherNodeUrl() {
-    this._nodes[this._selectedNodeUrl].ping = null;
-    return this._selectFastestNode();
+  // returns another node url than specified
+  getAnotherNodeUrl(url) {
+    const urls = Object.keys(this._nodes);
+    const index = urls.indexOf(url);
+    urls.splice(index, 1);
+    return urls[Math.floor(Math.random() * urls.length)];
   }
 }
 
