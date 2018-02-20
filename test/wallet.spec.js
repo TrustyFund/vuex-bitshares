@@ -122,7 +122,7 @@ describe('wallet module', () => {
       nonce,
       message
     );
-    expect(decrypted.toString).toBe(memo);
+    expect(decrypted.toString()).toBe(memo);
     done();
   });
 });
