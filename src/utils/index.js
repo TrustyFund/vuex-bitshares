@@ -43,8 +43,8 @@ export const formatPrices = (prices, base, quote) => {
   }
 
   prices.change = Math.floor(((prices.last / prices.first) * 100) - 100);
-  prices.first = Math.abs(prices.first).toFixed(4);
-  prices.last = Math.abs(prices.last).toFixed(4);
+  prices.first = Math.abs(prices.first);
+  prices.last = Math.abs(prices.last);
   return prices;
 };
 
