@@ -1,6 +1,7 @@
 import * as types from '../mutations';
 import API from '../services/api';
 import { arrayToObject } from '../utils';
+import config from '../../config';
 
 /**
  * Fetches assets objects from bitsharesjs-ws
@@ -22,8 +23,8 @@ export const fetchAssets = async ({ commit }, assets) => {
  * Fetches default assets objects via fetchAssets function
  to save default assets ids
  */
-export const fetchDefaultAssets = async ({ commit, getters }) => {
-  const defaultAssetsNames = getters.getDefaultAssetsNames;
+export const fetchDefaultAssets = async ({ commit }) => {
+  const { defaultAssetsNames } = config;
   const assets = await fetchAssets({ commit }, defaultAssetsNames);
   if (assets) {
     const ids = Object.keys(assets);

@@ -4,8 +4,6 @@ import * as actions from '../actions/assets';
 import * as getters from '../getters/assets';
 
 const initialState = {
-  defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
-    'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
   defaultAssetsIds: [],
   assets: {},
   pending: false
