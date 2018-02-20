@@ -18,5 +18,5 @@ export const getAccount = nameOrId => {
 
 export const getAccountIdByOwnerPubkey = async ownerPubkey => {
   const res = await Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]]);
-  return res ? res[0] : null;
+  return res ? res[0][0] : null;
 };

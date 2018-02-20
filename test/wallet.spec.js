@@ -1,5 +1,6 @@
 /* eslint-env jest */
 
+import { key, Aes } from 'bitsharesjs';
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import wallet from '../src/modules/wallet.js';
@@ -10,12 +11,16 @@ jest.mock('bitsharesjs-ws');
 
 // eslint-disable-next-line max-len
 const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
+// eslint-disable-next-line max-len
+const hobbitBrainkey = 'pheon dasi costar paler cooing pondman panurgy burton grike sculpt midnoon samara dermis derrick kurung femoral';
 const password = 'qwer1234';
 // const testAccount = '1.2.383374';
 // const testAccountName = 'anlopan364test2';
 const hobbitAccount = '1.2.512210';
 const hobbitAccountName = 'hobb1t';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
+
+const btsId = '1.3.0';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -94,6 +99,30 @@ describe('wallet module', () => {
 
     await store.dispatch('wallet/createAccount', { name });
     expect(store.state.wallet.userId).toBe(hobbitAccount);
+    done();
+  });
+  it('creates transfer transaction', async done => {
+    await store.dispatch('wallet/createWallet', { brainkey, password });
+    const nonce = '388886163115726';
+    const memo = 'test_memo';
+    const tr = await store.getters['wallet/getTransferTransaction'](
+      hobbitAccountName,
+      1,
+      btsId,
+      memo,
+      nonce
+    );
+    const { operations: [[, { memo: { message } }]] } = tr.toObject();
+
+    const testActiveKey = await store.getters['wallet/getKeys'].active;
+    const hobbitActiveKey = key.get_brainPrivateKey(hobbitBrainkey, 1);
+    const decrypted = Aes.decrypt_with_checksum(
+      testActiveKey,
+      hobbitActiveKey.toPublicKey(),
+      nonce,
+      message
+    );
+    expect(decrypted.toString).toBe(memo);
     done();
   });
 });

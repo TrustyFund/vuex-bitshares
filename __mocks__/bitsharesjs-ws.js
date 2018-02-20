@@ -19,7 +19,17 @@ Apis.instance = () => {
               case 'get_key_references': {
                 const [[key]] = data;
                 const res = ApiSamples.get_key_references[key];
-                resolve(res || {});
+                resolve(res || [[]]);
+                break;
+              }
+              case 'get_objects': {
+                const [[id]] = data;
+                const res = ApiSamples.get_objects[id];
+                resolve(res);
+                break;
+              }
+              case 'get_required_fees': {
+                resolve(ApiSamples.get_required_fees);
                 break;
               }
               default: resolve();
