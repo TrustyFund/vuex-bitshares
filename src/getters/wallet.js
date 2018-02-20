@@ -45,7 +45,8 @@ export const getTransferTransaction = state => {
         activeKey,
         memoToPubkey,
         nonce,
-        memo);
+        memo
+      );
 
       memoObj = {
         from: activePubkey,
@@ -54,8 +55,8 @@ export const getTransferTransaction = state => {
         message
       };
     }
-    let transaction = new TransactionBuilder();
-    let transfer = transaction.get_type_operation('transfer', {
+    const transaction = new TransactionBuilder();
+    const transfer = transaction.get_type_operation('transfer', {
       fee: {
         amount: 0,
         asset_id: '1.3.0'
@@ -63,7 +64,7 @@ export const getTransferTransaction = state => {
       from: state.userId,
       to: toAccount.id,
       amount: {
-        amount: amount,
+        amount,
         asset_id: assetId
       },
       memo: memoObj
@@ -73,6 +74,6 @@ export const getTransferTransaction = state => {
     await transaction.update_head_block();
     await transaction.set_required_fees();
     return transaction;
-  }
-}
+  };
+};
 
