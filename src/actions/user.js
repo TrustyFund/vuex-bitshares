@@ -29,3 +29,16 @@ export const fetchUser = async ({ commit }, username) => {
   commit(types.FETCH_USER_ERROR);
   return null;
 };
+
+/**
+ * Checks username for existance
+ * @param {string} username - name of user to fetch
+ */
+export const checkUsername = async (state, { username }) => {
+  return new Promise(async (resolve) => {
+    const result = await API.User.Get(username);
+    console.log(result);
+    if (result[0]) resolve(false);
+    resolve(true);
+  });
+};
