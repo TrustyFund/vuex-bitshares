@@ -8,6 +8,7 @@ export const suggestBrainkey = (dictionary) => {
 export const getAccount = nameOrId => {
   return Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false])
     .then(([res]) => {
+      console.log(res);
       if (res) {
         const [, { account }] = res;
         return account;

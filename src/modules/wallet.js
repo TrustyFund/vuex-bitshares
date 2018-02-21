@@ -12,7 +12,8 @@ const initialState = {
   created: null,
   aesPrivate: null,
   userId: null,
-  error: null
+  error: null,
+  user: null
 };
 
 const mutations = {
@@ -34,8 +35,8 @@ const mutations = {
   [types.WALLET_UNLOCK]: (state, aesPrivate) => {
     state.aesPrivate = aesPrivate;
   },
-  [types.WALLET_ACCOUNT_CREATED]: (state, userId) => {
-    state.userId = userId;
+  [types.WALLET_ACCOUNT_CREATED]: (state, user) => {
+    state.userId = user;
     state.error = null;
   },
   [types.WALLET_ACCOUNT_CREATE_ERROR]: (state, error) => {
