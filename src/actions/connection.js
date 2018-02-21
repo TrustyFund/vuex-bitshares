@@ -13,6 +13,6 @@ export const initConnection = ({ commit, getters }) => {
     if (!wsConnected && status === 'open') commit(types.WS_CONNECTED);
   };
 
-  API.connect(updateConnectionStatus);
+  API.Connection.connect(updateConnectionStatus);
 };
 

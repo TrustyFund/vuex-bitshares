@@ -2,9 +2,9 @@ import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
 import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 
-const OWNER_KEY_INDEX = 1;
+// const OWNER_KEY_INDEX = 1;
 
-export const createWallet = async ({ commit }, { brainkey, password }) => {
+export const createWallet = ({ commit }, { brainkey, password }) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionBuffer = key.get_random_key().toBuffer();
   const encryptionKey = passwordAes.encryptToHex(encryptionBuffer);
@@ -15,15 +15,15 @@ export const createWallet = async ({ commit }, { brainkey, password }) => {
   const passwordPrivate = PrivateKey.fromSeed(password);
   const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
 
-  const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
+  // const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
+  // const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
 
   const result = {
     passwordPubkey,
     encryptionKey,
     encryptedBrainkey,
     aesPrivate,
-    userId: await getAccountIdByOwnerPubkey(ownerPubkey)
+    // userId: await getAccountIdByOwnerPubkey(ownerPubkey)
   };
 
   commit(types.WALLET_CREATED, result);
@@ -65,15 +65,24 @@ export const createAccount = async ({ commit, getters }, {
         }
       })
     });
-    const result = response.json();
+    const result = await response.json();
+    console.log(result);
     if (result.error) {
-      const { error: { base: [errorText] } } = result.error;
-      throw Error(errorText);
+      console.log(result.error.base);
+      commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base);
     } else {
-      const { id } = await getAccount(name);
-      commit(types.WALLET_ACCOUNT_CREATED, id);
+      console.log('account created check');
+      const account = await getAccount(name);
+      console.log(account);
+      if (account && account.id) {
+        console.log('account created!');
+        commit(types.WALLET_ACCOUNT_CREATED, account.id);
+      } else {
+        throw Error('hzhzhz');
+      }
     }
   } catch (error) {
-    commit(types.WALLET_ACCOUNT_CREATE_ERROR, error);
+    console.log(error);
+    commit(types.WALLET_ACCOUNT_CREATE_ERROR, 'Account creation failed');
   }
 };

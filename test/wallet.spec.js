@@ -65,7 +65,7 @@ describe('wallet module', () => {
 
   it('creates account', async done => {
     const generatedBrainkey = suggestBrainkey(dictionary.en);
-    await store.dispatch('wallet/createWallet', { brainkey: generatedBrainkey, password });
+    store.dispatch('wallet/createWallet', { brainkey: generatedBrainkey, password });
     const { owner, active } = store.getters['wallet/getKeys'];
     const walletOwnerPubkey = owner.toPublicKey().toPublicKeyString();
     const activePubkey = active.toPublicKey().toPublicKeyString();

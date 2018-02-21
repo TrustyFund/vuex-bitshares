@@ -37,7 +37,6 @@ export const fetchUser = async ({ commit }, username) => {
 export const checkUsername = async (state, { username }) => {
   return new Promise(async (resolve) => {
     const result = await API.User.Get(username);
-    console.log(result);
     if (result[0]) resolve(false);
     resolve(true);
   });
