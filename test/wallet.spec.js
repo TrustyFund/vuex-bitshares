@@ -13,7 +13,7 @@ const brainkey = 'glink omental webless pschent knopper brumous scarry were wast
 const password = 'qwer1234';
 // const testAccount = '1.2.383374';
 // const testAccountName = 'anlopan364test2';
-const hobbitAccount = '1.2.512210';
+// const hobbitAccount = '1.2.512210';
 const hobbitAccountName = 'hobb1t';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
