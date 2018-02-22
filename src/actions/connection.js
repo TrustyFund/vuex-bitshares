@@ -6,10 +6,8 @@ import * as types from '../mutations';
  */
 export const initConnection = ({ commit, getters }) => {
   const updateConnectionStatus = (status) => {
-    // const prevStatus = getters.getRpcStatus;
     const wsConnected = getters.isWsConnected;
-    console.log('connection status : ', status);
-    // if (status === 'reconnect') API.connect(updateConnectionStatus);
+    console.log('Connection status : ', status);
     commit(types.RPC_STATUS_UPDATE, { status });
     if (status === 'error' || status === 'closed') commit(types.WS_DISCONNECTED);
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {
