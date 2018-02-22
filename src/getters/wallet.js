@@ -4,15 +4,13 @@ const ACTIVE_KEY_INDEX = 0;
 const OWNER_KEY_INDEX = 1;
 
 export const getBrainkey = state => {
-  if (!state.aesPrivate) {
-    throw Error('obtaining brainkey error, wallet is locked');
-  } else {
-    return state.aesPrivate.decryptHexToText(state.encryptedBrainkey);
-  }
+  if (!state.aesPrivate) return null;
+  return state.aesPrivate.decryptHexToText(state.encryptedBrainkey);
 };
 
 export const getKeys = state => {
   const brainkey = getBrainkey(state);
+  if (!brainkey) return null;
   return {
     active: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     owner: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX)
