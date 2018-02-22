@@ -68,14 +68,12 @@ export const createAccount = async ({ commit, getters }, {
     const result = await response.json();
     console.log(result);
     if (!result || (result && result.error)) {
-      console.log(result.error.base);
-      commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base);
+      commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base[0]);
       return false;
     }
     commit(types.WALLET_ACCOUNT_CREATED, result);
     return true;
   } catch (error) {
-    console.log(error);
     commit(types.WALLET_ACCOUNT_CREATE_ERROR, 'Account creation failed');
     return false;
   }
