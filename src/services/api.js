@@ -14,9 +14,9 @@ const API = {
     const url = changeNode ? nodesManager.getAnotherNodeUrl() : nodesManager.getInitialNodeUrl();
     console.log('Connecting to node : ', url);
 
+    Apis.setRpcConnectionStatusCallback(statusCallback);
     Apis.instance(url, true).init_promise.then(() => {
-      Apis.setRpcConnectionStatusCallback(statusCallback);
-      statusCallback('open');
+      statusCallback('realopen');
       nodesManager.testNodesPings();
     }).catch(error => {
       console.log('Connection error : ', error);
