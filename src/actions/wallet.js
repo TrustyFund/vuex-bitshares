@@ -2,7 +2,7 @@ import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
 import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 
-// const OWNER_KEY_INDEX = 1;
+const OWNER_KEY_INDEX = 1;
 
 export const createWallet = ({ commit }, { brainkey, password }) => {
   const passwordAes = Aes.fromSeed(password);
@@ -43,6 +43,7 @@ export const lockWallet = ({ commit }) => {
 export const createAccount = async ({ commit, getters }, {
   name,
   referrer,
+  brainkey,
   faucetUrl = 'https://faucet.bitshares.eu/onboarding'
 }) => {
   const { active, owner } = getters.getKeys;
@@ -71,7 +72,15 @@ export const createAccount = async ({ commit, getters }, {
       commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base[0]);
       return false;
     }
+
+    // retrieve user id
+    const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
+    const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
+    const userId = await getAccountIdByOwnerPubkey(ownerPubkey);
+    console.log(userId);
+
     commit(types.WALLET_ACCOUNT_CREATED, result);
+
     return true;
   } catch (error) {
     commit(types.WALLET_ACCOUNT_CREATE_ERROR, 'Account creation failed');
