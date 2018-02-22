@@ -31,5 +31,9 @@ export const isLocked = state => {
 
 export const getWalletError = state => {
   return state.error;
-}
+};
+
+export const getWalletUserId = state => {
+  return state.userId;
+};
 

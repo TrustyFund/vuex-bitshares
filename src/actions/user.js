@@ -17,9 +17,9 @@ const balancesToObject = (balancesArr) => {
  * Fetches users objects from bitsharesjs-ws
  * @param {string} username - name of user to fetch
  */
-export const fetchUser = async ({ commit }, username) => {
+export const fetchUser = async ({ commit }, nameOrId) => {
   commit(types.FETCH_USER_REQUEST);
-  const result = await API.User.Get(username);
+  const result = await API.User.Get(nameOrId);
   if (result) {
     const user = result[0][1];
     user.balances = balancesToObject(user.balances);
