@@ -6,7 +6,6 @@ import API from '../services/api';
 const OWNER_KEY_INDEX = 1;
 
 export const createWallet = ({ commit }, { brainkey, password }) => {
-  console.log('creating wallet : ', brainkey, password);
   const passwordAes = Aes.fromSeed(password);
   const encryptionBuffer = key.get_random_key().toBuffer();
   const encryptionKey = passwordAes.encryptToHex(encryptionBuffer);
@@ -17,15 +16,11 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
   const passwordPrivate = PrivateKey.fromSeed(password);
   const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
 
-  // const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-  // const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
-
   const result = {
     passwordPubkey,
     encryptionKey,
     encryptedBrainkey,
     aesPrivate,
-    // userId: await getAccountIdByOwnerPubkey(ownerPubkey)
   };
 
   commit(types.WALLET_CREATED, result);
@@ -70,19 +65,11 @@ export const createAccount = async ({ commit, getters }, {
       })
     });
     const result = await response.json();
-    console.log(result);
     if (!result || (result && result.error)) {
       commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base[0]);
       return false;
     }
-
-    // retrieve user id
-    // const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-    // const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
-    // const userId = await API.Wallet.getAccountIdByOwnerPubkey(ownerPubkey);
-    // console.log(userId);
-
-    commit(types.WALLET_ACCOUNT_CREATED, '');
+    commit(types.WALLET_ACCOUNT_CREATED);
 
     return true;
   } catch (error) {
@@ -91,13 +78,9 @@ export const createAccount = async ({ commit, getters }, {
   }
 };
 
-// export const retrieveUserId = ({ commit, getters }) => {
-
-// };
-
 export const logIn = async (state, { password, brainkey }) => {
   const { commit } = state;
-  createWallet(state, { password, brainkey });
+  const wallet = createWallet(state, { password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
@@ -105,7 +88,10 @@ export const logIn = async (state, { password, brainkey }) => {
   const id = userId && userId[0];
   if (id) {
     commit(types.WALLET_LOGIN_COMPLETE, { id });
-    API.Auth.cacheUser({ id });
+    API.Auth.cacheUserData({
+      id,
+      encryptedBrainkey: wallet.encryptedBrainkey
+    });
   } else commit(types.WALLET_LOGIN_ERROR);
   return id;
 };
@@ -121,8 +107,12 @@ export const signUp = async (state, { name, password, dictionary }) => {
   return success;
 };
 
-export const checkCachedUser = ({ commit }) => {
-  const userId = API.Auth.getCachedUserId();
-  console.log(userId);
-  if (userId) commit(types.SET_WALLET_USER_ID, { userId });
+export const checkCachedUserData = ({ commit }) => {
+  const data = API.Auth.getCachedUserData();
+  if (data) {
+    commit(types.SET_WALLET_USER_DATA, {
+      userId: data.userId,
+      encryptedBrainkey: data.encryptedBrainkey
+    });
+  }
 };

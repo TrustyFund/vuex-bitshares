@@ -93,7 +93,7 @@ describe('wallet module', () => {
 
 
     await store.dispatch('wallet/createAccount', { name });
-    expect(store.state.wallet.userId).toBe(hobbitAccount);
+    expect(store.state.wallet.error).toBeFalsy();
     done();
   });
 });
