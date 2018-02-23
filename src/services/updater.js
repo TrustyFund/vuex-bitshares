@@ -19,8 +19,7 @@ class Updater {
     });
   }
   _operationCb(operation) {
-    if (Updater._isSignUpOperation(operation)) {
-    // if (this._hasSignUpOperationsPending && this._isSignUpOperation(operation)) {
+    if (this._hasSignUpOperationsPending && Updater._isSignUpOperation(operation)) {
       this._handleSignUpOperation(operation);
     }
   }
