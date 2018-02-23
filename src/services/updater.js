@@ -27,9 +27,9 @@ class Updater {
   _handleSignUpOperation(operation) {
     const payload = operation.op[1];
     const { name } = payload;
-    console.log(operation);
     const id = operation.result[1];
     console.log('new user signed up : ', name, id);
+    console.log(operation);
     if (this._signUpWaitingList[name]) {
       this._signUpWaitingList[name].resolve(id);
       delete this._signUpWaitingList[name];
@@ -42,7 +42,7 @@ class Updater {
   _checkForSignUpOperations() {
     this._hasSignUpOperationsPending = !!(Object.keys(this._signUpWaitingList).length);
   }
-  listedToSignupId({ name }) {
+  listenToSignupId({ name }) {
     console.log('started listening to sign up id : ', name);
     return new Promise((resolve) => {
       this._signUpWaitingList[name] = { resolve };

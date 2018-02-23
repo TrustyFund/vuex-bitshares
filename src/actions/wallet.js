@@ -4,8 +4,10 @@ import * as types from '../mutations';
 import API from '../services/api';
 
 const OWNER_KEY_INDEX = 1;
+const ACTIVE_KEY_INDEX = 0;
 
-export const createWallet = ({ commit }, { brainkey, password }) => {
+// helper fync
+const createWallet = ({ brainkey, password }) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionBuffer = key.get_random_key().toBuffer();
   const encryptionKey = passwordAes.encryptToHex(encryptionBuffer);
@@ -23,7 +25,6 @@ export const createWallet = ({ commit }, { brainkey, password }) => {
     aesPrivate,
   };
 
-  commit(types.WALLET_CREATED, result);
   return result;
 };
 
@@ -38,83 +39,59 @@ export const lockWallet = ({ commit }) => {
   commit(types.WALLET_LOCK);
 };
 
-export const createAccount = async ({ commit, getters }, {
-  name,
-  referrer,
-  faucetUrl = 'https://faucet.bitshares.eu/onboarding'
-}) => {
-  const { active, owner } = getters.getKeys;
-  try {
-    // should be in API.Wallet service
-    const response = await fetch(faucetUrl + '/api/v1/accounts', {
-      method: 'post',
-      mode: 'cors',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        account: {
-          name,
-          owner_key: owner.toPublicKey().toPublicKeyString(),
-          active_key: active.toPublicKey().toPublicKeyString(),
-          memo_key: active.toPublicKey().toPublicKeyString(),
-          refcode: null,
-          referrer
-        }
-      })
+export const signUp = async (state, { name, password, dictionary }) => {
+  const { commit } = state;
+  commit(types.WALLET_SIGNUP_REQUEST);
+  const brainkey = API.Wallet.suggestBrainkey(dictionary);
+  const result = await API.Wallet.createAccount({
+    name,
+    activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
+    ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
+    referrer: ''
+  });
+  console.log('Account created : ', result.success);
+  if (result.success) {
+    const userId = await API.Updater.listenToSignupId({ name });
+    const wallet = createWallet({ password, brainkey });
+    console.log(userId);
+    commit(types.WALLET_SIGNUP_COMPLETE, { wallet, userId });
+    API.Auth.cacheUserData({
+      id: userId,
+      encryptedBrainkey: wallet.encryptedBrainkey
     });
-    const result = await response.json();
-    if (!result || (result && result.error)) {
-      commit(types.WALLET_ACCOUNT_CREATE_ERROR, result.error.base[0]);
-      return false;
-    }
-    commit(types.WALLET_ACCOUNT_CREATED);
-
-    return true;
-  } catch (error) {
-    commit(types.WALLET_ACCOUNT_CREATE_ERROR, 'Account creation failed');
-    return false;
+    return { success: true };
   }
+  commit(types.WALLET_SIGNUP_ERROR, { error: result.error });
+  return {
+    success: false,
+    error: result.error
+  };
 };
 
 export const logIn = async (state, { password, brainkey }) => {
   const { commit } = state;
-  const wallet = createWallet(state, { password, brainkey });
+  commit(types.WALLET_LOGIN_REQUEST);
+  const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
   const userId = await API.Wallet.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
-    commit(types.WALLET_LOGIN_COMPLETE, { id });
+    commit(types.WALLET_LOGIN_COMPLETE, { wallet, id });
     API.Auth.cacheUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
-  } else commit(types.WALLET_LOGIN_ERROR);
-  return id;
-};
-
-
-export const signUp = async (state, { name, password, dictionary }) => {
-  const { commit } = state;
-  const brainkey = API.Wallet.suggestBrainkey(dictionary);
-  createWallet(state, { password, brainkey });
-  const success = await createAccount(state, {
-    name,
-    referred: '',
-  });
-  console.log(success);
-  if (success) {
-    const userId = await API.Updater.listedToSignupId({ name });
-    console.log(newId);
-    commit(types.SET_WALLET_USER_DATA, {
-      userId
-    });
-    return userId;
+    return {
+      success: true
+    };
   }
-  return false;
+  commit(types.WALLET_LOGIN_ERROR);
+  return {
+    success: false,
+    error: 'Login error'
+  };
 };
 
 export const checkCachedUserData = ({ commit }) => {

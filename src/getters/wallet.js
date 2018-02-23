@@ -37,3 +37,7 @@ export const getWalletUserId = state => {
   return state.userId;
 };
 
+export const getWalletPendingState = state => {
+  return state.pending;
+};
+
