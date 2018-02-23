@@ -54,8 +54,8 @@ const mutations = {
     state.userId = null;
   },
   [types.SET_WALLET_USER_DATA]: (state, { userId, encryptedBrainkey }) => {
-    state.userId = userId;
-    state.encryptedBrainkey = encryptedBrainkey;
+    if (userId) state.userId = userId;
+    if (encryptedBrainkey) state.encryptedBrainkey = encryptedBrainkey;
   }
 };
 

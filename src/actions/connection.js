@@ -13,6 +13,9 @@ export const initConnection = ({ commit, getters }) => {
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {
       commit(types.WS_CONNECTED);
     }
+    if (status === 'realopen') {
+      API.Updater.enable();
+    }
   };
 
   API.Connection.connect(updateConnectionStatus);

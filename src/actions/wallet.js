@@ -98,13 +98,23 @@ export const logIn = async (state, { password, brainkey }) => {
 
 
 export const signUp = async (state, { name, password, dictionary }) => {
+  const { commit } = state;
   const brainkey = API.Wallet.suggestBrainkey(dictionary);
   createWallet(state, { password, brainkey });
   const success = await createAccount(state, {
     name,
     referred: '',
   });
-  return success;
+  console.log(success);
+  if (success) {
+    const userId = await API.Updater.listedToSignupId({ name });
+    console.log(newId);
+    commit(types.SET_WALLET_USER_DATA, {
+      userId
+    });
+    return userId;
+  }
+  return false;
 };
 
 export const checkCachedUserData = ({ commit }) => {

@@ -4,6 +4,7 @@ import Wallet from './wallet';
 import Connection from './connection';
 import Brainkey from './brainkey';
 import Auth from './auth';
+import Updater from './updater';
 
 const API = {
   Connection,
@@ -11,7 +12,8 @@ const API = {
   Assets,
   Wallet,
   Brainkey,
-  Auth
+  Auth,
+  Updater
 };
 
 export default API;
