@@ -32,48 +32,41 @@ export const isLocked = state => {
   return state.aesPrivate == null;
 };
 
-export const getTransferTransaction = state => {
-  return async (to, amount, assetId, memo, optionalNonce = null) => {
-    const activeKey = getKeys(state).active;
-    const activePubkey = activeKey.toPublicKey().toPublicKeyString();
-    const toAccount = await getAccount(to);
-    let memoObj = null;
-    if (memo) {
-      const memoToPubkey = toAccount.options.memo_key;
-      const nonce = optionalNonce || TransactionHelper.unique_nonce_uint64();
-      const message = Aes.encrypt_with_checksum(
-        activeKey,
-        memoToPubkey,
-        nonce,
-        memo
-      );
+export const encryptMemo = state => {
+  return (memo, toPubkey) => {
 
-      memoObj = {
-        from: activePubkey,
-        to: memoToPubkey,
-        nonce,
-        message
-      };
-    }
-    const transaction = new TransactionBuilder();
-    const transfer = transaction.get_type_operation('transfer', {
-      fee: {
-        amount: 0,
-        asset_id: '1.3.0'
-      },
-      from: state.userId,
-      to: toAccount.id,
-      amount: {
-        amount,
-        asset_id: assetId
-      },
-      memo: memoObj
-    });
-    transaction.add_operation(transfer);
-    transaction.add_signer(activeKey, activePubkey);
-    await transaction.update_head_block();
-    await transaction.set_required_fees();
-    return transaction;
+    const { active } = getKeys(state);
+    const activePubkey = active.toPublicKey().toPublicKeyString();
+    const nonce = TransactionHelper.unique_nonce_uint64();
+
+    const message = Aes.encrypt_with_checksum(
+      active,
+      toPubkey,
+      nonce,
+      memo
+    );
+
+    return {
+      from: activePubkey,
+      to: toPubkey,
+      nonce,
+      message
+    };
   };
-};
+}
 
+export const signTransaction = state => {
+  return async transaction => {
+    const { active, owner } = getKeys(state);
+    const pubkeys = [active, owner].map(key => key.toPublicKey().toPublicKeyString());
+    const requiredPubkeys = await transaction.get_required_signatures(pubkeys);
+    for (let requiredPubkey of requiredPubkeys) {
+      if (active.toPublicKey().toPublicKeyString() == requiredPubkey) {
+        transaction.add_signer(active, requiredPubkey);
+      }
+      if (owner.toPublicKey().toPublicKeyString() == requiredPubkey) {
+        transaction.add_signer(owner, requiredPubkey);
+      }
+    }
+  };
+}

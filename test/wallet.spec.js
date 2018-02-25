@@ -18,9 +18,8 @@ const password = 'qwer1234';
 // const testAccountName = 'anlopan364test2';
 const hobbitAccount = '1.2.512210';
 const hobbitAccountName = 'hobb1t';
+const hobbitMemo = 'BTS7jdBe1Yz9S6wc9VhD41M9PJ1JmP6EdbvBdcy6z8XGVbEr1WoCD';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
-
-const btsId = '1.3.0';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -101,18 +100,11 @@ describe('wallet module', () => {
     expect(store.state.wallet.userId).toBe(hobbitAccount);
     done();
   });
+
   it('creates transfer transaction', async done => {
     await store.dispatch('wallet/createWallet', { brainkey, password });
-    const nonce = '388886163115726';
     const memo = 'test_memo';
-    const tr = await store.getters['wallet/getTransferTransaction'](
-      hobbitAccountName,
-      1,
-      btsId,
-      memo,
-      nonce
-    );
-    const { operations: [[, { memo: { message } }]] } = tr.toObject();
+    const { message, nonce } = store.getters['wallet/encryptMemo'](memo, hobbitMemo);
 
     const testActiveKey = await store.getters['wallet/getKeys'].active;
     const hobbitActiveKey = key.get_brainPrivateKey(hobbitBrainkey, 1);
