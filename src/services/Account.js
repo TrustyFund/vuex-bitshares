@@ -18,7 +18,7 @@ export const getUser = async (nameOrId) => {
     }
     return {
       success: false,
-      error: 'Error during user fetching'
+      error: 'User not found'
     };
   } catch (error) {
     console.log(error);

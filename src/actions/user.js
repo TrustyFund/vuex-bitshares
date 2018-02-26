@@ -24,10 +24,10 @@ export const fetchUser = async ({ commit }, nameOrId) => {
     const user = result.data;
     user.balances = balancesToObject(user.balances);
     commit(types.FETCH_USER_COMPLETE, user);
-    return user;
+  } else {
+    commit(types.FETCH_USER_ERROR);    
   }
-  commit(types.FETCH_USER_ERROR);
-  return null;
+  return result;
 };
 
 /**
