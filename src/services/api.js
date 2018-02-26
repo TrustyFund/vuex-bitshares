@@ -3,7 +3,7 @@ import Assets from './assets';
 import Account from './account';
 import Connection from './connection';
 import Brainkey from './brainkey';
-import Auth from './auth';
+import Persistent from './persistent';
 import ChainListener from './chain-listener';
 
 const API = {
@@ -12,7 +12,7 @@ const API = {
   Assets,
   Account,
   Brainkey,
-  Auth,
+  Persistent,
   ChainListener
 };
 

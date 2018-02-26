@@ -16,10 +16,10 @@ const initialState = {
 };
 
 const mutations = {
-  [types.WALLET_SIGNUP_REQUEST]: (state) => {
+  [types.ACCOUNT_SIGNUP_REQUEST]: (state) => {
     state.pending = true;
   },
-  [types.WALLET_SIGNUP_COMPLETE]: (state, { wallet, userId }) => {
+  [types.ACCOUNT_SIGNUP_COMPLETE]: (state, { wallet, userId }) => {
     state.pending = false;
     state.passwordPubkey = wallet.passwordPubkey;
     state.encryptedBrainkey = wallet.encryptedBrainkey;
@@ -29,14 +29,14 @@ const mutations = {
     state.created = new Date();
     state.userId = userId;
   },
-  [types.WALLET_SIGNUP_ERROR]: (state, { error }) => {
+  [types.ACCOUNT_SIGNUP_ERROR]: (state, { error }) => {
     state.pending = false;
     state.error = error;
   },
-  [types.WALLET_LOGIN_REQUEST]: (state) => {
+  [types.ACCOUNT_LOGIN_REQUEST]: (state) => {
     state.pending = true;
   },
-  [types.WALLET_LOGIN_COMPLETE]: (state, { wallet, id }) => {
+  [types.ACCOUNT_LOGIN_COMPLETE]: (state, { wallet, id }) => {
     state.pending = false;
     state.userId = id;
     state.passwordPubkey = wallet.passwordPubkey;
@@ -44,19 +44,19 @@ const mutations = {
     state.encryptionKey = wallet.encryptionKey;
     state.aesPrivate = wallet.aesPrivate;
   },
-  [types.WALLET_LOGIN_ERROR]: (state) => {
+  [types.ACCOUNT_LOGIN_ERROR]: (state) => {
     state.pending = false;
   },
-  [types.WALLET_BRAINKEY_BACKUP]: (state) => {
+  [types.ACCOUNT_BRAINKEY_BACKUP]: (state) => {
     state.brainkeyBackupDate = Date();
   },
-  [types.WALLET_LOCK]: (state) => {
+  [types.ACCOUNT_LOCK_WALLET]: (state) => {
     state.aesPrivate = null;
   },
-  [types.WALLET_UNLOCK]: (state, aesPrivate) => {
+  [types.ACCOUNT_UNLOCK_WALLET]: (state, aesPrivate) => {
     state.aesPrivate = aesPrivate;
   },
-  [types.SET_WALLET_USER_DATA]: (state, { userId, encryptedBrainkey }) => {
+  [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey }) => {
     state.userId = userId;
     state.encryptedBrainkey = encryptedBrainkey;
   }

@@ -32,18 +32,18 @@ export const unlockWallet = ({ commit, state }, password) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryptionKey);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
-  commit(types.WALLET_UNLOCK, aesPrivate);
+  commit(types.ACCOUNT_UNLOCK_WALLET, aesPrivate);
 };
 
 export const lockWallet = ({ commit }) => {
-  commit(types.WALLET_LOCK);
+  commit(types.ACCOUNT_LOCK_WALLET);
 };
 
-export const signUp = async (state, { name, password, dictionary }) => {
+export const signup = async (state, { name, password, dictionary }) => {
   const { commit } = state;
-  commit(types.WALLET_SIGNUP_REQUEST);
-  const brainkey = API.Wallet.suggestBrainkey(dictionary);
-  const result = await API.Wallet.createAccount({
+  commit(types.ACCOUNT_SIGNUP_REQUEST);
+  const brainkey = API.Account.suggestBrainkey(dictionary);
+  const result = await API.Account.createAccount({
     name,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
@@ -54,50 +54,54 @@ export const signUp = async (state, { name, password, dictionary }) => {
     const userId = await API.ChainListener.listenToSignupId({ name });
     const wallet = createWallet({ password, brainkey });
     console.log(userId);
-    commit(types.WALLET_SIGNUP_COMPLETE, { wallet, userId });
-    API.Auth.cacheUserData({
+    commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
+    API.Persistent.cacheUserData({
       id: userId,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
     return { success: true };
   }
-  commit(types.WALLET_SIGNUP_ERROR, { error: result.error });
+  commit(types.ACCOUNT_SIGNUP_ERROR, { error: result.error });
   return {
     success: false,
     error: result.error
   };
 };
 
-export const logIn = async (state, { password, brainkey }) => {
+export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
-  commit(types.WALLET_LOGIN_REQUEST);
+  commit(types.ACCOUNT_LOGIN_REQUEST);
   const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
-  const userId = await API.Wallet.getAccountIdByOwnerPubkey(ownerPubkey);
+  const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
-    commit(types.WALLET_LOGIN_COMPLETE, { wallet, id });
-    API.Auth.cacheUserData({
+    API.Persistent.cacheUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
+    commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, id });
     return {
       success: true
     };
   }
-  commit(types.WALLET_LOGIN_ERROR);
+  commit(types.ACCOUNT_LOGIN_ERROR);
   return {
     success: false,
     error: 'Login error'
   };
 };
 
+export const logout = ({ commit }) => {
+  commit(types.ACCOUNT_LOGOUT);
+};
+
 export const checkCachedUserData = ({ commit }) => {
-  const data = API.Auth.getCachedUserData();
+  const data = API.Persistent.getCachedUserData();
   if (data) {
-    commit(types.SET_WALLET_USER_DATA, {
+    commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
       encryptedBrainkey: data.encryptedBrainkey
     });
