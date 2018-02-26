@@ -10,7 +10,6 @@ export const initConnection = ({ commit, getters }) => {
     console.log('Connection status : ', status);
     commit(types.RPC_STATUS_UPDATE, { status });
     if (status === 'error' || status === 'closed') {
-      API.ChainListener.disable();
       commit(types.WS_DISCONNECTED);
     }
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {

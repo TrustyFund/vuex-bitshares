@@ -13,6 +13,7 @@ class ChainListener {
     this._enabled = false;
   }
   enable() {
+    if (this._enabled) this.disable();
     Apis.instance().db_api().exec('set_subscribe_callback', [this._mainCallback.bind(this), true]);
     this._enabled = true;
   }
