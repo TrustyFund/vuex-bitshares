@@ -4,7 +4,7 @@ import Wallet from './wallet';
 import Connection from './connection';
 import Brainkey from './brainkey';
 import Auth from './auth';
-import Updater from './updater';
+import ChainListener from './chain-listener';
 
 const API = {
   Connection,
@@ -13,7 +13,7 @@ const API = {
   Wallet,
   Brainkey,
   Auth,
-  Updater
+  ChainListener
 };
 
 export default API;

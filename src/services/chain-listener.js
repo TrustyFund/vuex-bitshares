@@ -1,11 +1,12 @@
 /* eslint no-underscore-dangle: 0 */
 import { Apis } from 'bitsharesjs-ws';
+import { ChainTypes } from 'bitsharesjs';
 
 /**
  * Subscribe to updates from bitsharesjs-ws
  */
 
-class Updater {
+class ChainListener {
   constructor() {
     this._signUpWaitingList = {};
     this._hasSignUpOperationsPending = false;
@@ -13,13 +14,16 @@ class Updater {
   enable() {
     Apis.instance().db_api().exec('set_subscribe_callback', [this._mainCallback.bind(this), true]);
   }
+  static disable() {
+    Apis.instance().db_api().exec('cancel_all_subscriptions', []);
+  }
   _mainCallback(data) {
     data[0].forEach(operation => {
       if (typeof (operation) === 'object') this._operationCb(operation);
     });
   }
   _operationCb(operation) {
-    if (this._hasSignUpOperationsPending && Updater._isSignUpOperation(operation)) {
+    if (this._hasSignUpOperationsPending && ChainListener._isSignUpOperation(operation)) {
       this._handleSignUpOperation(operation);
     }
   }
@@ -36,7 +40,8 @@ class Updater {
     }
   }
   static _isSignUpOperation(operation) {
-    return (operation.id && operation.id.includes('1.11.') && operation.op[0] === 5);
+    return (operation.id && operation.id.includes('1.11.')
+      && operation.op[0] === ChainTypes.operations.account_create);
   }
   _checkForSignUpOperations() {
     this._hasSignUpOperationsPending = !!(Object.keys(this._signUpWaitingList).length);
@@ -51,5 +56,5 @@ class Updater {
 }
 
 
-export default new Updater();
+export default new ChainListener();
 
