@@ -1,5 +1,3 @@
-/* eslint no-underscore-dangle: 0 */
-
 const testAccounts = {
   hobb1t: '1.2.512210'
 };

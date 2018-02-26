@@ -220,7 +220,7 @@ describe('Account module: actions', () => {
 //     const { owner, active } = store.getters['wallet/getKeys'];
 //     const walletOwnerPubkey = owner.toPublicKey().toPublicKeyString();
 //     const activePubkey = active.toPublicKey().toPublicKeyString();
-    
+
 //     // simulate success response
 //     global.fetch = () => {
 //       return new Promise(resolve => {
@@ -247,7 +247,7 @@ describe('Account module: actions', () => {
 //       password,
 //       name
 //     });
-    
+
 //     // await store.dispatch('account/createAccount', { name });
 //     expect(store.state.account.error).toBeFalsy();
 //     done();

@@ -1,5 +1,3 @@
-// import { key } from 'bitsharesjs';
-
 const suggestedBrainkey = 'glink omental webless pschent knopper brumous ' +
   'scarry were wasting isopod raper barbas maco kirn tegua mitome';
 
