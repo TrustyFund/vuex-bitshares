@@ -30,6 +30,10 @@ const createWallet = ({ brainkey, password }) => {
   return result;
 };
 
+/**
+ * Unlocks user's wallet via provided password
+ * @param {string} password - user password
+ */
 export const unlockWallet = ({ commit, state }, password) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryptionKey);
@@ -37,14 +41,24 @@ export const unlockWallet = ({ commit, state }, password) => {
   commit(types.ACCOUNT_UNLOCK_WALLET, aesPrivate);
 };
 
+/**
+ * Locks user's wallet
+ */
 export const lockWallet = ({ commit }) => {
   commit(types.ACCOUNT_LOCK_WALLET);
 };
 
+/**
+ * Creates account & wallet for user
+ * @param {string} name - user name
+ * @param {string} password - user password
+ * @param {string} dictionary - string to generate brainkey from
+ */
 export const signup = async (state, { name, password, dictionary }) => {
   const { commit } = state;
   commit(types.ACCOUNT_SIGNUP_REQUEST);
   const brainkey = API.Account.suggestBrainkey(dictionary);
+  console.log(brainkey);
   const result = await API.Account.createAccount({
     name,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
@@ -70,6 +84,11 @@ export const signup = async (state, { name, password, dictionary }) => {
   };
 };
 
+/**
+ * Logs in & creates wallet
+ * @param {string} password - user password
+ * @param {string} brainkey - user brainkey
+ */
 export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
@@ -114,9 +133,7 @@ export const checkCachedUserData = ({ commit }) => {
  * Checks username for existance
  * @param {string} username - name of user to fetch
  */
-export const checkUsername = async (state, { username }) => {
-  return new Promise(async (resolve) => {
-    const result = await API.Account.getUser(username);
-    resolve(!result.success);
-  });
+export const checkIfUsernameFree = async (state, { username }) => {
+  const result = await API.Account.getUser(username);
+  return !result.success;
 };
