@@ -8,7 +8,6 @@ export const suggestBrainkey = (dictionary) => {
 export const getUser = async (nameOrId) => {
   try {
     const response = await Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false]);
-    console.log(response);
     if (response && response[0]) {
       const user = response[0][1];
       return {
