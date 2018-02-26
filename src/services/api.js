@@ -1,4 +1,3 @@
-import User from './user';
 import Assets from './assets';
 import Account from './account';
 import Connection from './connection';
@@ -8,7 +7,6 @@ import ChainListener from './chain-listener';
 
 const API = {
   Connection,
-  User,
   Assets,
   Account,
   Brainkey,

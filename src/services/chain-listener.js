@@ -10,12 +10,16 @@ class ChainListener {
   constructor() {
     this._signUpWaitingList = {};
     this._hasSignUpOperationsPending = false;
+    this._enabled = false;
   }
   enable() {
     Apis.instance().db_api().exec('set_subscribe_callback', [this._mainCallback.bind(this), true]);
+    this._enabled = true;
   }
-  static disable() {
-    Apis.instance().db_api().exec('cancel_all_subscriptions', []);
+  disable() {
+    Apis.instance().db_api().exec('cancel_all_subscriptions', []).then(() => {
+      this._enabled = false;
+    });
   }
   _mainCallback(data) {
     data[0].forEach(operation => {

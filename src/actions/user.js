@@ -19,9 +19,9 @@ const balancesToObject = (balancesArr) => {
  */
 export const fetchUser = async ({ commit }, nameOrId) => {
   commit(types.FETCH_USER_REQUEST);
-  const result = await API.User.Get(nameOrId);
-  if (result) {
-    const user = result[0][1];
+  const result = await API.Account.getUser(nameOrId);
+  if (result.success) {
+    const user = result.data;
     user.balances = balancesToObject(user.balances);
     commit(types.FETCH_USER_COMPLETE, user);
     return user;

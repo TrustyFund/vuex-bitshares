@@ -5,15 +5,28 @@ export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
 };
 
-export const getAccount = nameOrId => {
-  return Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false])
-    .then(([res]) => {
-      if (res) {
-        const [, { account }] = res;
-        return account;
-      }
-      return null;
-    });
+export const getUser = async (nameOrId) => {
+  try {
+    const response = await Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false]);
+    console.log(response);
+    if (response && response[0]) {
+      const user = response[0][1];
+      return {
+        success: true,
+        data: user
+      };
+    }
+    return {
+      success: false,
+      error: 'Error during user fetching'
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error
+    };
+  }
 };
 
 export const getAccountIdByOwnerPubkey = async ownerPubkey => {
@@ -61,5 +74,5 @@ export const createAccount = async ({ name, ownerKey, activeKey, referrer }) => 
 };
 
 export default {
-  suggestBrainkey, getAccount, getAccountIdByOwnerPubkey, createAccount
+  suggestBrainkey, getUser, getAccountIdByOwnerPubkey, createAccount
 };

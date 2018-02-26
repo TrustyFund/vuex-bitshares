@@ -107,3 +107,14 @@ export const checkCachedUserData = ({ commit }) => {
     });
   }
 };
+
+/**
+ * Checks username for existance
+ * @param {string} username - name of user to fetch
+ */
+export const checkUsername = async (state, { username }) => {
+  return new Promise(async (resolve) => {
+    const result = await API.Account.getUser(username);
+    resolve(!result.success);
+  });
+};
