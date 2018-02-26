@@ -33,11 +33,11 @@ export const getWalletError = state => {
   return state.error;
 };
 
-export const getWalletUserId = state => {
+export const getAccountUserId = state => {
   return state.userId;
 };
 
-export const getWalletPendingState = state => {
+export const getAccountPendingState = state => {
   return state.pending;
 };
 

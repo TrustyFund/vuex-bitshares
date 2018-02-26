@@ -1,6 +1,6 @@
-import * as actions from '../actions/wallet';
+import * as actions from '../actions/account';
 import * as types from '../mutations';
-import * as getters from '../getters/wallet';
+import * as getters from '../getters/account';
 
 
 const initialState = {
