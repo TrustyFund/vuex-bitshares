@@ -2,7 +2,7 @@
 // Testing mocked APIs here
 import API from '../src/services/api.js';
 
-jest.mock('../src/services/assets.js');
+jest.mock('../src/services/api/assets.js');
 
 describe('Mocked Assets API', () => {
   it('api mock works', async () => {

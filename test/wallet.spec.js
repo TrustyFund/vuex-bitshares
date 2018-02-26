@@ -3,7 +3,7 @@
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import wallet from '../src/modules/wallet.js';
-import { getAccount, suggestBrainkey } from '../src/services/wallet.js';
+import { getAccount, suggestBrainkey } from '../src/services/api/wallet.js';
 import dictionary from './brainkey_dictionary.js';
 
 jest.mock('bitsharesjs-ws');
