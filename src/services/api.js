@@ -1,16 +1,12 @@
-import Assets from './assets';
-import Account from './account';
-import Connection from './connection';
-import Brainkey from './brainkey';
-import Persistent from './persistent';
-import ChainListener from './chain-listener';
+import Assets from './api/assets';
+import Account from './api/account';
+import Connection from './api/connection';
+import ChainListener from './api/chain-listener';
 
 const API = {
   Connection,
   Assets,
   Account,
-  Brainkey,
-  Persistent,
   ChainListener
 };
 

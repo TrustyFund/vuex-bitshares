@@ -1,5 +1,5 @@
 import { Apis } from 'bitsharesjs-ws';
-import config from '../../config';
+import config from '../../../config';
 import NodesManager from './nodes-manager';
 
 const nodesManager = new NodesManager({

@@ -3,6 +3,7 @@ import * as types from '../mutations';
 import config from '../../config';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
+import PersistentStorage from '../services/persistent-storage';
 
 const OWNER_KEY_INDEX = 1;
 const ACTIVE_KEY_INDEX = 0;
@@ -56,7 +57,7 @@ export const signup = async (state, { name, password, dictionary }) => {
     const wallet = createWallet({ password, brainkey });
     console.log(userId);
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
-    API.Persistent.cacheUserData({
+    PersistentStorage.saveUserData({
       id: userId,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
@@ -79,7 +80,7 @@ export const login = async (state, { password, brainkey }) => {
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
-    API.Persistent.cacheUserData({
+    PersistentStorage.saveUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
@@ -100,7 +101,7 @@ export const logout = ({ commit }) => {
 };
 
 export const checkCachedUserData = ({ commit }) => {
-  const data = API.Persistent.getCachedUserData();
+  const data = PersistentStorage.getSavedUserData();
   if (data) {
     commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
