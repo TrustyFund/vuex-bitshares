@@ -8,10 +8,6 @@ import dictionary from './brainkey_dictionary.js';
 jest.mock('../src/services/api/account.js');
 jest.mock('../src/services/api/chain-listener.js');
 
-// import { getAccount, suggestBrainkey } from '../src/services/api/account.js';
-
-// jest.mock('bitsharesjs-ws');
-
 // eslint-disable-next-line max-len
 // const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
 // const password = 'qwer1234';
@@ -20,6 +16,12 @@ jest.mock('../src/services/api/chain-listener.js');
 // const hobbitAccount = '1.2.512210';
 // const hobbitAccountName = 'hobb1t';
 // const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
+
+const name = 'hobb1t';
+const password = 'qwer1234';
+const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
+  ' wasting isopod raper barbas maco kirn tegua mitome';
+const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -71,12 +73,6 @@ describe('Account module: actions', () => {
   });
 
   it('signs up', async done => {
-    const name = 'hobb1t';
-    const password = 'qwer1234';
-    const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
-      ' wasting isopod raper barbas maco kirn tegua mitome';
-    const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
-
     const result = await store.dispatch('account/signup', {
       name,
       password,
@@ -96,11 +92,10 @@ describe('Account module: actions', () => {
   });
 
   it('doesnt sign up bad account name', async done => {
-    const name = 'notHobb1t';
-    const password = 'qwer1234';
+    const badName = 'notHobb1t';
 
     const result = await store.dispatch('account/signup', {
-      name,
+      name: badName,
       password,
       dictionary: dictionary.en
     });
@@ -112,11 +107,6 @@ describe('Account module: actions', () => {
   });
 
   it('logs in', async done => {
-    const password = 'qwer1234';
-    const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
-      ' wasting isopod raper barbas maco kirn tegua mitome';
-    const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
-
     const result = await store.dispatch('account/login', {
       password,
       brainkey
@@ -134,12 +124,11 @@ describe('Account module: actions', () => {
   });
 
   it('doesnt log in with bad brainkey', async done => {
-    const password = 'qwer1234';
-    const brainkey = 'lalalalalalala';
+    const badBrainkey = 'lalalalalalala';
 
     const result = await store.dispatch('account/login', {
       password,
-      brainkey
+      brainkey: badBrainkey
     });
 
     expect(result.success).toBeFalsy();
@@ -147,9 +136,6 @@ describe('Account module: actions', () => {
   });
 
   it('locks and unlocks wallet', async done => {
-    const password = 'qwer1234';
-    const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
-      ' wasting isopod raper barbas maco kirn tegua mitome';
     await store.dispatch('account/login', {
       password,
       brainkey
