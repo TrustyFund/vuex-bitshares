@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import * as actions from '../actions/account';
 import * as types from '../mutations';
 import * as getters from '../getters/account';
