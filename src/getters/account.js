@@ -41,3 +41,7 @@ export const getAccountPendingState = state => {
   return state.pending;
 };
 
+export const getOperations = state => {
+  return state.operations;
+};
+

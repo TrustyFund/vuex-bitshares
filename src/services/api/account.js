@@ -1,8 +1,27 @@
-import { key } from 'bitsharesjs';
+import { key, ChainTypes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 
 export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
+};
+
+export const parseOperations = (operations) => {
+  const operationTypes = {};
+
+  Object.keys(ChainTypes.operations).forEach(name => {
+    const code = ChainTypes.operations[name];
+    operationTypes[code] = name;
+  });
+
+  return operations.map(operation => {
+    const [type, payload] = operation.op;
+
+    return {
+      id: operation.id,
+      type: operationTypes[type],
+      payload
+    };
+  });
 };
 
 export const getUser = async (nameOrId) => {
@@ -72,6 +91,31 @@ export const createAccount = async ({ name, ownerKey, activeKey, referrer }) => 
   }
 };
 
+
+export const getAccountOperations = async ({ userId }) => {
+  try {
+    const response = await Apis.instance().history_api().exec(
+      'get_account_history',
+      [userId, '1.11.9999999', 100, '1.11.0']
+    );
+    if (response && typeof (response) === 'object') {
+      return {
+        success: true,
+        data: response
+      };
+    }
+    return {
+      success: false,
+      error: 'Error fetching account operations'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error
+    };
+  }
+};
+
 export default {
-  suggestBrainkey, getUser, getAccountIdByOwnerPubkey, createAccount
+  suggestBrainkey, getUser, getAccountIdByOwnerPubkey, createAccount, getAccountOperations, parseOperations
 };

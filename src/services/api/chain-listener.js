@@ -58,6 +58,9 @@ class ChainListener {
       this._hasSignUpOperationsPending = true;
     });
   }
+  listenToUserOperations({ id, callback }) {
+    // this._enable
+  }
 }
 
 
