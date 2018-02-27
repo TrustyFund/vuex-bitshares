@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { key, Aes } from 'bitsharesjs';
+import { Aes } from 'bitsharesjs';
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import account from '../src/modules/account.js';
