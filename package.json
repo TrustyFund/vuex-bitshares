@@ -1,6 +1,6 @@
 {
   "name": "vuex-bitshares",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Vue way to build DAP's on bitshares net",
   "main": "src/index.js",
   "scripts": {
@@ -25,7 +25,8 @@
   "homepage": "https://github.com/TrustyFund/vuex-bitshares#readme",
   "dependencies": {
     "bitsharesjs": "^1.4.1",
-    "bitsharesjs-ws": "^1.3.1"
+    "bitsharesjs-ws": "^1.3.1",
+    "js-cookie": "^2.2.0"
   },
   "devDependencies": {
     "@vue/test-utils": "^1.0.0-beta.10",

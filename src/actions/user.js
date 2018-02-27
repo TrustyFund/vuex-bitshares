@@ -1,5 +1,5 @@
 import * as types from '../mutations';
-import { User } from '../services/api';
+import API from '../services/api';
 
 /**
  * Function to convert array of balances to object with keys as assets ids
@@ -17,15 +17,27 @@ const balancesToObject = (balancesArr) => {
  * Fetches users objects from bitsharesjs-ws
  * @param {string} username - name of user to fetch
  */
-export const fetchUser = async ({ commit }, username) => {
+export const fetchUser = async ({ commit }, nameOrId) => {
   commit(types.FETCH_USER_REQUEST);
-  const result = await User.Get(username);
-  if (result) {
-    const user = result[0][1];
+  const result = await API.Account.getUser(nameOrId);
+  if (result.success) {
+    const user = result.data;
     user.balances = balancesToObject(user.balances);
     commit(types.FETCH_USER_COMPLETE, user);
-    return user;
+  } else {
+    commit(types.FETCH_USER_ERROR);
   }
-  commit(types.FETCH_USER_ERROR);
-  return null;
+  return result;
+};
+
+/**
+ * Checks username for existance
+ * @param {string} username - name of user to fetch
+ */
+export const checkUsername = async (state, { username }) => {
+  return new Promise(async (resolve) => {
+    const result = await API.User.Get(username);
+    if (result[0]) resolve(false);
+    resolve(true);
+  });
 };

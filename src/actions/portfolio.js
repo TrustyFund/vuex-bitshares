@@ -1,5 +1,5 @@
 import * as types from '../mutations';
-import { Assets } from '../services/api';
+import API from '../services/api';
 import * as utils from '../utils';
 
 /**
@@ -12,30 +12,30 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
   const assets = rootGetters['assets/getAssets'];
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
   const baseAsset = assets[baseId];
-  const fiatAsset = assets[fiatId];
   const userAssetsIds = Object.keys(balances);
 
   // balance + default assets without duplication
   const filteredAssetsIdsList = userAssetsIds.concat(defaultAssetsIds.filter((id) => {
     return userAssetsIds.indexOf(id) < 0;
   }));
+  const fiatIdIndex = filteredAssetsIdsList.indexOf(fiatId);
+  // put fiat id at the beggining of array to calculate fiat multiplier
+  filteredAssetsIdsList.unshift(filteredAssetsIdsList.splice(fiatIdIndex, 1)[0]);
+  let fiatMultiplier;
 
-    // fetch currency asset prices history first to calc multiplier
-    // (to calculate fiat value of each asset)
-  const fiatPrices = await Assets.fetchPriceHistory(baseAsset, fiatAsset, days);
-  const fiatMultiplier = {
-    first: 1 / fiatPrices.first,
-    last: 1 / fiatPrices.last
-  };
-
-    // fetch and calculate prices for each asset
-  return Promise.all(filteredAssetsIdsList.map(async (id) => {
+  // fetch and calculate prices for each asset
+  return Promise.all(filteredAssetsIdsList.map(async (id, index) => {
     let balance = (balances[id] && balances[id].balance) || 0;
     balance = balance / (10 ** assets[id].precision);
     const name = assets[id].symbol;
     commit(types.FETCH_PORTFOLIO_ASSET_REQUEST, { id, name: assets[id].symbol, balance });
-
-    const prices = await Assets.fetchPriceHistory(baseAsset, assets[id], days);
+    const prices = await API.Assets.fetchPriceHistory(baseAsset, assets[id], days);
+    if (!index) {
+      fiatMultiplier = {
+        first: 1 / prices.first,
+        last: 1 / prices.last
+      };
+    }
     if (prices) {
       const { balanceBase, balanceFiat, change } = utils.calcPortfolioData({
         balance,

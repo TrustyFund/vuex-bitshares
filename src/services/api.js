@@ -1,15 +1,13 @@
-import { Apis } from 'bitsharesjs-ws';
-import User from './user';
-import Assets from './assets';
+import Assets from './api/assets';
+import Account from './api/account';
+import Connection from './api/connection';
+import ChainListener from './api/chain-listener';
 
-/**
- * Initializes bitshares apis
- * @param {function} statusCallback - callback function for status update
- */
-export const initApis = (statusCallback) => {
-  const wsString = 'wss://bitshares.openledger.info/ws';
-  Apis.setRpcConnectionStatusCallback(statusCallback);
-  return Apis.instance(wsString, true).init_promise;
+const API = {
+  Connection,
+  Assets,
+  Account,
+  ChainListener
 };
 
-export { User, Assets };
+export default API;

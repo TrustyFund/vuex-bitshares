@@ -3,7 +3,7 @@ import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import assets from '../src/modules/assets.js';
 
-jest.mock('../src/services/assets.js');
+jest.mock('../src/services/api/assets.js');
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -26,16 +26,12 @@ describe('Assets module: getters', () => {
   test('has correct initial state', () => {
     expect(store.state.assets.assets).toEqual({});
     expect(store.state.assets.defaultAssetsIds).toEqual([]);
-    expect(store.state.assets.defaultAssetsNames).toEqual(['BTS', 'OPEN.EOS', 'USD',
-      'OPEN.OMG', 'CNY', 'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN']);
     expect(store.state.assets.pending).toBeFalsy();
   });
 
   test('has correct getters', () => {
     expect(store.getters['assets/getAssets']).toEqual({});
     expect(store.getters['assets/getDefaultAssetsIds']).toEqual([]);
-    expect(store.getters['assets/getDefaultAssetsNames']).toEqual(['BTS', 'OPEN.EOS', 'USD',
-      'OPEN.OMG', 'CNY', 'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN']);
 
     const testAssets = {
       '1.3.0': {

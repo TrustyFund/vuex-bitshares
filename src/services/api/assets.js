@@ -1,5 +1,5 @@
 import { Apis } from 'bitsharesjs-ws';
-import * as utils from '../utils';
+import * as utils from '../../utils';
 
 /**
  * Fetches array of assets from bitsharesjs-ws
