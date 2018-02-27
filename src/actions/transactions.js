@@ -1,26 +1,7 @@
-import { Aes, TransactionHelper, TransactionBuilder } from 'bitsharesjs';
+import { TransactionBuilder } from 'bitsharesjs';
+import { encryptMemo } from '../utils';
 import * as types from '../mutations';
 import API from '../services/api';
-
-
-const encryptMemo = (memo, fromKey, toPubkey) => {
-  const nonce = TransactionHelper.unique_nonce_uint64();
-  const activePubkey = fromKey.toPublicKey().toPublicKeyString();
-
-  const message = Aes.encrypt_with_checksum(
-    fromKey,
-    toPubkey,
-    nonce,
-    memo
-  );
-
-  return {
-    from: activePubkey,
-    to: toPubkey,
-    nonce,
-    message
-  };
-};
 
 const signTransaction = async (transaction, { active, owner }) => {
   const pubkeys = [active, owner].map(privkey => privkey.toPublicKey().toPublicKeyString());
@@ -45,10 +26,10 @@ const buildAndBroadcast = async (type, payload, { active, owner }) => {
   return res;
 };
 
-export const transferAsset = async ({ rootState, commit, rootGetters }, payload) => {
-  console.log(payload);
-  const { to, assetId, amount, memo } = payload;
+export const transferAsset = async ({ commit, rootGetters }, payload) => {
   commit(types.TRANSFER_ASSET_REQUEST);
+
+  const { to, assetId, amount, memo } = payload;
   const toAccount = await API.Account.getUser(to);
 
   if (!toAccount.success) {
@@ -61,7 +42,7 @@ export const transferAsset = async ({ rootState, commit, rootGetters }, payload)
       amount: 0,
       asset_id: '1.3.0'
     },
-    from: rootState.account.userId,
+    from: rootGetters['account/getAccountUserId'],
     to: toAccount.data.account.id,
     amount: {
       amount,
