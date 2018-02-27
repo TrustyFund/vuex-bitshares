@@ -9,14 +9,11 @@ jest.mock('../src/services/api/account.js');
 jest.mock('../src/services/api/chain-listener.js');
 jest.mock('../src/services/persistent-storage.js');
 
-// eslint-disable-next-line max-len
-// const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
-// const password = 'qwer1234';
 // const testAccount = '1.2.383374';
 // const testAccountName = 'anlopan364test2';
+
 // const hobbitAccount = '1.2.512210';
 // const hobbitAccountName = 'hobb1t';
-// const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
 const name = 'hobb1t';
 const password = 'qwer1234';
@@ -229,6 +226,7 @@ describe('Account module: actions', () => {
     expect(store.getters['account/isLocked']).toBeTruthy();
     store.dispatch('account/unlockWallet', password);
     expect(store.getters['account/isLocked']).toBeFalsy();
+    expect(store.getters['account/getBrainkey']).toBe(brainkey);
 
     done();
   });
@@ -274,68 +272,3 @@ describe('Account module: actions', () => {
 //     expect(store.getters['account/isValidPassword']('wrong password')).toBe(false);
 //     done();
 //   });
-
-//   it('unlocks wallet', async done => {
-//     await store.dispatch('account/unlockWallet', password);
-//     expect(store.getters['account/getBrainkey']).toBe(brainkey);
-//     expect(store.getters['account/isLocked']).toBe(false);
-//     done();
-//   });
-
-//   it('locks wallet', async done => {
-//     await store.dispatch('account/lockWallet');
-//     expect(store.getters['account/isLocked']).toBe(true);
-//     done();
-//   });
-
-//   it('checks existing accounts', async done => {
-//     const acc = await getAccount(hobbitAccountName);
-//     expect(acc).not.toBe(null);
-//     const nonExistingAcc = await getAccount('definitely not existing account');
-//     expect(nonExistingAcc).toBe(null);
-//     done();
-//   });
-
-//   it('signs up', async done => {
-//     // const generatedBrainkey = suggestBrainkey(dictionary.en);
-//     const name = hobbitAccountName;
-//     const { owner, active } = store.getters['wallet/getKeys'];
-//     const walletOwnerPubkey = owner.toPublicKey().toPublicKeyString();
-//     const activePubkey = active.toPublicKey().toPublicKeyString();
-
-//     // simulate success response
-//     global.fetch = () => {
-//       return new Promise(resolve => {
-//         const res = {
-//           account: {
-//             active_key: activePubkey,
-//             memo_key: activePubkey,
-//             name,
-//             owner_key: walletOwnerPubkey,
-//             referrer: 'referrer',
-//             registrar: 'registrar'
-//           }
-//         };
-//         const response = {
-//           json: () => res
-//         };
-//         resolve(response);
-//       });
-//     };
-
-//     await store.dispatch('account/signup', {
-//       dictionary: dictionary.en,
-//       // brainkey: generatedBrainkey,
-//       password,
-//       name
-//     });
-
-//     // await store.dispatch('account/createAccount', { name });
-//     expect(store.state.account.error).toBeFalsy();
-//     done();
-//   });
-
-//   it('logs in', async done => {
-//     done();
-//   });
-// });

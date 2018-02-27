@@ -92,7 +92,7 @@ export const signup = async (state, { name, password, dictionary }) => {
 export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
-  const wallet = await createWallet({ password, brainkey });
+  const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
