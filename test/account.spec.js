@@ -263,16 +263,8 @@ describe('Account module: actions', () => {
       brainkey
     });
     const memo = 'test_memo';
-    const { message, nonce } = store.getters['account/encryptMemo'](memo, hobbitMemo);
-
-    const testActiveKey = await store.getters['account/getKeys'].active;
-    const decrypted = Aes.decrypt_with_checksum(
-      testActiveKey,
-      hobbitMemo,
-      nonce,
-      message
-    );
-    expect(decrypted.toString()).toBe(memo);
+    await store.dispatch('transaction/transferAsset',{ to: 'hobb1t', assetId: '1.3.0', amount: 1, memo});
+    console.log(store.state.transaction);
     done();
   });
 });
