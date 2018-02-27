@@ -29,7 +29,7 @@ export const isLocked = state => {
   return state.aesPrivate == null;
 };
 
-export const getWalletError = state => {
+export const getAccountError = state => {
   return state.error;
 };
 

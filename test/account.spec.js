@@ -7,6 +7,7 @@ import dictionary from './brainkey_dictionary.js';
 
 jest.mock('../src/services/api/account.js');
 jest.mock('../src/services/api/chain-listener.js');
+jest.mock('../src/services/persistent-storage.js');
 
 // eslint-disable-next-line max-len
 // const brainkey = 'glink omental webless pschent knopper brumous scarry were wasting isopod raper barbas maco kirn tegua mitome';
@@ -64,6 +65,88 @@ describe('Account module: getters', () => {
 
     store.state.account.pending = true;
     expect(store.getters['account/getAccountPendingState']).toBeTruthy();
+
+    store.state.account.error = 'error msg';
+    expect(store.getters['account/getAccountError']).toBe('error msg');
+  });
+});
+
+describe('Account module: mutations', () => {
+  const accountModule = { ...account };
+  let state;
+
+  beforeEach(() => {
+    state = { ...account.state };
+  });
+
+  test('ACCOUNT_SIGNUP_REQUEST', () => {
+    accountModule.mutations.ACCOUNT_SIGNUP_REQUEST(state);
+    expect(state.pending).toBeTruthy();
+  });
+
+  test('ACCOUNT_SIGNUP_ERROR', () => {
+    state.pending = true;
+    accountModule.mutations.ACCOUNT_SIGNUP_ERROR(state, { error: '123' });
+    expect(state.pending).toBeFalsy();
+    expect(state.error).toBe('123');
+  });
+
+  test('ACCOUNT_SIGNUP_COMPLETE', () => {
+    state.pending = true;
+    accountModule.mutations.ACCOUNT_SIGNUP_COMPLETE(state, {
+      userId: '1.2.3',
+      wallet: {
+        passwordPubkey: 'aaaaa',
+        encryptedBrainkey: 'bbbb',
+        encryptionKey: 'cccc',
+        aesPrivate: 'dddd'
+      }
+    });
+    expect(state.pending).toBeFalsy();
+    expect(state.passwordPubkey).toBe('aaaaa');
+    expect(state.encryptedBrainkey).toBe('bbbb');
+    expect(state.encryptionKey).toBe('cccc');
+    expect(state.aesPrivate).toBe('dddd');
+    expect(state.error).toBe(null);
+    expect(state.userId).toBe('1.2.3');
+    expect(state.brainkeyBackupDate).toBe(null);
+  });
+
+  test('ACCOUNT_LOGIN_REQUEST', () => {
+    accountModule.mutations.ACCOUNT_LOGIN_REQUEST(state);
+    expect(state.pending).toBeTruthy();
+  });
+
+  test('ACCOUNT_LOGIN_ERROR', () => {
+    accountModule.mutations.ACCOUNT_LOGIN_ERROR(state, { error: '123' });
+    expect(state.pending).toBeFalsy();
+    expect(state.error).toBe('123');
+  });
+
+  test('ACCOUNT_LOGIN_COMPLETE', () => {
+    state.pending = true;
+    accountModule.mutations.ACCOUNT_LOGIN_COMPLETE(state, {
+      userId: '1.2.3',
+      wallet: {
+        passwordPubkey: 'aaaaa',
+        encryptedBrainkey: 'bbbb',
+        encryptionKey: 'cccc',
+        aesPrivate: 'dddd'
+      }
+    });
+    expect(state.pending).toBeFalsy();
+    expect(state.passwordPubkey).toBe('aaaaa');
+    expect(state.encryptedBrainkey).toBe('bbbb');
+    expect(state.encryptionKey).toBe('cccc');
+    expect(state.aesPrivate).toBe('dddd');
+    expect(state.error).toBe(null);
+    expect(state.userId).toBe('1.2.3');
+  });
+
+  test('ACCOUNT_BRAINKEY_BACKUP', () => {
+    accountModule.mutations.ACCOUNT_BRAINKEY_BACKUP(state);
+    const date = new Date();
+    expect(new Date(state.brainkeyBackupDate).toLocaleString()).toBe(date.toLocaleString());
   });
 });
 
@@ -160,6 +243,19 @@ describe('Account module: actions', () => {
     });
     expect(newResult).toBeTruthy();
     done();
+  });
+
+  it('gets user data from storage', () => {
+    store.dispatch('account/checkCachedUserData');
+    expect(store.state.account.userId).toBe('1.2.512210');
+  });
+
+  it('logs out', () => {
+    store.state.account.userId = '1.2.3';
+    store.state.encryptedBrainkey = '3333';
+    store.state.aesPrivate = '4444';
+    store.dispatch('account/logout');
+    expect(store.state.account).toEqual(account.state);
   });
 });
 

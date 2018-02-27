@@ -92,7 +92,7 @@ export const signup = async (state, { name, password, dictionary }) => {
 export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
-  const wallet = createWallet({ password, brainkey });
+  const wallet = await createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
@@ -103,12 +103,12 @@ export const login = async (state, { password, brainkey }) => {
       id,
       encryptedBrainkey: wallet.encryptedBrainkey
     });
-    commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, id });
+    commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {
       success: true
     };
   }
-  commit(types.ACCOUNT_LOGIN_ERROR);
+  commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
   return {
     success: false,
     error: 'Login error'
