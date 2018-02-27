@@ -1,5 +1,5 @@
 /* eslint-env jest */
-
+import { key, Aes } from 'bitsharesjs';
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import account from '../src/modules/account.js';
@@ -20,6 +20,7 @@ const password = 'qwer1234';
 const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
   ' wasting isopod raper barbas maco kirn tegua mitome';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
+const hobbitMemo = 'BTS7jdBe1Yz9S6wc9VhD41M9PJ1JmP6EdbvBdcy6z8XGVbEr1WoCD';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -257,15 +258,17 @@ describe('Account module: actions', () => {
   });
 
   it('creates transfer transaction', async done => {
-    await store.dispatch('wallet/createWallet', { brainkey, password });
+    await store.dispatch('account/login', {
+      password,
+      brainkey
+    });
     const memo = 'test_memo';
-    const { message, nonce } = store.getters['wallet/encryptMemo'](memo, hobbitMemo);
+    const { message, nonce } = store.getters['account/encryptMemo'](memo, hobbitMemo);
 
-    const testActiveKey = await store.getters['wallet/getKeys'].active;
-    const hobbitActiveKey = key.get_brainPrivateKey(hobbitBrainkey, 1);
+    const testActiveKey = await store.getters['account/getKeys'].active;
     const decrypted = Aes.decrypt_with_checksum(
       testActiveKey,
-      hobbitActiveKey.toPublicKey(),
+      hobbitMemo,
       nonce,
       message
     );
