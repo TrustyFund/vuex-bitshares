@@ -5,12 +5,14 @@ import * as getters from '../getters/user';
 const initialState = {
   account: null,
   balances: [],
-  pending: false
+  pending: false,
+  error: false
 };
 
 const mutations = {
   [types.FETCH_USER_REQUEST](state) {
     state.pending = true;
+    state.error = false;
   },
   [types.FETCH_USER_COMPLETE](state, result) {
     state.account = result.account;
@@ -19,6 +21,7 @@ const mutations = {
   },
   [types.FETCH_USER_ERROR](state) {
     state.pending = false;
+    state.error = true;
   },
 };
 
@@ -26,5 +29,6 @@ export default {
   state: initialState,
   actions,
   getters,
-  mutations
+  mutations,
+  namespaced: true
 };

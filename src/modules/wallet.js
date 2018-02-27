@@ -5,32 +5,41 @@ import * as getters from '../getters/wallet';
 
 const initialState = {
   //  for password validation
-  password_pubkey: null,
-  encrypted_brainkey: null,
-  brainkey_backup_date: null,
-  encryption_key: null,
+  passwordPubkey: null,
+  encryptedBrainkey: null,
+  brainkeyBackupDate: null,
+  encryptionKey: null,
   created: null,
-  aes_private: null,
-  user_id: null
+  aesPrivate: null,
+  userId: null,
+  error: null
 };
 
 const mutations = {
-  [types.WALLET_CREATED]: (state, { keys, userId }) => {
-    state.password_pubkey = keys.passwordPubkey;
-    state.encrypted_brainkey = keys.encryptedBrainkey;
-    state.encryption_key = keys.encryptionKey;
-    state.aes_private = keys.aesPrivate;
+  [types.WALLET_CREATED]: (state, data) => {
+    state.passwordPubkey = data.passwordPubkey;
+    state.encryptedBrainkey = data.encryptedBrainkey;
+    state.encryptionKey = data.encryptionKey;
+    state.aesPrivate = data.aesPrivate;
+    state.brainkeyBackupDate = null;
     state.created = new Date();
-    state.user_id = userId;
+    state.userId = data.userId;
   },
   [types.WALLET_BRAINKEY_BACKUP]: (state) => {
-    state.brainkey_backup_date = Date();
+    state.brainkeyBackupDate = Date();
   },
   [types.WALLET_LOCK]: (state) => {
-    state.aes_private = null;
+    state.aesPrivate = null;
   },
   [types.WALLET_UNLOCK]: (state, aesPrivate) => {
-    state.aes_private = aesPrivate;
+    state.aesPrivate = aesPrivate;
+  },
+  [types.WALLET_ACCOUNT_CREATED]: (state, userId) => {
+    state.userId = userId;
+    state.error = null;
+  },
+  [types.WALLET_ACCOUNT_CREATE_ERROR]: (state, error) => {
+    state.error = error;
   }
 };
 
@@ -38,5 +47,6 @@ export default {
   state: initialState,
   mutations,
   actions,
-  getters
+  getters,
+  namespaced: true
 };
