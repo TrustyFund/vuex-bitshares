@@ -29,3 +29,15 @@ export const isLocked = state => {
   return state.aesPrivate == null;
 };
 
+export const getAccountError = state => {
+  return state.error;
+};
+
+export const getAccountUserId = state => {
+  return state.userId;
+};
+
+export const getAccountPendingState = state => {
+  return state.pending;
+};
+

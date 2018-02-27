@@ -1,27 +1,25 @@
 /* eslint no-underscore-dangle: ['error', { 'allow': ['_nodes', '_selectedNodeUrl',
   '_pingNode', '_retrieveCachedNodesData', '_selectFastestNode'] }] */
 
-import Cookies from 'js-cookie';
+import PersistentStorage from '../persistent-storage';
 
 // BitsharesJS-WS Nodes Manager
-// Selects node with minimal ping, stores nodes data in Cookies & retrieves it from there
+// Selects node with minimal ping, stores nodes data in persistent storage & retrieves it from there
 class NodesManager {
   constructor({ nodes, defaultNode }) {
     this._nodes = nodes;
     this._selectedNodeUrl = defaultNode;
   }
 
-  // gets nodes ping data from cookies
+  // gets nodes ping data from storage
   _retrieveCachedNodesData() {
-    const cachedData = Cookies.getJSON('BITSHARES_NODES');
-    if (typeof (cachedData) === 'object' && cachedData !== null) {
-      Object.keys(this._nodes).forEach(url => {
-        const cachedNode = cachedData[url];
-        if (cachedNode && cachedNode.ping && typeof (cachedNode.ping) === 'number') {
-          this._nodes[url].ping = cachedNode.ping;
-        }
-      });
-    }
+    const cachedData = PersistentStorage.getSavedNodesData();
+    Object.keys(this._nodes).forEach(url => {
+      const cachedNode = cachedData[url];
+      if (cachedNode && cachedNode.ping && typeof (cachedNode.ping) === 'number') {
+        this._nodes[url].ping = cachedNode.ping;
+      }
+    });
   }
 
   // selects node with minimum ping
@@ -60,7 +58,7 @@ class NodesManager {
           this._nodes[url].ping = await NodesManager._pingNode(url);
         }
       })).then(() => {
-        Cookies.set('BITSHARES_NODES', this._nodes);
+        PersistentStorage.saveNodesData({ data: this._nodes });
         resolve();
       });
     });

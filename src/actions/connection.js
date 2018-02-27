@@ -9,12 +9,17 @@ export const initConnection = ({ commit, getters }) => {
     const wsConnected = getters.isWsConnected;
     console.log('Connection status : ', status);
     commit(types.RPC_STATUS_UPDATE, { status });
-    if (status === 'error' || status === 'closed') commit(types.WS_DISCONNECTED);
+    if (status === 'error' || status === 'closed') {
+      commit(types.WS_DISCONNECTED);
+    }
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {
       commit(types.WS_CONNECTED);
     }
+    if (status === 'realopen') {
+      API.ChainListener.enable();
+    }
   };
 
-  API.connect(updateConnectionStatus);
+  API.Connection.connect(updateConnectionStatus);
 };
 

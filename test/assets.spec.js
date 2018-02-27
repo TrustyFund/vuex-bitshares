@@ -3,7 +3,7 @@ import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import assets from '../src/modules/assets.js';
 
-jest.mock('../src/services/assets.js');
+jest.mock('../src/services/api/assets.js');
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
