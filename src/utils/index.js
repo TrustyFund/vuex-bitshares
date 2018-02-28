@@ -1,4 +1,4 @@
-import { Aes, TransactionHelper, TransactionBuilder } from 'bitsharesjs';
+import { Aes, TransactionHelper } from 'bitsharesjs';
 /**
  * Return object with keys = id of each element of array (element.id)
  * @param {Array} array - array of data elements
