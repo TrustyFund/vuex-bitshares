@@ -3,8 +3,7 @@ import * as actions from '../actions/transactions';
 
 const initialState = {
   pending: false,
-  error: null,
-  transaction: null
+  error: null
 };
 
 const mutations = {

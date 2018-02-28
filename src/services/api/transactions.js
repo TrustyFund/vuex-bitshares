@@ -68,7 +68,6 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
       resolve({ success: true });
     } catch (error) {
       clearTimeout(broadcastTimeout);
-      console.log('Broadcast error', error);
       resolve({ success: false, error: 'broadcast error' });
     }
   });

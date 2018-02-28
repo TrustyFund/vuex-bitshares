@@ -1,5 +1,4 @@
 /* eslint-env jest */
-import { Aes } from 'bitsharesjs';
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import account from '../src/modules/account.js';
@@ -20,7 +19,6 @@ const password = 'qwer1234';
 const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
   ' wasting isopod raper barbas maco kirn tegua mitome';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
-const hobbitMemo = 'BTS7jdBe1Yz9S6wc9VhD41M9PJ1JmP6EdbvBdcy6z8XGVbEr1WoCD';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -255,17 +253,6 @@ describe('Account module: actions', () => {
     store.state.aesPrivate = '4444';
     store.dispatch('account/logout');
     expect(store.state.account).toEqual(account.state);
-  });
-
-  it('creates transfer transaction', async done => {
-    await store.dispatch('account/login', {
-      password,
-      brainkey
-    });
-    const memo = 'test_memo';
-    await store.dispatch('transaction/transferAsset',{ to: 'hobb1t', assetId: '1.3.0', amount: 1, memo});
-    console.log(store.state.transaction);
-    done();
   });
 });
 
