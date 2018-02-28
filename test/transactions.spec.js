@@ -55,7 +55,12 @@ describe('Transactions module: actions', () => {
       brainkey
     });
     const memo = 'test_memo';
-    await store.dispatch('transactions/transferAsset', { to: 'hobb1t', assetId: '1.3.0', amount: 1, memo });
+    await store.dispatch('transactions/transferAsset', {
+      to: 'hobb1t',
+      assetId: '1.3.0',
+      amount: 1,
+      memo
+    });
     expect(store.state.transactions.pending).toBeFalsy();
     expect(store.state.transactions.error).toEqual(null);
     done();
