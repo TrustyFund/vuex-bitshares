@@ -40,4 +40,3 @@ export const getAccountUserId = state => {
 export const getAccountPendingState = state => {
   return state.pending;
 };
-

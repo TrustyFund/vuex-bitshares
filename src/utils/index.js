@@ -1,3 +1,4 @@
+import { Aes, TransactionHelper } from 'bitsharesjs';
 /**
  * Return object with keys = id of each element of array (element.id)
  * @param {Array} array - array of data elements
@@ -90,4 +91,32 @@ export const calcPortfolioData = ({
   let change = calcPercentChange(prices, multiplier);
   if (prices.last === prices.first && !isBase) change = 0;
   return { balanceBase, balanceFiat, change };
+};
+
+export const encryptMemo = (memo, fromKey, toPubkey) => {
+  const nonce = TransactionHelper.unique_nonce_uint64();
+  const activePubkey = fromKey.toPublicKey().toPublicKeyString();
+
+  const message = Aes.encrypt_with_checksum(
+    fromKey,
+    toPubkey,
+    nonce,
+    memo
+  );
+
+  return {
+    from: activePubkey,
+    to: toPubkey,
+    nonce,
+    message
+  };
+};
+
+export const decryptMemo = (memo, privateKey) => {
+  return Aes.decrypt_with_checksum(
+    privateKey,
+    memo.from,
+    memo.nonce,
+    memo.message
+  ).toString('utf-8');
 };
