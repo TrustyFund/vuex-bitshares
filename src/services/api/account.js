@@ -7,6 +7,7 @@ export const suggestBrainkey = (dictionary) => {
 
 export const parseOperations = (operations) => {
   const operationTypes = {};
+  console.log(ChainTypes);
 
   Object.keys(ChainTypes.operations).forEach(name => {
     const code = ChainTypes.operations[name];
@@ -15,6 +16,14 @@ export const parseOperations = (operations) => {
 
   return operations.map(operation => {
     const [type, payload] = operation.op;
+
+    // time calc
+    // const blockId = operation.block_num;
+    // const block_interval = ChainTypes.get("parameters").get("block_interval");
+    // const head_block = dynGlobalObject.get("head_block_number");
+    // const head_block_time = new Date(dynGlobalObject.get("time") + "Z");
+    // const seconds_below = (head_block - block_number) * block_interval;
+    // return new Date(head_block_time - seconds_below * 1000);
 
     return {
       id: operation.id,
@@ -117,5 +126,10 @@ export const getAccountOperations = async ({ userId }) => {
 };
 
 export default {
-  suggestBrainkey, getUser, getAccountIdByOwnerPubkey, createAccount, getAccountOperations, parseOperations
+  suggestBrainkey,
+  getUser,
+  getAccountIdByOwnerPubkey,
+  createAccount,
+  getAccountOperations,
+  parseOperations
 };

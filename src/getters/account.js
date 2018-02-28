@@ -45,3 +45,6 @@ export const getOperations = state => {
   return state.operations;
 };
 
+export const getAccountOperationsPendingState = state => {
+  return state.operationsPending;
+};
