@@ -322,5 +322,369 @@ export default {
         stack: [[Object], [Object]]
       }
     }
+  },
+  get_objects: {
+    '2.1.0': [
+      {
+        id: '2.1.0',
+        head_block_number: 24574572,
+        head_block_id: '0176fa6c67d3b046157d140f588371abfaab0e34',
+        time: '2018-02-20T00:07:39',
+        current_witness: '1.6.64',
+        next_maintenance_time: '2018-02-20T01:00:00',
+        last_budget_time: '2018-02-20T00:00:00',
+        witness_budget: 105100000,
+        accounts_registered_this_interval: 7,
+        recently_missed_count: 0,
+        current_aslot: 24719427,
+        recent_slots_filled: '340282366920938463463374607431768211455',
+        dynamic_flags: 0,
+        last_irreversible_block_num: 24574557
+      }
+    ],
+    '2.0.0': [
+      {
+        id: '2.0.0',
+        parameters: {
+          current_fees: {
+            parameters: [
+              [
+                0,
+                {
+                  fee: 1662,
+                  price_per_kbyte: 923
+                }
+              ],
+              [
+                1,
+                {
+                  fee: 92
+                }
+              ],
+              [
+                2,
+                {
+                  fee: 9
+                }
+              ],
+              [
+                3,
+                {
+                  fee: 92
+                }
+              ],
+              [
+                4,
+                {}
+              ],
+              [
+                5,
+                {
+                  basic_fee: 9233,
+                  premium_fee: 461677,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                6,
+                {
+                  fee: 92,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                7,
+                {
+                  fee: 9233
+                }
+              ],
+              [
+                8,
+                {
+                  membership_annual_fee: '100000000000000',
+                  membership_lifetime_fee: 11080263
+                }
+              ],
+              [
+                9,
+                {
+                  fee: 461677
+                }
+              ],
+              [
+                10,
+                {
+                  symbol3: 738684244,
+                  symbol4: 184671061,
+                  long_symbol: 4616776,
+                  price_per_kbyte: 923
+                }
+              ],
+              [
+                11,
+                {
+                  fee: 184671,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                12,
+                {
+                  fee: 461677
+                }
+              ],
+              [
+                13,
+                {
+                  fee: 461677
+                }
+              ],
+              [
+                14,
+                {
+                  fee: 1662,
+                  price_per_kbyte: 923
+                }
+              ],
+              [
+                15,
+                {
+                  fee: 92
+                }
+              ],
+              [
+                16,
+                {
+                  fee: 46167
+                }
+              ],
+              [
+                17,
+                {
+                  fee: 4616
+                }
+              ],
+              [
+                18,
+                {
+                  fee: 461677
+                }
+              ],
+              [
+                19,
+                {
+                  fee: 9
+                }
+              ],
+              [
+                20,
+                {
+                  fee: 4616776
+                }
+              ],
+              [
+                21,
+                {
+                  fee: 923
+                }
+              ],
+              [
+                22,
+                {
+                  fee: 13850,
+                  price_per_kbyte: 4616
+                }
+              ],
+              [
+                23,
+                {
+                  fee: 461,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                24,
+                {
+                  fee: 0
+                }
+              ],
+              [
+                25,
+                {
+                  fee: 13850
+                }
+              ],
+              [
+                26,
+                {
+                  fee: 923
+                }
+              ],
+              [
+                27,
+                {
+                  fee: 1329,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                28,
+                {
+                  fee: 0
+                }
+              ],
+              [
+                29,
+                {
+                  fee: 461677
+                }
+              ],
+              [
+                30,
+                {
+                  fee: 923355
+                }
+              ],
+              [
+                31,
+                {
+                  fee: 0
+                }
+              ],
+              [
+                32,
+                {
+                  fee: 92335
+                }
+              ],
+              [
+                33,
+                {
+                  fee: 184671
+                }
+              ],
+              [
+                34,
+                {
+                  fee: 4616776
+                }
+              ],
+              [
+                35,
+                {
+                  fee: 923,
+                  price_per_kbyte: 4616
+                }
+              ],
+              [
+                36,
+                {
+                  fee: 46167
+                }
+              ],
+              [
+                37,
+                {}
+              ],
+              [
+                38,
+                {
+                  fee: 92335,
+                  price_per_kbyte: 646
+                }
+              ],
+              [
+                39,
+                {
+                  fee: 19390,
+                  price_per_output: 6463
+                }
+              ],
+              [
+                41,
+                {
+                  fee: 19390
+                }
+              ],
+              [
+                43,
+                {
+                  fee: 92335
+                }
+              ]
+            ],
+            scale: 10000
+          },
+          block_interval: 3,
+          maintenance_interval: 3600,
+          maintenance_skip_slots: 3,
+          committee_proposal_review_period: 3600,
+          maximum_transaction_size: 98304,
+          maximum_block_size: 2000000,
+          maximum_time_until_expiration: 86400,
+          maximum_proposal_lifetime: 2419200,
+          maximum_asset_whitelist_authorities: 10,
+          maximum_asset_feed_publishers: 25,
+          maximum_witness_count: 1001,
+          maximum_committee_count: 1001,
+          maximum_authority_membership: 10,
+          reserve_percent_of_fee: 2000,
+          network_percent_of_fee: 2000,
+          lifetime_referrer_percent_of_fee: 3000,
+          cashback_vesting_period_seconds: 7776000,
+          cashback_vesting_threshold: 10000000,
+          count_non_member_votes: true,
+          allow_non_member_whitelists: false,
+          witness_pay_per_block: 100000,
+          worker_budget_per_day: '50000000000',
+          max_predicate_opcode: 1,
+          fee_liquidation_threshold: 10000000,
+          accounts_per_fee_scale: 1000,
+          account_fee_scale_bitshifts: 0,
+          max_authority_depth: 2,
+          extensions: []
+        },
+        next_available_vote_id: 325,
+        active_committee_members: [
+          '1.5.25',
+          '1.5.15',
+          '1.5.16',
+          '1.5.33',
+          '1.5.23',
+          '1.5.20',
+          '1.5.27',
+          '1.5.30',
+          '1.5.13',
+          '1.5.28',
+          '1.5.17'
+        ],
+        active_witnesses: [
+          '1.6.16',
+          '1.6.17',
+          '1.6.20',
+          '1.6.22',
+          '1.6.28',
+          '1.6.34',
+          '1.6.35',
+          '1.6.45',
+          '1.6.59',
+          '1.6.63',
+          '1.6.64',
+          '1.6.65',
+          '1.6.69',
+          '1.6.71',
+          '1.6.73',
+          '1.6.74',
+          '1.6.76',
+          '1.6.84',
+          '1.6.98'
+        ]
+      }
+    ]
+  },
+  get_required_fees: {
+    amount: 1744,
+    asset_id: '1.3.0'
   }
+
 };

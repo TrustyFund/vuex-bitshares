@@ -1,5 +1,4 @@
 /* eslint-env jest */
-
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import account from '../src/modules/account.js';
