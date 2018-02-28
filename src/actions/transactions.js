@@ -15,7 +15,6 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
   }
 
   const res = await API.Transactions.transferAsset(fromId, to, assetId, amount, keys, memo);
-  console.log("RES IN ACTION", res);
   if (res.success) {
     commit(types.TRANSFER_ASSET_COMPLETE);
   } else {

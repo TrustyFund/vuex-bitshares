@@ -24,14 +24,8 @@ const buildAndBroadcast = async (type, payload, { active, owner }) => {
   await transaction.update_head_block();
   await transaction.set_required_fees();
 
-  try {
-    const res = await transaction.broadcast();
-    console.log('BROADCAST RESULT', res);
-    return res;
-  } catch (error) {
-    console.log('BROADCAST ERROR', error);
-    return false;
-  }
+  const res = await transaction.broadcast();
+  return res;
 };
 
 const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) => {
