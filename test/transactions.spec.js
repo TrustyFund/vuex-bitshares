@@ -23,6 +23,27 @@ const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
 
 const initialState = JSON.parse(JSON.stringify(store.state));
 
+describe('Transactions module: mutations', () => {
+  let state;
+
+  beforeEach(() => {
+    state = { ...initialState };
+  });
+
+  test('TRANSFER_ASSET_REQUEST', () => {
+    transactions.mutations.TRANSFER_ASSET_REQUEST(state);
+    expect(state.pending).toBeTruthy();
+  });
+  test('TRANSFER_ASSET_ERROR', () => {
+    transactions.mutations.TRANSFER_ASSET_ERROR(state);
+    expect(state.pending).toBeFalsy();
+  });
+  test('TRANSFER_ASSET_COMPLETE', () => {
+    transactions.mutations.TRANSFER_ASSET_COMPLETE(state);
+    expect(state.pending).toBeFalsy();
+  });
+});
+
 describe('Transactions module: actions', () => {
   beforeEach(() => {
     store.replaceState(JSON.parse(JSON.stringify(initialState)));
