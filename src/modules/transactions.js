@@ -14,10 +14,8 @@ const mutations = {
     state.error = error;
     state.pending = false;
   },
-  [types.TRANSFER_ASSET_COMPLETE](state, transaction) {
+  [types.TRANSFER_ASSET_COMPLETE](state) {
     state.pending = false;
-    state.transaction = transaction;
-    console.log('TRANSFER_ASSET_COMPLETE', state);
   },
 };
 
