@@ -139,17 +139,17 @@ export const checkIfUsernameFree = async (state, { username }) => {
 };
 
 
-export const fetchAccountOperations = async (state) => {
-  const { commit, getters } = state;
+export const fetchAccountOperations = async (store) => {
+  const { commit, getters } = store;
   const userId = getters.getAccountUserId;
   console.log('fetching operations for : ', userId);
   commit(types.FETCH_ACCOUNT_OPERATIONS_REQUEST);
   const result = await API.Account.getAccountOperations({ userId });
   if (result.success === true) {
-    console.log(result.data);
     const parsedData = API.Account.parseOperations(result.data);
+    store.dispatch('assets/fetchAssets', { assets: parsedData.assetsIds }, { root: true });
     commit(types.FETCH_ACCOUNT_OPERATIONS_COMPLETE, {
-      operations: parsedData
+      operations: parsedData.operations
     });
   } else {
     commit(types.FETCH_ACCOUNT_OPERATIONS_ERROR, {

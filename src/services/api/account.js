@@ -5,25 +5,50 @@ export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
 };
 
+
+const getOperationsAssetsIds = (parsedOperations) => {
+  function addNewId(array, id) {
+    if (array.indexOf(id) === -1) array.push(id);
+  }
+
+  return parsedOperations.reduce((result, operation) => {
+    switch (operation.type) {
+      case 'transfer':
+        addNewId(result, operation.payload.amount.asset_id);
+        break;
+      case 'fill_order':
+        addNewId(result, operation.payload.pays.asset_id);
+        addNewId(result, operation.payload.receives.asset_id);
+        break;
+      case 'limit_order_create':
+        addNewId(result, operation.payload.amount_to_sell.asset_id);
+        addNewId(result, operation.payload.min_to_receive.asset_id);
+        break;
+      default:
+    }
+    return result;
+  }, []);
+};
+
 export const parseOperations = (operations) => {
   const operationTypes = {};
-  console.log(ChainTypes);
 
   Object.keys(ChainTypes.operations).forEach(name => {
     const code = ChainTypes.operations[name];
     operationTypes[code] = name;
   });
 
-  return operations.map(operation => {
-    const [type, payload] = operation.op;
+  // time calc
+  // console.log(Apis);
+  // const blockId = operation.block_num;
+  // const block_interval = ChainTypes.get("parameters").get("block_interval");
+  // const head_block = dynGlobalObject.get("head_block_number");
+  // const head_block_time = new Date(dynGlobalObject.get("time") + "Z");
+  // const seconds_below = (head_block - block_number) * block_interval;
+  // return new Date(head_block_time - seconds_below * 1000);
 
-    // time calc
-    // const blockId = operation.block_num;
-    // const block_interval = ChainTypes.get("parameters").get("block_interval");
-    // const head_block = dynGlobalObject.get("head_block_number");
-    // const head_block_time = new Date(dynGlobalObject.get("time") + "Z");
-    // const seconds_below = (head_block - block_number) * block_interval;
-    // return new Date(head_block_time - seconds_below * 1000);
+  const parsedOperations = operations.map(operation => {
+    const [type, payload] = operation.op;
 
     return {
       id: operation.id,
@@ -31,6 +56,13 @@ export const parseOperations = (operations) => {
       payload
     };
   });
+
+  const assetsIds = getOperationsAssetsIds(parsedOperations);
+
+  return {
+    operations: parsedOperations,
+    assetsIds
+  };
 };
 
 export const getUser = async (nameOrId) => {
