@@ -146,7 +146,7 @@ export const fetchAccountOperations = async (store) => {
   commit(types.FETCH_ACCOUNT_OPERATIONS_REQUEST);
   const result = await API.Account.getAccountOperations({ userId });
   if (result.success === true) {
-    const parsedData = API.Account.parseOperations(result.data);
+    const parsedData = await API.Account.parseOperations(result.data);
     store.dispatch('assets/fetchAssets', { assets: parsedData.assetsIds }, { root: true });
     commit(types.FETCH_ACCOUNT_OPERATIONS_COMPLETE, {
       operations: parsedData.operations

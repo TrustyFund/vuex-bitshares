@@ -98,7 +98,7 @@ describe('Assets module: actions', () => {
     // todo: remove
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
-    store.dispatch('assets/fetchAssets', ['1.3.0', '1.3.113']).then(() => {
+    store.dispatch('assets/fetchAssets', { assets: ['1.3.0', '1.3.113']}).then(() => {
       const recievedAssets = store.state.assets.assets;
       expect(recievedAssets).toBeDefined();
       expect(Object.keys(recievedAssets).length).toBe(2);
