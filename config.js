@@ -29,7 +29,7 @@ const config = {
     defaultNode: 'wss://bitshares.openledger.info/ws'
   },
   defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
-    'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARISTO', 'ARCOIN'],
+    'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARCOIN'],
   referrer: 'trfnd'
 };
 
