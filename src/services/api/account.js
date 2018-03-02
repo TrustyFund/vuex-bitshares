@@ -46,19 +46,30 @@ export const parseOperations = async (operations) => {
   const headBlock = ApiObjectDyn[0].head_block_number;
   const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
 
-  const parsedOperations = operations.map(operation => {
+  const parsedOperations = await Promise.all(operations.map(async operation => {
     const [type, payload] = operation.op;
 
     const secondsBelow = (headBlock - operation.block_num) * blockInterval;
     const date = new Date(headBlockTime - (secondsBelow * 1000));
+    let isBid = false;
+
+    if (operationTypes[type] === 'fill_order' || operationTypes[type] === 'limit_order_create') {
+      const blockNum = operation.block_num;
+      const trxInBlock = operation.trx_in_block;
+      const transaction = await ApiInstance.db_api().exec('get_transaction', [blockNum, trxInBlock]);
+      isBid = transaction.operations[0][1].amount_to_sell.asset_id === transaction.operations[0][1].fee.asset_id;
+    }
 
     return {
       id: operation.id,
       type: operationTypes[type],
       payload,
-      date
+      date,
+      buyer: !!isBid
     };
-  });
+  }));
+
+  console.log(parsedOperations);
 
   const assetsIds = getOperationsAssetsIds(parsedOperations);
 

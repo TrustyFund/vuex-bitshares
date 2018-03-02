@@ -21,6 +21,7 @@ const connect = (statusCallback, changeNode) => {
   }).catch(error => {
     console.log('Connection error : ', error);
     // connect to another node
+    Apis.setRpcConnectionStatusCallback(null);
     connect(statusCallback, true);
   });
 };
