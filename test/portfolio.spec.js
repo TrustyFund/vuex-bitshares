@@ -162,15 +162,6 @@ describe('Portfolio module: actions', () => {
         fetching: false,
         name: 'OPEN.OMG',
       },
-      '1.3.2220': {
-        balance: 0,
-        balanceBase: 0,
-        balanceFiat: 0,
-        change: 0,
-        error: true,
-        fetching: false,
-        name: 'ARISTO',
-      },
       '1.3.2379': {
         balance: 0,
         balanceBase: 0,
