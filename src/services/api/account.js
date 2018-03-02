@@ -30,55 +30,6 @@ const getOperationsAssetsIds = (parsedOperations) => {
   }, []);
 };
 
-export const parseOperations = async (operations) => {
-  const operationTypes = {};
-
-  Object.keys(ChainTypes.operations).forEach(name => {
-    const code = ChainTypes.operations[name];
-    operationTypes[code] = name;
-  });
-
-  // computing date time for operation via block number
-  const ApiInstance = Apis.instance();
-  const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
-  const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
-  const blockInterval = ApiObject[0].parameters.block_interval;
-  const headBlock = ApiObjectDyn[0].head_block_number;
-  const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
-
-  const parsedOperations = await Promise.all(operations.map(async operation => {
-    const [type, payload] = operation.op;
-
-    const secondsBelow = (headBlock - operation.block_num) * blockInterval;
-    const date = new Date(headBlockTime - (secondsBelow * 1000));
-    let isBid = false;
-
-    if (operationTypes[type] === 'fill_order' || operationTypes[type] === 'limit_order_create') {
-      const blockNum = operation.block_num;
-      const trxInBlock = operation.trx_in_block;
-      const transaction = await ApiInstance.db_api().exec('get_transaction', [blockNum, trxInBlock]);
-      isBid = transaction.operations[0][1].amount_to_sell.asset_id === transaction.operations[0][1].fee.asset_id;
-    }
-
-    return {
-      id: operation.id,
-      type: operationTypes[type],
-      payload,
-      date,
-      buyer: !!isBid
-    };
-  }));
-
-  console.log(parsedOperations);
-
-  const assetsIds = getOperationsAssetsIds(parsedOperations);
-
-  return {
-    operations: parsedOperations,
-    assetsIds
-  };
-};
-
 export const getUser = async (nameOrId) => {
   try {
     const response = await Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false]);
@@ -100,6 +51,64 @@ export const getUser = async (nameOrId) => {
       error
     };
   }
+};
+
+export const parseOperations = async ({ operations, userId }) => {
+  const operationTypes = {};
+
+  Object.keys(ChainTypes.operations).forEach(name => {
+    const code = ChainTypes.operations[name];
+    operationTypes[code] = name;
+  });
+
+  // computing date time for operation via block number
+  const ApiInstance = Apis.instance();
+  const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
+  const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
+  const blockInterval = ApiObject[0].parameters.block_interval;
+  const headBlock = ApiObjectDyn[0].head_block_number;
+  const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
+
+  const parsedOperations = await Promise.all(operations.map(async operation => {
+    const [type, payload] = operation.op;
+    const operationType = operationTypes[type];
+
+    const secondsBelow = (headBlock - operation.block_num) * blockInterval;
+    const date = new Date(headBlockTime - (secondsBelow * 1000));
+    let isBid = false;
+    let otherUserName = null;
+
+    if (operationType === 'fill_order' || operationType === 'limit_order_create') {
+      const blockNum = operation.block_num;
+      const trxInBlock = operation.trx_in_block;
+      const transaction = await ApiInstance.db_api().exec('get_transaction', [blockNum, trxInBlock]);
+      isBid = transaction.operations[0][1].amount_to_sell.asset_id === transaction.operations[0][1].fee.asset_id;
+    }
+
+    if (operationType === 'transfer') {
+      const otherUserId = payload.to === userId ? payload.from : payload.to;
+      const userRequest = await getUser(otherUserId);
+      if (userRequest.success) otherUserName = userRequest.data.account.name;
+    }
+
+    return {
+      id: operation.id,
+      type: operationType,
+      payload,
+      date,
+      buyer: !!isBid,
+      otherUserName
+    };
+  }));
+
+  console.log(parsedOperations);
+
+  const assetsIds = getOperationsAssetsIds(parsedOperations);
+
+  return {
+    operations: parsedOperations,
+    assetsIds
+  };
 };
 
 export const getAccountIdByOwnerPubkey = async ownerPubkey => {
