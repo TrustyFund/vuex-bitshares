@@ -6,15 +6,15 @@ import * as types from '../mutations';
  */
 export const initConnection = ({ commit, getters }, changeNode) => {
   let active = true;
-  const updateConnectionStatus = (status) => {
+  const updateConnectionStatus = async (status) => {
     if (!active) return;
     const wsConnected = getters.isWsConnected;
     console.log('Connection status : ', status);
     commit(types.RPC_STATUS_UPDATE, { status });
     if (status === 'error' || status === 'closed') {
       commit(types.WS_DISCONNECTED);
-      API.Connection.removeStatusCallback();
       active = false;
+      await API.Connection.disconnect();
       initConnection({ commit, getters }, true);
     }
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {
