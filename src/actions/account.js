@@ -143,25 +143,3 @@ export const checkIfUsernameFree = async (state, { username }) => {
   const result = await API.Account.getUser(username);
   return !result.success;
 };
-
-
-/**
- * Fetches user's operations
- */
-export const fetchAccountOperations = async (store) => {
-  const { commit, getters } = store;
-  const userId = getters.getAccountUserId;
-  commit(types.FETCH_ACCOUNT_OPERATIONS_REQUEST);
-  const result = await API.Operations.getAccountOperations({ userId });
-  if (result.success === true) {
-    // fetch assets used in operations
-    store.dispatch('assets/fetchAssets', { assets: result.data.assetsIds }, { root: true });
-    commit(types.FETCH_ACCOUNT_OPERATIONS_COMPLETE, {
-      operations: result.data.operations
-    });
-  } else {
-    commit(types.FETCH_ACCOUNT_OPERATIONS_ERROR, {
-      error: result.error
-    });
-  }
-};

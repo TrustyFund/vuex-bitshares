@@ -113,7 +113,7 @@ const Operations = {
   },
 
   // fetches user's operations
-  getAccountOperations: async ({ userId }) => {
+  getUserOperations: async ({ userId }) => {
     try {
       const response = await Apis.instance().history_api().exec(
         'get_account_history',
