@@ -15,6 +15,7 @@ const signTransaction = async (transaction, { active, owner }) => {
       transaction.add_signer(owner, requiredPubkey);
     }
   });
+  return transaction;
 };
 
 const buildAndBroadcast = async (type, payload, { active, owner }) => {
@@ -73,4 +74,7 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
   });
 };
 
-export default { transferAsset };
+export default { 
+  transferAsset,
+  signTransaction
+};
