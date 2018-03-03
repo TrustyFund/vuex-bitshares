@@ -11,7 +11,7 @@ const Operations = {
     Object.keys(ChainTypes.operations).forEach(name => {
       const code = ChainTypes.operations[name];
       Operations._operationTypes[code] = name;
-    });    
+    }); 
   },
 
   // Gets operation's data based on it's block number
@@ -67,7 +67,7 @@ const Operations = {
       type: operationType,
       payload,
       date,
-      buyer: !!isBid,
+      buyer: isBid,
       otherUserName
     };
   },

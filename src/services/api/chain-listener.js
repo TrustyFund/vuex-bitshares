@@ -11,6 +11,19 @@ class ChainListener {
     this._signUpWaitingList = {};
     this._hasSignUpOperationsPending = false;
     this._enabled = false;
+    this._user = {
+      id: 'lalala',
+      callback: null
+    };
+    this._operationTypes = {};
+    Object.keys(ChainTypes.operations).forEach(name => {
+      const code = ChainTypes.operations[name];
+      this._operationTypes[code] = name;
+    }); 
+    this._userFields = {
+      transfer: 'to',
+      fill_order: 'account_id'
+    }
   }
   enable() {
     if (this._enabled) this.disable();
@@ -31,6 +44,9 @@ class ChainListener {
     if (this._hasSignUpOperationsPending && ChainListener._isSignUpOperation(operation)) {
       this._handleSignUpOperation(operation);
     }
+    if (this._user.id && ChainListener._isUsersOperation(operation, this._userId)) {
+      this._handleUsersOperation(operation);
+    }
   }
   _handleSignUpOperation(operation) {
     const payload = operation.op[1];
@@ -44,9 +60,20 @@ class ChainListener {
       this._checkForSignUpOperations();
     }
   }
+  _handleUsersOperation(operation) {
+    const [typeCode, payload] = operation.op;
+    const operationType = this._operationTypes[typeCode];
+    const pathToUserId = this._userFields[operationType];
+    console.log(operationType, pathToUserId, payload[pathToUserId]);
+  }
   static _isSignUpOperation(operation) {
     return (operation.id && operation.id.includes('1.11.')
       && operation.op[0] === ChainTypes.operations.account_create);
+  }
+  static _isUsersOperation(operation) {
+    const userOperationsCodes = [0, 4];
+    return (operation.id && operation.id.includes('1.11.')
+      && userOperationsCodes.includes(operation.op[0]));
   }
   _checkForSignUpOperations() {
     this._hasSignUpOperationsPending = !!(Object.keys(this._signUpWaitingList).length);
@@ -58,8 +85,8 @@ class ChainListener {
       this._hasSignUpOperationsPending = true;
     });
   }
-  listenToUserOperations({ id, callback }) {
-    // this._enable
+  listenToUserOperations({ userId, callback }) {
+    this._user = { id: userId, callback }
   }
 }
 
