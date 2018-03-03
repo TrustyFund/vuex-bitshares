@@ -52,16 +52,18 @@ class NodesManager {
 
   // pings all nodes & updates nodes data, then saves data to cookies
   testNodesPings() {
-    return new Promise((resolve) => {
-      Promise.all(Object.keys(this._nodes).map(async (url) => {
-        if (url !== this._selectedNodeUrl) {
-          this._nodes[url].ping = await NodesManager._pingNode(url);
-        }
-      })).then(() => {
-        PersistentStorage.saveNodesData({ data: this._nodes });
-        resolve();
-      });
+    const cachedData = PersistentStorage.getSavedNodesData();
+    if (cachedData) return;
+    // return new Promise((resolve) => {
+    Promise.all(Object.keys(this._nodes).map(async (url) => {
+      if (url !== this._selectedNodeUrl) {
+        this._nodes[url].ping = await NodesManager._pingNode(url);
+      }
+    })).then(() => {
+      PersistentStorage.saveNodesData({ data: this._nodes }, { expires: 1 });
+      // resolve();
     });
+    // });
   }
 
   // retrieves nodes data from cache, selects fastest & returns it's url

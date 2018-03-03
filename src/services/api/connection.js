@@ -19,13 +19,18 @@ const connect = (statusCallback, changeNode) => {
     statusCallback('realopen');
     nodesManager.testNodesPings();
   }).catch(error => {
-    console.log('Connection error : ', error);
-    // connect to another node
-    Apis.setRpcConnectionStatusCallback(null);
-    connect(statusCallback, true);
+    // console.log('Connection error : ', error);
+    // // connect to another node
+    // Apis.setRpcConnectionStatusCallback(null);
+    // connect(statusCallback, true);
+    statusCallback('error');
   });
 };
 
+const disconnect = () => {
+  Apis.setRpcConnectionStatusCallback(null);
+};
+
 export default {
-  connect
+  connect, disconnect
 };
