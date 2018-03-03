@@ -2,10 +2,11 @@ import { ChainTypes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import API from '../api';
 
-
+// Service for dealing with operations (transactions)
 const Operations = {
   _operationTypes: {},
 
+  // Prepares object with code : operation's name format
   prepareOperationTypes: () =>{
     Object.keys(ChainTypes.operations).forEach(name => {
       const code = ChainTypes.operations[name];
@@ -13,6 +14,7 @@ const Operations = {
     });    
   },
 
+  // Gets operation's data based on it's block number
   _getOperationDate: async (operation) => {
     const ApiInstance = Apis.instance();
     const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
@@ -25,6 +27,7 @@ const Operations = {
     return date;
   },
 
+  // Used for place order and fill order operations. Determines if user is a seller or buyer
   _checkIfBidOperation: async (operation) => {
     const ApiInstance = Apis.instance();
     const blockNum = operation.block_num;
@@ -35,12 +38,14 @@ const Operations = {
     return amountAssetId === feeAssetId;
   },
 
+  // User for transfer operations. Determines if user received or sent 
   _getOperationOtherUserName: async (userId, payload) => {
     const otherUserId = payload.to === userId ? payload.from : payload.to;
     const userRequest = await API.Account.getUser(otherUserId);
     return userRequest.success ? userRequest.data.account.name : '';
   },
 
+  // Parses operation for improved format
   parseOperation: async (operation, userId) => {
     const [type, payload] = operation.op;
     const operationType = Operations._operationTypes[type];
@@ -67,12 +72,12 @@ const Operations = {
     };
   },
 
+  // Parses array of operations, return array of parsed operations and array of assets ids
+  // that were user in it
   parseOperations: async ({ operations, userId }) => {
     const parsedOperations = await Promise.all(operations.map(async operation => {
       return Operations.parseOperation(operation, userId);
     }));
-
-    console.log(parsedOperations);
 
     const assetsIds = Operations._getOperationsAssetsIds(parsedOperations);
 
@@ -82,6 +87,7 @@ const Operations = {
     };
   },
 
+  // retrieves array of assets ids that were used in operations
   _getOperationsAssetsIds: (parsedOperations) => {
     function addNewId(array, id) {
       if (array.indexOf(id) === -1) array.push(id);
@@ -106,6 +112,7 @@ const Operations = {
     }, []);
   },
 
+  // fetches user's operations
   getAccountOperations: async ({ userId }) => {
     try {
       const response = await Apis.instance().history_api().exec(
@@ -113,9 +120,10 @@ const Operations = {
         [userId, '1.11.9999999', 100, '1.11.0']
       );
       if (response && typeof (response) === 'object') {
+        const parsedOperations = await Operations.parseOperations({ operations: response, userId });
         return {
           success: true,
-          data: response
+          data: parsedOperations
         };
       }
       return {

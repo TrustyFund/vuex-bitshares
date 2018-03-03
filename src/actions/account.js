@@ -115,10 +115,16 @@ export const login = async (state, { password, brainkey }) => {
   };
 };
 
+/**
+ * Log out 
+ */
 export const logout = ({ commit }) => {
   commit(types.ACCOUNT_LOGOUT);
 };
 
+/**
+ * Gets user's data from storage and saves it
+ */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
   if (data) {
@@ -145,18 +151,13 @@ export const checkIfUsernameFree = async (state, { username }) => {
 export const fetchAccountOperations = async (store) => {
   const { commit, getters } = store;
   const userId = getters.getAccountUserId;
-  console.log('fetching operations for : ', userId);
   commit(types.FETCH_ACCOUNT_OPERATIONS_REQUEST);
-  console.log(API.Operations);
   const result = await API.Operations.getAccountOperations({ userId });
   if (result.success === true) {
-    const parsedData = await API.Operations.parseOperations({
-      operations: result.data,
-      userId
-    });
-    store.dispatch('assets/fetchAssets', { assets: parsedData.assetsIds }, { root: true });
+    // fetch assets used in operations
+    store.dispatch('assets/fetchAssets', { assets: result.data.assetsIds }, { root: true });
     commit(types.FETCH_ACCOUNT_OPERATIONS_COMPLETE, {
-      operations: parsedData.operations
+      operations: result.data.operations
     });
   } else {
     commit(types.FETCH_ACCOUNT_OPERATIONS_ERROR, {
