@@ -147,9 +147,10 @@ export const fetchAccountOperations = async (store) => {
   const userId = getters.getAccountUserId;
   console.log('fetching operations for : ', userId);
   commit(types.FETCH_ACCOUNT_OPERATIONS_REQUEST);
-  const result = await API.Account.getAccountOperations({ userId });
+  console.log(API.Operations);
+  const result = await API.Operations.getAccountOperations({ userId });
   if (result.success === true) {
-    const parsedData = await API.Account.parseOperations({
+    const parsedData = await API.Operations.parseOperations({
       operations: result.data,
       userId
     });

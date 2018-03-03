@@ -50,7 +50,7 @@ class NodesManager {
     });
   }
 
-  // pings all nodes & updates nodes data, then saves data to cookies
+  // if there is no cached data, pings all nodes & updates nodes data, then caches data
   testNodesPings() {
     const cachedData = PersistentStorage.getSavedNodesData();
     if (cachedData) return;

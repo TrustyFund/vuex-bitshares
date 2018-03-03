@@ -27,10 +27,11 @@ const connect = (statusCallback, changeNode) => {
   });
 };
 
-const disconnect = () => {
+//
+const removeStatusCallback = () => {
   Apis.setRpcConnectionStatusCallback(null);
 };
 
 export default {
-  connect, disconnect
+  connect, removeStatusCallback
 };

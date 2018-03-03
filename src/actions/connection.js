@@ -13,8 +13,8 @@ export const initConnection = ({ commit, getters }, changeNode) => {
     commit(types.RPC_STATUS_UPDATE, { status });
     if (status === 'error' || status === 'closed') {
       commit(types.WS_DISCONNECTED);
-      API.Connection.disconnect();
-      // active = false;
+      API.Connection.removeStatusCallback();
+      active = false;
       initConnection({ commit, getters }, true);
     }
     if (!wsConnected && (status === 'realopen' || status === 'reconnect')) {
