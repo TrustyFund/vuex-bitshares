@@ -183,21 +183,19 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
     .reduce(
       ({ sell, buy }, key) => {
         if (distribution[key] > update[key]) {
-          return {
-            sell: Object.assign(
-              sell, 
-              { 
-                [key]: Math.floor((distribution[key] - update[key])*total)
-              }
-            ),
+          const amount = Math.floor((distribution[key] - update[key])*total);
+          if (amount > 10) return {
+            sell: Object.assign(sell, { [key]: amount }),
             buy
           }
         } else {
-          return {
-            buy: Object.assign(buy, { [key]: (update[key] - distribution[key])*total }),
+          const amount = Math.floor((update[key] - distribution[key])*total); 
+          if (amount > 10) return {
+            buy: Object.assign(buy, { [key]:  amount}),
             sell
           }
         }
+        return { sell, buy };
       }, {
         sell: {},
         buy: {}
