@@ -4,11 +4,19 @@ import API from '../services/api';
 
 
 const actions = {
+  /**
+   * Dispatches actions to fetch user operations & subscribe to new operations of this user
+   * @param {String} userId - user's id
+   */
   fetchAndSubscribe: async (store, { userId }) => {
     await actions.fetchUserOperations(store, { userId });
     await actions.subscribeToUserOperations(store, { userId });
   },
 
+  /**
+   * Fetches user operations
+   * @param {String} userId - user's id
+   */
   fetchUserOperations: async (store, { userId }) => {
     const { commit } = store;
     commit(types.FETCH_USER_OPERATIONS_REQUEST);
@@ -26,6 +34,12 @@ const actions = {
     }
   },
 
+  /**
+   * Add new operation to operation's list. This action is dispatched on a callback
+    to new user's operation received
+   * @param {String} userId - user's id
+   * @param {Object} operation - operation date object
+   */
   addUserOperation: async (store, { operation, userId }) => {
     const { commit } = store;
     // parse operation data for better format & information
@@ -40,6 +54,10 @@ const actions = {
     });
   },
 
+  /**
+   * Subscribes to new user's operations
+   * @param {String} userId - user's id
+   */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
     API.ChainListener.subscribeToUserOperations({ userId, callback: (operation) => {
@@ -48,6 +66,9 @@ const actions = {
     commit(types.SUBSCRIBED_TO_USER_OPERATIONS);
   },
 
+  /**
+   * Unsubscribes from new user's operations
+   */
   unsubscribeFromUserOperations(store) {
     const { commit } = store;
     API.ChainListener.stopListetingToUserOperations();
@@ -57,7 +78,8 @@ const actions = {
 
 const getters = {
   getOperations: state => state.list,
-  isFetching: state => state.pending
+  isFetching: state => state.pending,
+  isError: state => state.error
 };
 
 const initialState = {
