@@ -85,7 +85,7 @@ const getters = {
 const initialState = {
   list: [],
   pending: false,
-  error: null,
+  error: false,
   subscribed: false
 };
 
