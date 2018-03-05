@@ -48,7 +48,7 @@ describe('Assets module: getters', () => {
     store.state.assets.assets = testAssets;
     expect(store.getters['assets/getAssets']).toEqual(testAssets);
     expect(store.getters['assets/getAssetById']('1.3.0')).toEqual(testAssets['1.3.0']);
-    expect(store.getters['assets/getAssetById']('aaaa')).toBeFalsy();
+    expect(store.getters['assets/getAssetById']('aaaa')).toEqual({precision: 1, symbol: 'No Data'});
   });
 });
 
@@ -170,8 +170,8 @@ describe('Assets module: actions', () => {
   test('handles bad assets fetch request', done => {
     // todo: remove
     store.state.assets.assets = {};
-    store.dispatch('assets/fetchAssets', null).then(response => {
-      expect(response).toBeNull();
+    store.dispatch('assets/fetchAssets', { assets: ['hzhzhz'] }).then(response => {
+      expect(response).toEqual({});
       expect(store.state.assets.assets).toEqual({});
       done();
     });

@@ -12,9 +12,7 @@ const initialState = {
   aesPrivate: null,
   userId: null,
   error: null,
-  pending: false,
-  operationsPending: false,
-  operations: []
+  pending: false
 };
 
 const mutations = {
@@ -73,17 +71,6 @@ const mutations = {
     state.userId = null;
     state.error = null;
     state.pending = false;
-  },
-  [types.FETCH_ACCOUNT_OPERATIONS_REQUEST]: (state) => {
-    state.operationsPending = true;
-  },
-  [types.FETCH_ACCOUNT_OPERATIONS_COMPLETE]: (state, { operations }) => {
-    state.operationsPending = false;
-    state.operations = operations;
-  },
-  [types.FETCH_ACCOUNT_OPERATIONS_ERROR]: (state, { error }) => {
-    state.operationsPending = false;
-    state.error = error;
   }
 };
 
