@@ -35,8 +35,11 @@ const createWallet = ({ brainkey, password }) => {
  * @param {string} password - user password
  */
 export const unlockWallet = ({ commit, state }, password) => {
+  console.log(password);
   const passwordAes = Aes.fromSeed(password);
+  console.log(state.encryptionKey);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryptionKey);
+  console.log('encription plain buffer',encryptionPlainbuffer);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
   commit(types.ACCOUNT_UNLOCK_WALLET, aesPrivate);
 };
@@ -73,7 +76,8 @@ export const signup = async (state, { name, password, dictionary }) => {
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
     PersistentStorage.saveUserData({
       id: userId,
-      encryptedBrainkey: wallet.encryptedBrainkey
+      encryptedBrainkey: wallet.encryptedBrainkey,
+      encryptionKey: wallet.encryptionKey
     });
     return { success: true };
   }
@@ -101,7 +105,8 @@ export const login = async (state, { password, brainkey }) => {
   if (id) {
     PersistentStorage.saveUserData({
       id,
-      encryptedBrainkey: wallet.encryptedBrainkey
+      encryptedBrainkey: wallet.encryptedBrainkey,
+      encryptionKey: wallet.encryptionKey
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {
@@ -122,9 +127,11 @@ export const logout = ({ commit }) => {
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
   if (data) {
+    console.log('getSavedUserData', data.encryptionKey);
     commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
-      encryptedBrainkey: data.encryptedBrainkey
+      encryptedBrainkey: data.encryptedBrainkey,
+      encryptionKey: data.encryptionKey
     });
   }
 };
