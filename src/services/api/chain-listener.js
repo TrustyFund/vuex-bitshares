@@ -22,7 +22,9 @@ class ChainListener {
     }); 
     this._userFields = {
       transfer: 'to',
-      fill_order: 'account_id'
+      fill_order: 'account_id',
+      limit_order_create: 'seller',
+      limit_order_cancel: 'fee_paying_account'
     }
   }
   enable() {
@@ -71,9 +73,9 @@ class ChainListener {
       && operation.op[0] === ChainTypes.operations.account_create);
   }
   static _isUsersOperation(operation) {
-    const userOperationsCodes = [0, 4];
+    const _userOperationsCodes = [0, 1, 2, 4];
     return (operation.id && operation.id.includes('1.11.')
-      && userOperationsCodes.includes(operation.op[0]));
+      && _userOperationsCodes.includes(operation.op[0]));
   }
   _checkForSignUpOperations() {
     this._hasSignUpOperationsPending = !!(Object.keys(this._signUpWaitingList).length);
