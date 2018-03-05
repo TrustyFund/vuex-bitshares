@@ -15,10 +15,7 @@ const Operations = {
   },
 
   // Gets operation's data based on it's block number
-  _getOperationDate: async (operation) => {
-    const ApiInstance = Apis.instance();
-    const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
-    const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
+  _getOperationDate: async (operation, ApiObject, ApiObjectDyn) => {
     const blockInterval = ApiObject[0].parameters.block_interval;
     const headBlock = ApiObjectDyn[0].head_block_number;
     const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
@@ -33,6 +30,9 @@ const Operations = {
     const blockNum = operation.block_num;
     const trxInBlock = operation.trx_in_block;
     const transaction = await ApiInstance.db_api().exec('get_transaction', [blockNum, trxInBlock]);
+    // console.log(transaction);
+    // console.log(transaction.operations[0][1]);
+    // console.log(transaction.operations[0][1].amount_to_sell);
     const amountAssetId = transaction.operations[0][1].amount_to_sell.asset_id;
     const feeAssetId = transaction.operations[0][1].fee.asset_id;
     return amountAssetId === feeAssetId;
@@ -46,10 +46,10 @@ const Operations = {
   },
 
   // Parses operation for improved format
-  parseOperation: async (operation, userId) => {
+  _parseOperation: async (operation, userId, ApiObject, ApiObjectDyn) => {
     const [type, payload] = operation.op;
     const operationType = Operations._operationTypes[type];
-    const date = await Operations._getOperationDate(operation);
+    const date = await Operations._getOperationDate(operation, ApiObject, ApiObjectDyn);
 
     let isBid = false;
     let otherUserName = null;
@@ -75,8 +75,12 @@ const Operations = {
   // Parses array of operations, return array of parsed operations and array of assets ids
   // that were user in it
   parseOperations: async ({ operations, userId }) => {
+    const ApiInstance = Apis.instance();
+    const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
+    const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
+
     const parsedOperations = await Promise.all(operations.map(async operation => {
-      return Operations.parseOperation(operation, userId);
+      return Operations._parseOperation(operation, userId, ApiObject, ApiObjectDyn);
     }));
 
     const assetsIds = Operations._getOperationsAssetsIds(parsedOperations);

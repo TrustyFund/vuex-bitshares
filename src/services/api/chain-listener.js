@@ -12,7 +12,7 @@ class ChainListener {
     this._hasSignUpOperationsPending = false;
     this._enabled = false;
     this._user = {
-      id: 'lalala',
+      id: null,
       callback: null
     };
     this._operationTypes = {};
@@ -47,7 +47,8 @@ class ChainListener {
       this._handleSignUpOperation(operation);
     }
     if (this._user.id && ChainListener._isUsersOperation(operation, this._userId)) {
-      this._handleUsersOperation(operation);
+      const usersIds = this._getOperationUserIds(operation);
+      if (usersIds.includes(this._user.id)) this._handleUsersOperation(operation);
     }
   }
   _handleSignUpOperation(operation) {
@@ -60,13 +61,20 @@ class ChainListener {
       this._signUpWaitingList[name].resolve(id);
       delete this._signUpWaitingList[name];
       this._checkForSignUpOperations();
+
     }
   }
-  _handleUsersOperation(operation) {
+  _getOperationUserIds(operation) {
     const [typeCode, payload] = operation.op;
     const operationType = this._operationTypes[typeCode];
     const pathToUserId = this._userFields[operationType];
-    console.log(operationType, pathToUserId, payload[pathToUserId]);
+    const usersIds = [payload[pathToUserId]];
+    if (operationType === 'transfer') usersIds.push(payload.from);
+    return usersIds;
+  }
+  _handleUsersOperation(operation) {
+    console.log('new users operation detected: ', operation);
+    this._user.callback(operation);
   }
   static _isSignUpOperation(operation) {
     return (operation.id && operation.id.includes('1.11.')
@@ -87,8 +95,11 @@ class ChainListener {
       this._hasSignUpOperationsPending = true;
     });
   }
-  listenToUserOperations({ userId, callback }) {
+  subscribeToUserOperations({ userId, callback }) {
     this._user = { id: userId, callback }
+  }
+  stopListetingToUserOperations() {
+    this._user = { id: null, callback: null };
   }
 }
 
