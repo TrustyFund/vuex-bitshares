@@ -14,7 +14,7 @@ const listenToSignupId = ({ name }) => {
   });
 };
 
-const subscribeToUserOperations = ({ userId, callback }) => {
+const subscribeToUserOperations = ({ callback }) => {
   process.nextTick(() => {
     callback(testOperation);
   });

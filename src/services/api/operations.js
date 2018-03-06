@@ -1,3 +1,4 @@
+/* eslint no-underscore-dangle: 0 */
 import { ChainTypes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import API from '../api';
@@ -7,11 +8,11 @@ const Operations = {
   _operationTypes: {},
 
   // Prepares object with code : operation's name format
-  prepareOperationTypes: () =>{
+  prepareOperationTypes: () => {
     Object.keys(ChainTypes.operations).forEach(name => {
       const code = ChainTypes.operations[name];
       Operations._operationTypes[code] = name;
-    }); 
+    });
   },
 
   // Gets operation's data based on it's block number
@@ -38,7 +39,7 @@ const Operations = {
     return amountAssetId === feeAssetId;
   },
 
-  // User for transfer operations. Determines if user received or sent 
+  // User for transfer operations. Determines if user received or sent
   _getOperationOtherUserName: async (userId, payload) => {
     const otherUserId = payload.to === userId ? payload.from : payload.to;
     const userRequest = await API.Account.getUser(otherUserId);
@@ -144,7 +145,7 @@ const Operations = {
       };
     }
   }
-}
+};
 
 Operations.prepareOperationTypes();
 

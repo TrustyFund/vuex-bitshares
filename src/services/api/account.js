@@ -1,33 +1,8 @@
-import { key, ChainTypes } from 'bitsharesjs';
+import { key } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 
 export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
-};
-
-
-const getOperationsAssetsIds = (parsedOperations) => {
-  function addNewId(array, id) {
-    if (array.indexOf(id) === -1) array.push(id);
-  }
-
-  return parsedOperations.reduce((result, operation) => {
-    switch (operation.type) {
-      case 'transfer':
-        addNewId(result, operation.payload.amount.asset_id);
-        break;
-      case 'fill_order':
-        addNewId(result, operation.payload.pays.asset_id);
-        addNewId(result, operation.payload.receives.asset_id);
-        break;
-      case 'limit_order_create':
-        addNewId(result, operation.payload.amount_to_sell.asset_id);
-        addNewId(result, operation.payload.min_to_receive.asset_id);
-        break;
-      default:
-    }
-    return result;
-  }, []);
 };
 
 export const getUser = async (nameOrId) => {

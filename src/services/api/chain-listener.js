@@ -19,13 +19,13 @@ class ChainListener {
     Object.keys(ChainTypes.operations).forEach(name => {
       const code = ChainTypes.operations[name];
       this._operationTypes[code] = name;
-    }); 
+    });
     this._userFields = {
       transfer: 'to',
       fill_order: 'account_id',
       limit_order_create: 'seller',
       limit_order_cancel: 'fee_paying_account'
-    }
+    };
   }
   enable() {
     if (this._enabled) this.disable();
@@ -61,7 +61,6 @@ class ChainListener {
       this._signUpWaitingList[name].resolve(id);
       delete this._signUpWaitingList[name];
       this._checkForSignUpOperations();
-
     }
   }
   _getOperationUserIds(operation) {
@@ -96,7 +95,7 @@ class ChainListener {
     });
   }
   subscribeToUserOperations({ userId, callback }) {
-    this._user = { id: userId, callback }
+    this._user = { id: userId, callback };
   }
   unsubscribeFromUserOperations() {
     this._user = { id: null, callback: null };

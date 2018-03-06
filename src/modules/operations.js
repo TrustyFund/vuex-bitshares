@@ -61,11 +61,13 @@ const actions = {
    */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
-    API.ChainListener.subscribeToUserOperations({ userId, callback: (operation) => {
-      actions.addUserOperation(store, { operation, userId });
-    }});
+    API.ChainListener.subscribeToUserOperations({ 
+      userId,
+      callback: (operation) => {
+        actions.addUserOperation(store, { operation, userId });
+      }
+    });
     commit(types.SUBSCRIBE_TO_USER_OPERATIONS);
-
   },
 
   /**
@@ -76,7 +78,7 @@ const actions = {
     API.ChainListener.unsubscribeFromUserOperations();
     commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
   }
-}
+};
 
 const getters = {
   getOperations: state => state.list,

@@ -18,7 +18,7 @@ const connect = (statusCallback, changeNode) => {
   Apis.instance(url, true).init_promise.then(() => {
     statusCallback('realopen');
     nodesManager.testNodesPings();
-  }).catch(error => {
+  }).catch(() => {
     statusCallback('error');
   });
 };

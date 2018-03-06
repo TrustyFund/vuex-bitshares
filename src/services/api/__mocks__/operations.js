@@ -14,11 +14,11 @@ const testOperations = {
 
 const singleTestOperation = {
   id: 'test-update-operation'
-}
+};
 
 const assets = {
   '1.2.3': ['1.3.0']
-}
+};
 
 const Operations = {
   parseOperations: ({ operations, userId }) => {
@@ -41,12 +41,12 @@ const Operations = {
           resolve({
             success: true,
             data: {
-              operations: testOperations[userId],
+              operations: testOperations[userId].slice(0, limit),
               assetsIds: assets[userId]
             }
           });
         } else {
-          resolve({ 
+          resolve({
             success: false,
             error: 'Error fetching account operations'
           });
@@ -54,7 +54,7 @@ const Operations = {
       });
     });
   }
-}
+};
 
 // Operations.prepareOperationTypes();
 

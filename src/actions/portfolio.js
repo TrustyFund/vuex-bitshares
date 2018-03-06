@@ -52,7 +52,7 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
         }
       });
     } else {
-      commit(types.FETCH_PORTFOLIO_ASSET_ERROR, {  id });
+      commit(types.FETCH_PORTFOLIO_ASSET_ERROR, { id });
     }
   }));
 };

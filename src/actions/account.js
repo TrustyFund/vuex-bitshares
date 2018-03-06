@@ -116,7 +116,7 @@ export const login = async (state, { password, brainkey }) => {
 };
 
 /**
- * Log out 
+ * Log out
  */
 export const logout = ({ commit }) => {
   commit(types.ACCOUNT_LOGOUT);
