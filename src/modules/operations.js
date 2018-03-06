@@ -32,6 +32,7 @@ const actions = {
         error: result.error
       });
     }
+    return result;
   },
 
   /**
@@ -64,6 +65,7 @@ const actions = {
       actions.addUserOperation(store, { operation, userId });
     }});
     commit(types.SUBSCRIBE_TO_USER_OPERATIONS);
+
   },
 
   /**
@@ -71,7 +73,7 @@ const actions = {
    */
   unsubscribeFromUserOperations(store) {
     const { commit } = store;
-    API.ChainListener.stopListetingToUserOperations();
+    API.ChainListener.unsubscribeFromUserOperations();
     commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
   }
 }
@@ -79,7 +81,8 @@ const actions = {
 const getters = {
   getOperations: state => state.list,
   isFetching: state => state.pending,
-  isError: state => state.error
+  isError: state => state.error,
+  isSubscribed: state => state.subscribed
 };
 
 const initialState = {

@@ -15,7 +15,7 @@ const Operations = {
   },
 
   // Gets operation's data based on it's block number
-  _getOperationDate: async (operation, ApiObject, ApiObjectDyn) => {
+  _getOperationDate: (operation, ApiObject, ApiObjectDyn) => {
     const blockInterval = ApiObject[0].parameters.block_interval;
     const headBlock = ApiObjectDyn[0].head_block_number;
     const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
@@ -49,7 +49,7 @@ const Operations = {
   _parseOperation: async (operation, userId, ApiObject, ApiObjectDyn) => {
     const [type, payload] = operation.op;
     const operationType = Operations._operationTypes[type];
-    const date = await Operations._getOperationDate(operation, ApiObject, ApiObjectDyn);
+    const date = Operations._getOperationDate(operation, ApiObject, ApiObjectDyn);
 
     let isBid = false;
     let otherUserName = null;
@@ -120,7 +120,7 @@ const Operations = {
   },
 
   // fetches user's operations
-  getUserOperations: async ({ userId, limit = 100 }) => {
+  getUserOperations: async ({ userId, limit }) => {
     try {
       const response = await Apis.instance().history_api().exec(
         'get_account_history',

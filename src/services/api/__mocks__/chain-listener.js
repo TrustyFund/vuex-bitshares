@@ -2,6 +2,10 @@ const testAccounts = {
   hobb1t: '1.2.512210'
 };
 
+const testOperation = {
+  type: 'super-operation'
+};
+
 const listenToSignupId = ({ name }) => {
   return new Promise((resolve) => {
     process.nextTick(() => {
@@ -10,7 +14,17 @@ const listenToSignupId = ({ name }) => {
   });
 };
 
+const subscribeToUserOperations = ({ userId, callback }) => {
+  process.nextTick(() => {
+    callback(testOperation);
+  });
+};
+
+const unsubscribeFromUserOperations = () => {};
+
 export default {
-  listenToSignupId
+  listenToSignupId,
+  subscribeToUserOperations,
+  unsubscribeFromUserOperations
 };
 

@@ -2,15 +2,19 @@
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
 import operations from '../src/modules/operations.js';
+import assets from '../src/modules/assets.js';
 
-// jest.mock('../src/services/api/operations.js');
+jest.mock('../src/services/api/operations.js');
+jest.mock('../src/services/api/assets.js');
+jest.mock('../src/services/api/chain-listener.js');
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    operations
+    operations,
+    assets
   }
 });
 
@@ -32,8 +36,9 @@ describe('Operations module: getters', () => {
 
   test('has correct getters', () => {
     expect(store.getters['operations/getOperations']).toEqual([]);
-    expect(store.getters['operations/isFetching']).toBeFalsy;
+    expect(store.getters['operations/isFetching']).toBeFalsy();
     expect(store.getters['operations/isError']).toBeFalsy();
+    expect(store.getters['operations/isSubscribed']).toBeFalsy();
 
     store.state.operations.list = [1, 2, 3];
     expect(store.getters['operations/getOperations']).toEqual([1, 2, 3]);
@@ -43,6 +48,9 @@ describe('Operations module: getters', () => {
 
     store.state.operations.error = true;
     expect(store.getters['operations/isError']).toBeTruthy();
+
+    store.state.operations.subscribed = true;
+    expect(store.getters['operations/isSubscribed']).toBeTruthy();
   });
 });
 
@@ -96,19 +104,70 @@ describe('Operations module: actions', () => {
   });
 
   it('fetches user operations', async done => {
-
+    const result = await store.dispatch('operations/fetchUserOperations', {
+      userId: '1.2.3',
+      limit: 5
+    });
+    expect(result.success).toBeTruthy();
+    expect(store.getters['operations/getOperations']).toEqual([{
+        id: '1111'
+      }, {
+        id: '2222'
+      }, {
+        id: '3333'
+      }, {
+        id: '4444'
+      }, {
+        id: '5555'
+    }]);
+    expect(store.getters['operations/isFetching']).toBeFalsy();
+    expect(store.getters['operations/isError']).toBeFalsy();
     done();
   });
   it('handles error when fetching user operations', async done => {
-
+    const result = await store.dispatch('operations/fetchUserOperations', {
+      userId: 'bad-id',
+      limit: 52
+    });
+    expect(result.success).toBeFalsy();
+    expect(store.getters['operations/getOperations']).toEqual([]);
+    expect(store.getters['operations/isFetching']).toBeFalsy();
+    expect(store.getters['operations/isError']).toBeTruthy();
     done();
   });
   it('subscribes to user operations and receives updates', async done => {
-
-    done();
+    store.dispatch('operations/subscribeToUserOperations', {
+      userId: '1.2.3',
+    });
+    expect(store.getters['operations/isSubscribed']).toBeTruthy();
+    setTimeout(() => {
+      expect(store.getters['operations/getOperations']).toEqual([{ id: 'test-update-operation' }]);
+      done();
+    }, 0);
   });
-  it('unsubscribes from user operations', async done => {
-
-    done();
-  });
+  it('fetches & subscribes/unsubscribes to user operations t', async done => {
+    store.dispatch('operations/fetchAndSubscribe', {
+      userId: '1.2.3',
+      limit: 5
+    });
+    setTimeout(() => {
+      expect(store.getters['operations/getOperations']).toEqual([{ 
+        id: 'test-update-operation' 
+      }, {
+        id: '1111'
+      }, {
+        id: '2222'
+      }, {
+        id: '3333'
+      }, {
+        id: '4444'
+      }, {
+        id: '5555'
+      }]);
+      expect(store.getters['operations/isSubscribed']).toBeTruthy();
+      store.dispatch('operations/unsubscribeFromUserOperations');
+      expect(store.getters['operations/isSubscribed']).toBeFalsy();
+      done();
+    }, 0);
+  }); 
 });

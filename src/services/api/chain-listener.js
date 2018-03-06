@@ -98,7 +98,7 @@ class ChainListener {
   subscribeToUserOperations({ userId, callback }) {
     this._user = { id: userId, callback }
   }
-  stopListetingToUserOperations() {
+  unsubscribeFromUserOperations() {
     this._user = { id: null, callback: null };
   }
 }
