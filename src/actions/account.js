@@ -35,11 +35,8 @@ const createWallet = ({ brainkey, password }) => {
  * @param {string} password - user password
  */
 export const unlockWallet = ({ commit, state }, password) => {
-  console.log(password);
   const passwordAes = Aes.fromSeed(password);
-  console.log(state.encryptionKey);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryptionKey);
-  console.log('encription plain buffer',encryptionPlainbuffer);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
   commit(types.ACCOUNT_UNLOCK_WALLET, aesPrivate);
 };
