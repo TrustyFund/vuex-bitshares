@@ -64,16 +64,16 @@ describe('Operations module: mutations', () => {
   });
 
   test('FETCH_USER_OPERATIONS_REQUEST', () => {
-    operationsModule.mutations.FETCH_USER_OPERATIONS_REQUEST(state, { userId : '1' });
+    operationsModule.mutations.FETCH_USER_OPERATIONS_REQUEST(state, { userId: '1' });
     expect(state.pending).toBeTruthy();
   });
   test('FETCH_USER_OPERATIONS_ERROR', () => {
-    operationsModule.mutations.FETCH_USER_OPERATIONS_ERROR(state, { error : 'error' });
+    operationsModule.mutations.FETCH_USER_OPERATIONS_ERROR(state, { error: 'error' });
     expect(state.pending).toBeFalsy();
     expect(state.error).toBeTruthy();
   });
   test('FETCH_USER_OPERATIONS_COMPLETE', () => {
-    operationsModule.mutations.FETCH_USER_OPERATIONS_COMPLETE(state, { 
+    operationsModule.mutations.FETCH_USER_OPERATIONS_COMPLETE(state, {
       operations: [1, 2, 3]
     });
     expect(state.pending).toBeFalsy();
@@ -82,8 +82,8 @@ describe('Operations module: mutations', () => {
   });
   test('ADD_USER_OPERATION', () => {
     state.list = [1, 2];
-    operationsModule.mutations.ADD_USER_OPERATION(state, { 
-      operation: { name: 'test'}
+    operationsModule.mutations.ADD_USER_OPERATION(state, {
+      operation: { name: 'test' }
     });
     expect(state.list).toEqual([{ name: 'test' }, 1, 2]);
   });
@@ -110,15 +110,15 @@ describe('Operations module: actions', () => {
     });
     expect(result.success).toBeTruthy();
     expect(store.getters['operations/getOperations']).toEqual([{
-        id: '1111'
-      }, {
-        id: '2222'
-      }, {
-        id: '3333'
-      }, {
-        id: '4444'
-      }, {
-        id: '5555'
+      id: '1111'
+    }, {
+      id: '2222'
+    }, {
+      id: '3333'
+    }, {
+      id: '4444'
+    }, {
+      id: '5555'
     }]);
     expect(store.getters['operations/isFetching']).toBeFalsy();
     expect(store.getters['operations/isError']).toBeFalsy();
@@ -151,8 +151,8 @@ describe('Operations module: actions', () => {
       limit: 5
     });
     setTimeout(() => {
-      expect(store.getters['operations/getOperations']).toEqual([{ 
-        id: 'test-update-operation' 
+      expect(store.getters['operations/getOperations']).toEqual([{
+        id: 'test-update-operation'
       }, {
         id: '1111'
       }, {
@@ -169,5 +169,5 @@ describe('Operations module: actions', () => {
       expect(store.getters['operations/isSubscribed']).toBeFalsy();
       done();
     }, 0);
-  }); 
+  });
 });
