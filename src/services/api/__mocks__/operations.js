@@ -28,7 +28,7 @@ const Operations = {
           resolve({
             operations: [singleTestOperation],
             assetsIds: assets[userId]
-          });        
+          });
         }
       });
     });
