@@ -3,3 +3,4 @@ package-lock.json
 *.swp
 *.swo
 .DS_Store
+coverage
