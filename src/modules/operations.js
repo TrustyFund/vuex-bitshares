@@ -8,8 +8,8 @@ const actions = {
    * Dispatches actions to fetch user operations & subscribe to new operations of this user
    * @param {String} userId - user's id
    */
-  fetchAndSubscribe: async (store, { userId }) => {
-    await actions.fetchUserOperations(store, { userId });
+  fetchAndSubscribe: async (store, { userId, limit }) => {
+    await actions.fetchUserOperations(store, { userId, limit });
     await actions.subscribeToUserOperations(store, { userId });
   },
 
@@ -17,10 +17,10 @@ const actions = {
    * Fetches user operations
    * @param {String} userId - user's id
    */
-  fetchUserOperations: async (store, { userId }) => {
+  fetchUserOperations: async (store, { userId, limit }) => {
     const { commit } = store;
     commit(types.FETCH_USER_OPERATIONS_REQUEST);
-    const result = await API.Operations.getUserOperations({ userId });
+    const result = await API.Operations.getUserOperations({ userId, limit });
     if (result.success) {
       // fetch assets used in operations
       store.dispatch('assets/fetchAssets', { assets: result.data.assetsIds }, { root: true });
@@ -63,7 +63,7 @@ const actions = {
     API.ChainListener.subscribeToUserOperations({ userId, callback: (operation) => {
       actions.addUserOperation(store, { operation, userId });
     }});
-    commit(types.SUBSCRIBED_TO_USER_OPERATIONS);
+    commit(types.SUBSCRIBE_TO_USER_OPERATIONS);
   },
 
   /**
@@ -72,7 +72,7 @@ const actions = {
   unsubscribeFromUserOperations(store) {
     const { commit } = store;
     API.ChainListener.stopListetingToUserOperations();
-    commit(types.UNSUBSCRIBED_FROM_USER_OPERATIONS);
+    commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
   }
 }
 
@@ -107,10 +107,10 @@ const mutations = {
     newList.unshift(operation);
     Vue.set(state, 'list', newList);
   },
-  [types.SUBSCRIBED_TO_USER_OPERATIONS]: (state) => {
+  [types.SUBSCRIBE_TO_USER_OPERATIONS]: (state) => {
     state.subscribed = true;
   },
-  [types.UNSUBSCRIBED_FROM_USER_OPERATIONS]: (state) => {
+  [types.UNSUBSCRIBE_FROM_USER_OPERATIONS]: (state) => {
     state.subscribed = false;
   }
 };

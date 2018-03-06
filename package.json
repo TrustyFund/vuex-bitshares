@@ -4,7 +4,7 @@
   "description": "Vue way to build DAP's on bitshares net",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "eslint ./**/*.{vue,js}"
   },
   "repository": {

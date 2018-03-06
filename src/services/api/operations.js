@@ -79,7 +79,10 @@ const Operations = {
     const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
     const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
 
-    const parsedOperations = await Promise.all(operations.map(async operation => {
+    const operationTypes = [0, 1, 2, 4];
+    const filteredOperations = operations.filter(op => operationTypes.includes(op.op[0]));
+
+    const parsedOperations = await Promise.all(filteredOperations.map(async operation => {
       return Operations._parseOperation(operation, userId, ApiObject, ApiObjectDyn);
     }));
 
@@ -117,11 +120,11 @@ const Operations = {
   },
 
   // fetches user's operations
-  getUserOperations: async ({ userId }) => {
+  getUserOperations: async ({ userId, limit = 100 }) => {
     try {
       const response = await Apis.instance().history_api().exec(
         'get_account_history',
-        [userId, '1.11.9999999', 100, '1.11.0']
+        [userId, '1.11.9999999', limit, '1.11.0']
       );
       if (response && typeof (response) === 'object') {
         const parsedOperations = await Operations.parseOperations({ operations: response, userId });

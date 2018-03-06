@@ -79,13 +79,13 @@ describe('Operations module: mutations', () => {
     });
     expect(state.list).toEqual([{ name: 'test' }, 1, 2]);
   });
-  test('SUBSCRIBED_TO_USER_OPERATIONS', () => {
-    operationsModule.mutations.SUBSCRIBED_TO_USER_OPERATIONS(state);
+  test('SUBSCRIBE_TO_USER_OPERATIONS', () => {
+    operationsModule.mutations.SUBSCRIBE_TO_USER_OPERATIONS(state);
     expect(state.subscribed).toBeTruthy();
   });
-  test('UNSUBSCRIBED_FROM_USER_OPERATIONS', () => {
+  test('UNSUBSCRIBE_FROM_USER_OPERATIONS', () => {
     state.subscribed = true;
-    operationsModule.mutations.UNSUBSCRIBED_FROM_USER_OPERATIONS(state);
+    operationsModule.mutations.UNSUBSCRIBE_FROM_USER_OPERATIONS(state);
     expect(state.subscribed).toBeFalsy();
   });
 });
