@@ -184,7 +184,7 @@ describe('Portfolio module: actions', () => {
     //  todo: remove
     store.state.portfolio.list = {};
     await store.dispatch('assets/fetchDefaultAssets');
-    await store.dispatch('assets/fetchAssets', assetsIds);
+    await store.dispatch('assets/fetchAssets', { assets: assetsIds });
     await store.dispatch('portfolio/fetchPortfolioData', {
       balances: {
         '1.3.0': {

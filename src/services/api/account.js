@@ -73,5 +73,8 @@ export const createAccount = async ({ name, ownerKey, activeKey, referrer }) => 
 };
 
 export default {
-  suggestBrainkey, getUser, getAccountIdByOwnerPubkey, createAccount
+  suggestBrainkey,
+  getUser,
+  getAccountIdByOwnerPubkey,
+  createAccount
 };
