@@ -85,6 +85,16 @@ export const signup = async (state, { name, password, dictionary }) => {
   };
 };
 
+//write backup brainkey date to Cookie
+export const storeBackupDate = (state, {date}) => {
+  const { commit } = state;
+  console.log(date);
+  PersistentStorage.saveBackupDate({
+    date
+  });
+  commit(types.STORE_BACKUP_DATE, date);
+}
+
 /**
  * Logs in & creates wallet
  * @param {string} password - user password
@@ -124,11 +134,11 @@ export const logout = ({ commit }) => {
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
   if (data) {
-    console.log('getSavedUserData', data.encryptionKey);
     commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
       encryptedBrainkey: data.encryptedBrainkey,
-      encryptionKey: data.encryptionKey
+      encryptionKey: data.encryptionKey,
+      backupDate: data.backupDate
     });
   }
 };

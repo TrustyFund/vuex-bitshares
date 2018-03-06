@@ -11,12 +11,14 @@ const PersistentStorage = {
     const userId = Cookies.get('BITSHARES_USER_ID');
     const encryptedBrainkey = Cookies.get('BITSHARES_USER_BRAINKEY');
     const encryptionKey = Cookies.get('BITSHARES_ENCRYPTION_KEY');
+    const backupDate = Cookies.get('BACKUP_DATE');
     if (!userId || !encryptedBrainkey || !encryptionKey) return null;
     if (typeof (userId) !== 'string') return null;
     return {
       userId,
       encryptedBrainkey,
-      encryptionKey
+      encryptionKey,
+      backupDate
     };
   },
   saveNodesData: ({ data }) => {
@@ -28,7 +30,11 @@ const PersistentStorage = {
       return cachedData;
     }
     return {};
-  }
+  },
+  saveBackupDate: ({ date }) => {
+    Cookies.set('BACKUP_DATE', date);
+  },
+
 };
 
 export default PersistentStorage;
