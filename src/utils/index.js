@@ -184,13 +184,13 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
       ({ sell, buy }, key) => {
         if (distribution[key] > update[key]) {
           const amount = Math.floor((distribution[key] - update[key])*total);
-          if (amount > 10) return {
-            sell: Object.assign(sell, { [key]: amount }),
+          if (amount > 0) return {
+            sell: Object.assign(sell, { [key]: amount/baseBalances[key] }),
             buy
           }
         } else {
           const amount = Math.floor((update[key] - distribution[key])*total); 
-          if (amount > 10) return {
+          if (amount > 0) return {
             buy: Object.assign(buy, { [key]:  amount}),
             sell
           }

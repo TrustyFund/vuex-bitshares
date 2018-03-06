@@ -160,24 +160,26 @@ export default class Market {
     }
   }
   calcExchangeRate (from, to, amount) {
+    if (from.id == to.id) return amount;
     const { marketFeePercent } = this.getExchangeFees(from, to);
     const orders = this.getExchangeOrders(from, to, amount);
     return orders.reduce(
-      (res, { order, amount }) => {
-        const { 
-          sell_price: {
-            base: {
-              amount: baseAmount
-            },
-            quote: {
-              amount: quoteAmount
-            }
-          }
-        } = order;
-        return res += Math.floor((amount * (baseAmount/quoteAmount)) * (1 - marketFeePercent));
-      },
+      (res, { order, amount }) => res += Market.calcOrderOutput(order, amount, marketFeePercent),
       0
     );
+  }
+  static calcOrderOutput (order, amount, marketFeePercent) {
+    const { 
+      sell_price: {
+        base: {
+          amount: baseAmount
+        },
+        quote: {
+          amount: quoteAmount
+        }
+      }
+    } = order;
+    return Math.floor((amount * (baseAmount/quoteAmount)) * (1 - marketFeePercent));
   }
   static orderMaxToFill (order) {
     return Math.floor(order.for_sale * order.sell_price.quote.amount / order.sell_price.base.amount);
@@ -220,4 +222,57 @@ export default class Market {
     }
     return res;
   }
+  getExchangeToBaseOrders (balances, base) {
+    return balances.filter(({ asset: { id }}) => id != base.id)
+      .reduce((res, { asset, balance }) => res.concat(this.getExchangeOrders(asset, base, balance)), []);
+  }
+  getExchangeToDistributionOrders (base, amount, distribution) {
+    return distribution.filter(({ asset: { id }}) => id != base.id)
+      .reduce(
+        (res, { asset, share }) => res.concat(this.getExchangeOrders(base, asset, Math.floor(amount * share))),
+        []
+      );
+  }
+  static getFillOrdersTransaction(orders, accountId, btsFee = false) {
+    const result = {}; 
+    const tr = new TransactionBuilder();
+    orders.forEach(({ order, amount }) => {
+      const {
+        sell_price: {
+          base: { amount: base, asset_id: baseAsset},
+          quote: { amount: quote, asset_id: quoteAsset}
+        }
+      } = order;
+      const expiration = new Date();
+      expiration.setYear(expiration.getFullYear() + 5);
+      const toReceive = Math.floor(amount*base/quote);
+      if (toReceive <= 0 ) return;
+      if(!result[baseAsset]) {
+        result[baseAsset] = 0;
+      }
+      result[baseAsset] += toReceive;
+
+      const newOrder = {
+        seller: accountId,
+        amount_to_sell: {
+          asset_id: quoteAsset,
+          amount
+        },
+        min_to_receive: { 
+          asset_id: baseAsset,
+          amount: toReceive
+        },
+        expiration: expiration,
+        fill_or_kill: true
+      };
+      //if (!btsFee) {
+      //  newOrder.fee = {
+      //    asset_id: quoteAsset
+      //  }
+      //}
+      tr.add_type_operation('limit_order_create', newOrder);
+    })
+    return tr;
+  }
 }
+
