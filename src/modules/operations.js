@@ -61,7 +61,7 @@ const actions = {
    */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
-    API.ChainListener.subscribeToUserOperations({ 
+    API.ChainListener.subscribeToUserOperations({
       userId,
       callback: (operation) => {
         actions.addUserOperation(store, { operation, userId });
