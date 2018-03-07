@@ -124,7 +124,7 @@ export const decryptMemo = (memo, privateKey) => {
 
 /** Calculates distribution 0..1 of total amount of assets expressed
  * in base asset
- * @param {Object} baseBalances - {assetId: baseAssetValue}
+ * @param {Object} balances - {assetId: baseAssetValue}
  */
 export const distributionFromBalances = (balances) => {
   const total = Object.keys(balances).reduce((res, key) => res + balances[key], 0);
@@ -171,8 +171,8 @@ export const distributionSampling = (proportions, accuracy) => {
 
 
 /**
- * Calculates for each update equivalent amounts 
- * in base asset to sell and distrubution of assets to buy to fit updates
+ * Calculates for each update shares of specified assets balances
+ * to sell and distrubution of assets to buy to fit updates
  * @param {Object} baseBalances - {assetId: baseAssetValue}
  * @param {Object} updates - {assetId: distribuitionToSet}
  */

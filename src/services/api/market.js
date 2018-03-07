@@ -1,4 +1,4 @@
-import { ChainTypes, TransactionBuilder } from 'bitsharesjs';
+import { ChainTypes, TransactionBuilder, ops } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import API from '../api';
 
@@ -14,7 +14,7 @@ export default class Market {
       ([quote, base]) => (quote == from && base == to) || (quote == to && base == from)
     );
   }
-  getLimitOrders(base, quote) {
+  getLimitOrders(baseId, quoteId) {
     return this.limitOrders.filter(order => {
       const {
         sell_price: {
@@ -26,17 +26,18 @@ export default class Market {
           }
         }
       } = order;
-      return (baseAsset == base && quoteAsset == quote) 
-        || (baseAsset == quote && quoteAsset == base);
+      return (baseAsset == baseId && quoteAsset == quoteId) 
+        || (baseAsset == quoteId && quoteAsset == baseId);
     });
   }
-  async loadLimitOrders(baseId, quoteId, limit = 10000) {
+  loadLimitOrders(baseId, quoteId, limit = 10000) {
     return Apis.instance().db_api().exec(
       "get_limit_orders",
       [baseId, quoteId, limit]
     );
   }
   async subscribeToMarket(baseId, quoteId) {
+    if(baseId == quoteId) return;
     if (!this.isSubscribed(baseId, quoteId)) {
       const orders = await this.loadLimitOrders(baseId, quoteId);
       this.limitOrders = [...this.limitOrders, ...orders];
@@ -52,9 +53,7 @@ export default class Market {
   onOrderFill(notification) {
     const [[, data]] = notification;
     const {fee, order_id, account_id, pays: {amount}} = data;
-    const idx = this.limitOrders.findIndex(o => {
-      return o.id == order_id;
-    });
+    const idx = this.limitOrders.findIndex(({ id }) => id == order_id);
     if (idx != -1) {
       this.limitOrders[idx].for_sale -= amount;
 
@@ -86,35 +85,34 @@ export default class Market {
   }
   onMarketUpdate([notifications]) {
     const handleNotification = (notification) => {
-      switch(true) {
-          //operation notification
-        case Array.isArray(notification):
-          const [[operation, data]] = notification;
-          if (operation == ChainTypes.operations.fill_order) {
-            this.onOrderFill(notification);
-          } else {
-            console.warn("market: unknown operation ", notification);
-          }
-          break;
-          //remove order notification
-        case typeof notification == 'object':
-          const { id } = notification
-          //make sure its not a call order
-          if(id.substr(0,3) != '1.8') {
-            this.onNewLimitOrder(notification);
-          }
-          break;
-        case typeof notification == 'string':
-          this.onOrderDelete(notification);
-          break;
-          //new order 
-        default:
-          console.warn("market: unhandled notification ", notification);
+      if (Array.isArray(notification)) {
+        //operation notification
+        const [[operation, data]] = notification;
+        if (operation == ChainTypes.operations.fill_order) {
+          this.onOrderFill(notification);
+        } else {
+          console.warn("market: unknown operation ", notification);
+        }
+      } else if (typeof notification == 'object') {
+        //new order 
+        const { id } = notification
+        //make sure its not a call order
+        if(id.substr(0,3) != '1.8') {
+          this.onNewLimitOrder(notification);
+        }
+      } else if (typeof notification == 'string') {
+        this.onOrderDelete(notification);
+      } else {
+        console.warn("market: unhandled notification ", notification);
       }
-    };
+    }
     notifications.forEach(handleNotification.bind(this));
   }
   async subscribeExchangeRate(from, to, amount, callback) {
+    if(from.id == amount.id) {
+      callback(amount);
+      return;
+    }
     await this.subscribeToMarket(from.id, to.id);
     const subscription = { from, to, amount, callback };
     this.notifyExchangeRate(subscription);
@@ -129,7 +127,7 @@ export default class Market {
       this.exchangeRateSubscriptions.splice(idx, 1);
     }
   }
-  notifyExchangeRateSubscribers(base, quote) {
+  notifyExchangeRateSubscribers(baseId, quoteId) {
     this.exchangeRateSubscriptions.forEach(subscription => {
       const { from, to } = subscription;
       if (base == to.id && quote == from.id) this.notifyExchangeRate(subscription);
@@ -147,13 +145,13 @@ export default class Market {
     const quotient = core_exchange_rate.base.asset_id == from.id 
       ? core_exchange_rate.base.amount 
       : core_exchange_rate.quote.amount
-    
+
     const divisor = core_exchange_rate.base.asset_id == from.id 
       ? core_exchange_rate.quote.amount 
       : core_exchange_rate.base.amount
-    
+
     //transaction fee equivalent in "from" asset
-    const transactionFee = Math.floor(this.transactionFee * quotient  / divisor);
+    const transactionFee = Math.ceil(this.transactionFee * quotient  / divisor);
     return {
       transactionFee,
       marketFeePercent
@@ -198,7 +196,7 @@ export default class Market {
       return toBuy * (1 - marketFeePercent) / toSell;
     }
     const orders = this.getLimitOrders(to.id, from.id)
-      //filter orders that sells "from-asset"
+    //filter orders that sells "from-asset"
       .filter(o => o.sell_price.base.asset_id == to.id)
       .sort((a,b) => calcOrderRate(b) - calcOrderRate(a));
 
@@ -222,57 +220,58 @@ export default class Market {
     }
     return res;
   }
-  getExchangeToBaseOrders (balances, base) {
-    return balances.filter(({ asset: { id }}) => id != base.id)
-      .reduce((res, { asset, balance }) => res.concat(this.getExchangeOrders(asset, base, balance)), []);
+  getExchangeToBaseOrders (balances, base, accountId) {
+    return Promise.all(
+      balances.filter(({ asset: { id }}) => id != base.id)
+      .reduce((res, { asset, balance }) => res.concat(this.getExchangeOrders(asset, base, balance)), [])
+      .map(({ amount, order }) => Market.getFillingOrder(order, amount, accountId))
+    );
   }
-  getExchangeToDistributionOrders (base, amount, distribution) {
-    return distribution.filter(({ asset: { id }}) => id != base.id)
+  getExchangeToDistributionOrders (base, amount, distribution, accountId) {
+    return Promise.all(
+      distribution.filter(({ asset: { id }}) => id != base.id)
       .reduce(
         (res, { asset, share }) => res.concat(this.getExchangeOrders(base, asset, Math.floor(amount * share))),
         []
-      );
+      )
+      .map(({ amount, order }) => Market.getFillingOrder(order, amount, accountId))
+    );
   }
-  static getFillOrdersTransaction(orders, accountId, btsFee = false) {
-    const result = {}; 
-    const tr = new TransactionBuilder();
-    orders.forEach(({ order, amount }) => {
-      const {
-        sell_price: {
-          base: { amount: base, asset_id: baseAsset},
-          quote: { amount: quote, asset_id: quoteAsset}
-        }
-      } = order;
-      const expiration = new Date();
-      expiration.setYear(expiration.getFullYear() + 5);
-      const toReceive = Math.floor(amount*base/quote);
-      if (toReceive <= 0 ) return;
-      if(!result[baseAsset]) {
-        result[baseAsset] = 0;
+  static async getFillingOrder(order, amount, accountId, btsFee = false) {
+    //TODO: handle empty fee pool
+    const {
+      sell_price: {
+        base: { amount: base, asset_id: baseAsset},
+        quote: { amount: quote, asset_id: quoteAsset}
       }
-      result[baseAsset] += toReceive;
+    } = order;
+    const expiration = new Date();
+    expiration.setYear(expiration.getFullYear() + 5);
+    const toReceive = Math.floor(amount*base/quote);
 
-      const newOrder = {
-        seller: accountId,
-        amount_to_sell: {
-          asset_id: quoteAsset,
-          amount
-        },
-        min_to_receive: { 
-          asset_id: baseAsset,
-          amount: toReceive
-        },
-        expiration: expiration,
-        fill_or_kill: true
-      };
-      //if (!btsFee) {
-      //  newOrder.fee = {
-      //    asset_id: quoteAsset
-      //  }
-      //}
-      tr.add_type_operation('limit_order_create', newOrder);
-    })
-    return tr;
+    const newOrder = {
+      seller: accountId,
+      amount_to_sell: {
+        asset_id: quoteAsset,
+        amount
+      },
+      min_to_receive: { 
+        asset_id: baseAsset,
+        amount: toReceive
+      },
+      expiration: expiration,
+      fill_or_kill: true
+    };
+
+    const serializedOperation = ops.operation.toObject(
+      (new TransactionBuilder).get_type_operation('limit_order_create', newOrder)
+    );
+    const [fee] = await Apis.instance().db_api().exec(
+      'get_required_fees',
+      [[serializedOperation], btsFee ? '1.3.0' : quoteAsset]);
+
+    return { ...newOrder, fee};
+    //return newOrder;
   }
 }
 
