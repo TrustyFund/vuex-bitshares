@@ -85,14 +85,14 @@ export const signup = async (state, { name, password, dictionary }) => {
   };
 };
 
-//write backup brainkey date to Cookie
-export const storeBackupDate = (state, {date}) => {
+//  write backup brainkey date to Cookie
+export const storeBackupDate = (state, { date }) => {
   const { commit } = state;
   PersistentStorage.saveBackupDate({
     date
   });
   commit(types.STORE_BACKUP_DATE, date);
-}
+};
 
 /**
  * Logs in & creates wallet

@@ -58,7 +58,8 @@ const mutations = {
   [types.ACCOUNT_UNLOCK_WALLET]: (state, aesPrivate) => {
     state.aesPrivate = aesPrivate;
   },
-  [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey, encryptionKey, backupDate }) => {
+  [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey,
+    encryptionKey, backupDate }) => {
     state.userId = userId;
     state.encryptedBrainkey = encryptedBrainkey;
     state.encryptionKey = encryptionKey;
