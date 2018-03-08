@@ -10,7 +10,7 @@ export default class Market {
   }
   isSubscribed(from, to) {
     const callback = ([quote, base]) => {
-      return (quote === from && base === to) || (quote === to && base === from);
+      return quote === from && base === to;
     };
     return this.marketSubscriptions.find(callback);
   }
@@ -26,8 +26,7 @@ export default class Market {
           }
         }
       } = order;
-      return (baseAsset === baseId && quoteAsset === quoteId)
-        || (baseAsset === quoteId && quoteAsset === baseId);
+      return (baseAsset === baseId && quoteAsset === quoteId);
     });
   }
   static loadLimitOrders(baseId, quoteId, limit = 10000) {
@@ -137,6 +136,13 @@ export default class Market {
   }
   getExchangeFees(from, to) {
     const marketFeePercent = to.options.market_fee_percent / 10000;
+
+    if (from.id === to.id) {
+      return {
+        marketFeePercent,
+        transactionFee: this.transactionFee
+      }
+    }
     const { options: { core_exchange_rate: coreExchangeRate } } = from;
 
     // for some uncertain reason core_exchange_rate base is not
@@ -195,15 +201,13 @@ export default class Market {
     return Math.floor((forSale * quoteAmount) / baseAmount);
   }
   getExchangeOrders(from, to, amount) {
+    //TODO: calculate optimal orders set
     const { transactionFee, marketFeePercent } = this.getExchangeFees(from, to);
     if (transactionFee > amount) {
       return [];
     }
     // sort function
     const calcOrderRate = (order) => {
-      // total amount available to fill
-      const orderCanBuy = Market.orderMaxToFill(order);
-      const toSell = amount > orderCanBuy ? orderCanBuy : amount;
       const {
         sell_price: {
           quote: {
@@ -214,12 +218,10 @@ export default class Market {
           }
         }
       } = order;
-      const toBuy = ((toSell - transactionFee) * baseAmount) / quoteAmount;
-      return (toBuy * (1 - marketFeePercent)) / toSell;
+      return baseAmount/quoteAmount;
     };
     const orders = this.getLimitOrders(to.id, from.id)
-    // filter orders that sells 'from-asset'
-      .filter(o => o.sell_price.base.asset_id === to.id)
+      .filter(o => o.for_sale > 10)
       .sort((a, b) => calcOrderRate(b) - calcOrderRate(a));
 
     const res = [];
