@@ -88,7 +88,6 @@ export const signup = async (state, { name, password, dictionary }) => {
 //write backup brainkey date to Cookie
 export const storeBackupDate = (state, {date}) => {
   const { commit } = state;
-  console.log(date);
   PersistentStorage.saveBackupDate({
     date
   });
