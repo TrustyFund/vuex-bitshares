@@ -5,6 +5,7 @@ import account from './modules/account';
 import portfolio from './modules/portfolio';
 import transactions from './modules/transactions';
 import operations from './modules/operations';
+import market from './modules/market';
 
 export default function install(store) {
   store.registerModule('connection', connection);
@@ -14,4 +15,5 @@ export default function install(store) {
   store.registerModule('portfolio', portfolio);
   store.registerModule('transactions', transactions);
   store.registerModule('operations', operations);
+  store.registerModule('market', market);
 }

@@ -48,7 +48,8 @@ export const fetchPortfolioData = async ({ commit, rootGetters }, {
       commit(types.FETCH_PORTFOLIO_ASSET_COMPLETE, {
         id,
         data: {
-          name, balance, balanceBase, balanceFiat, change
+          name, balance, balanceBase, balanceFiat, change,
+          precision: assets[id].precision
         }
       });
     } else {

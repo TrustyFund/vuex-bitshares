@@ -178,7 +178,9 @@ export const distributionSampling = (proportions, accuracy) => {
  */
 export const calcPortfolioDistributionChange = (baseBalances, update) => {
   const total = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
+  console.log(total);
   const distribution = distributionFromBalances(baseBalances);
+  console.log(distribution);
   const result = Object.keys(update)
     .reduce(
       ({ sell, buy }, key) => {
