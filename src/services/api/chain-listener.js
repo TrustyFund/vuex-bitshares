@@ -82,12 +82,6 @@ class ChainListener {
       this._hasSignUpOperationsPending = true;
     });
   }
-  subscribeToUserOperations({ userId, callback }) {
-    this._user = { id: userId, callback };
-  }
-  unsubscribeFromUserOperations() {
-    this._user = { id: null, callback: null };
-  }
 }
 
 
