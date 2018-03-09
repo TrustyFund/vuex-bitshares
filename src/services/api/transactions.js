@@ -74,7 +74,7 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
   });
 };
 
-export default { 
+export default {
   transferAsset,
   signTransaction
 };
