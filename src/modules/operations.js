@@ -61,7 +61,7 @@ const actions = {
    */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
-    API.ChainListener.subscribeToUserOperations({
+    API.ChainListener.addSubscription('userOperation', {
       userId,
       callback: (operation) => {
         actions.addUserOperation(store, { operation, userId });
@@ -75,7 +75,7 @@ const actions = {
    */
   unsubscribeFromUserOperations(store) {
     const { commit } = store;
-    API.ChainListener.unsubscribeFromUserOperations();
+    API.ChainListener.deleteSubscription('userOperation');
     commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
   }
 };

@@ -12,7 +12,7 @@ const API = {
   Account,
   ChainListener,
   Transactions,
-  Market
+  Market,
   Operations
 };
 
