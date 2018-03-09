@@ -26,7 +26,7 @@ export const isValidPassword = state => {
 };
 
 export const isLocked = state => {
-  return state.aesPrivate === null;
+  return !state.aesPrivate;
 };
 
 export const getAccountError = state => {
