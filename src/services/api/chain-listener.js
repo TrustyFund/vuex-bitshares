@@ -1,6 +1,5 @@
 /* eslint no-underscore-dangle: 0 */
 import { Apis } from 'bitsharesjs-ws';
-import { ChainTypes } from 'bitsharesjs';
 import SubscriptionBuilder from './subscription-builder';
 /**
  * Subscribe to updates from bitsharesjs-ws
@@ -24,19 +23,29 @@ class ChainListener {
     });
   }
 
-  addSubscription(type, payload) {
+  addSubscription(type, payload, wait = false) {
+    if (wait) {
+      return new Promise((resolve) => {
+        payload.callback = (operation) => {
+          this.deleteSubscription(type);
+          resolve(operation.result[1]);
+        };
+        this._subscribers.push(new SubscriptionBuilder(type, payload));
+      });
+    }
     this._subscribers.push(new SubscriptionBuilder(type, payload));
+    return true;
   }
 
   deleteSubscription(type) {
     let subscriptionIndex = -1;
-    this._subscribers.forEach((sub,index) => {
+    this._subscribers.forEach((sub, index) => {
       if (sub.getType() === type) {
         subscriptionIndex = index;
       }
-    })
+    });
     if (subscriptionIndex > -1) {
-      this._subscribers.splice(subscriptionIndex,1);
+      this._subscribers.splice(subscriptionIndex, 1);
     }
   }
 
@@ -46,40 +55,10 @@ class ChainListener {
     });
   }
   _operationCb(operation) {
-    if (this._hasSignUpOperationsPending && ChainListener._isSignUpOperation(operation)) {
-      this._handleSignUpOperation(operation);
-    }
-
     this._subscribers.forEach((subscriber) => {
       if (subscriber.checkOperation(operation)) {
         subscriber.notify(operation);
       }
-    });
-  }
-  _handleSignUpOperation(operation) {
-    const payload = operation.op[1];
-    const { name } = payload;
-    const id = operation.result[1];
-    console.log('new user signed up : ', name, id);
-    console.log(operation);
-    if (this._signUpWaitingList[name]) {
-      this._signUpWaitingList[name].resolve(id);
-      delete this._signUpWaitingList[name];
-      this._checkForSignUpOperations();
-    }
-  }
-  static _isSignUpOperation(operation) {
-    return (operation.id && operation.id.includes('1.11.')
-      && operation.op[0] === ChainTypes.operations.account_create);
-  }
-  _checkForSignUpOperations() {
-    this._hasSignUpOperationsPending = !!(Object.keys(this._signUpWaitingList).length);
-  }
-  listenToSignupId({ name }) {
-    console.log('started listening to sign up id : ', name);
-    return new Promise((resolve) => {
-      this._signUpWaitingList[name] = { resolve };
-      this._hasSignUpOperationsPending = true;
     });
   }
 }

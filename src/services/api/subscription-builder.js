@@ -1,13 +1,35 @@
 import { ChainTypes } from 'bitsharesjs';
 
-class SubscriptionBuilder {
-  constructor(type, payload) {
-    switch(type) {
-      case 'userOperation': {
-        return new UserOperation(payload);
-        break;
+class SignUp {
+  constructor({ name, callback }) {
+    this._name = name;
+    this._callback = callback;
+    this.type = 'userSignUp';
+  }
+
+  notify(operation) {
+    this._callback(operation);
+  }
+
+  checkOperation(operation) {
+    if (operation.id && operation.id.includes('1.11.')
+      && operation.op[0] === ChainTypes.operations.account_create){
+      const payload = operation.op[1];
+      const { name } = payload;
+      const id = operation.result[1];
+      if (this._name === name) {
+        return true;
       }
     }
+    return false;
+  }
+
+  notify(operation) {
+    this._callback(operation);
+  }
+
+  getType() {
+    return this.type;
   }
 }
 
@@ -15,6 +37,7 @@ class UserOperation {
   constructor({ userId, callback }) {
     this._userId = userId;
     this._callback = callback;
+    this.type = 'userOperation';
 
     this._operationTypes = {};
     Object.keys(ChainTypes.operations).forEach(name => {
@@ -58,8 +81,18 @@ class UserOperation {
   }
 
   getType() {
-    return 'userOperation';
+    return this.type;
   }
 }
 
-export default SubscriptionBuilder
+class SubscriptionBuilder {
+  constructor(type, payload) {
+    switch (type) {
+      case 'userOperation': return new UserOperation(payload);
+      case 'userSignUp': return new SignUp(payload);
+      default: break;
+    }
+  }
+}
+
+export default SubscriptionBuilder;
