@@ -4,6 +4,7 @@ import Connection from './api/connection';
 import ChainListener from './api/chain-listener';
 import Transactions from './api/transactions';
 import Market from './api/market';
+import Operations from './api/operations';
 
 const API = {
   Connection,
@@ -12,6 +13,7 @@ const API = {
   ChainListener,
   Transactions,
   Market
+  Operations
 };
 
 export default API;

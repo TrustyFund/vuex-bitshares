@@ -16,5 +16,8 @@ export function getDefaultAssetsIds({ defaultAssetsIds }) {
  * Returns function to get asset by id
  */
 export function getAssetById({ assets }) {
-  return (id) => ((assets && assets[id]) ? assets[id] : false);
+  return (id) => ((assets && assets[id]) ? assets[id] : {
+    symbol: '...',
+    precision: 1
+  });
 }
