@@ -1,6 +1,5 @@
 import { ChainTypes, TransactionBuilder, ops } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
-import API from '../api';
 
 export default class Market {
   constructor(transactionFee) {
@@ -9,11 +8,23 @@ export default class Market {
     this.exchangeRateSubscriptions = [];
     this.transactionFee = transactionFee;
   }
-  isSubscribed(from, to) {
-    return this.marketSubscriptions.find(
-      ([quote, base]) => (quote == from && base == to) || (quote == to && base == from)
-    );
+
+  /**
+   * checks subscription
+   * @param {string} fromId
+   * @param {string} toId
+   */
+  isSubscribed(fromId, toId) {
+    const callback = ([quote, base]) => {
+      return quote === fromId && base === toId;
+    };
+    return this.marketSubscriptions.find(callback);
   }
+  /**
+   * gets limit orders from market store
+   * @param {string} baseId
+   * @param {string} quoteId
+   */
   getLimitOrders(baseId, quoteId) {
     return this.limitOrders.filter(order => {
       const {
@@ -26,35 +37,50 @@ export default class Market {
           }
         }
       } = order;
-      return (baseAsset == baseId && quoteAsset == quoteId) 
-        || (baseAsset == quoteId && quoteAsset == baseId);
+      return (baseAsset === baseId && quoteAsset === quoteId);
     });
   }
-  loadLimitOrders(baseId, quoteId, limit = 200) {
+  /**
+   * load limit ordesr from api
+   * @param {string} baseId
+   * @param {string} quoteId
+   * @param {number} limit - max orders count to fetch
+   */
+  static loadLimitOrders(baseId, quoteId, limit = 200) {
     return Apis.instance().db_api().exec(
-      "get_limit_orders",
+      'get_limit_orders',
       [baseId, quoteId, limit]
     );
   }
+  /**
+   * subscribes to specified market, to keep actual limit orders will be stored
+   * in this.limitOrders
+   * @param {string} baseId
+   * @param {string} quoteId
+   */
   async subscribeToMarket(baseId, quoteId) {
-    if(baseId == quoteId) return;
+    if (baseId === quoteId) return;
     if (!this.isSubscribed(baseId, quoteId)) {
-      const orders = await this.loadLimitOrders(baseId, quoteId);
+      const orders = await Market.loadLimitOrders(baseId, quoteId);
       this.limitOrders = [...this.limitOrders, ...orders];
       this.marketSubscriptions.push([baseId, quoteId]);
-      return Apis.instance().db_api().exec(
-        "subscribe_to_market", 
+      await Apis.instance().db_api().exec(
+        'subscribe_to_market',
         [this.onMarketUpdate.bind(this), baseId, quoteId]
       );
     } else {
       console.warn(`market: already subscribed to ${baseId} <-> ${quoteId}`);
     }
   }
-  onOrderFill(notification) {
-    const [[, data]] = notification;
-    const {fee, order_id, account_id, pays: {amount}} = data;
-    const idx = this.limitOrders.findIndex(({ id }) => id == order_id);
-    if (idx != -1) {
+  /**
+   * called when order was filled in network, corrects for_sale value
+   * for specified order. Called by subscription callback
+   * @param {Object} data - fill order operation json-api representation
+   */
+  onOrderFill(data) {
+    const { order_id: orderId, pays: { amount } } = data;
+    const idx = this.limitOrders.findIndex(({ id }) => id === orderId);
+    if (idx !== -1) {
       this.limitOrders[idx].for_sale -= amount;
 
       const order = this.limitOrders[idx];
@@ -63,19 +89,27 @@ export default class Market {
         order.sell_price.quote.asset_id
       );
     } else {
-      console.warn("market: cant find order to fill");
+      console.warn('market: cant find order to fill');
     }
   }
+  /**
+   * called when order was deleted in network. Called by subscription callback
+   * @param {string} notification - order id
+   */
   onOrderDelete(notification) {
     const idx = this.limitOrders.findIndex(e => {
-      return String(e.id) == notification
+      return e.id === notification;
     });
     if (idx >= 0) {
-      this.limitOrders.splice(idx,1);
+      this.limitOrders.splice(idx, 1);
     } else {
-      console.warn("market: unknown order removed", notification);
+      console.warn('market: unknown order removed', notification);
     }
   }
+  /**
+   * called when new order appears in network. Called by subscription callback
+   * @param {Object} order - order json-api representation
+   */
   onNewLimitOrder(order) {
     this.limitOrders.push(order);
     this.notifyExchangeRateSubscribers(
@@ -83,33 +117,45 @@ export default class Market {
       order.sell_price.quote.asset_id
     );
   }
+  /**
+   * subscription callback
+   * @callback subscribeToMarketCallback
+   * @param {Array} notifications - array containing array of notifications
+   */
   onMarketUpdate([notifications]) {
     const handleNotification = (notification) => {
       if (Array.isArray(notification)) {
-        //operation notification
+        // operation notification
         const [[operation, data]] = notification;
-        if (operation == ChainTypes.operations.fill_order) {
-          this.onOrderFill(notification);
+        if (operation === ChainTypes.operations.fill_order) {
+          this.onOrderFill(data);
         } else {
-          console.warn("market: unknown operation ", notification);
+          console.warn('market: unknown operation ', notification);
         }
-      } else if (typeof notification == 'object') {
-        //new order 
-        const { id } = notification
-        //make sure its not a call order
-        if(id.substr(0,3) != '1.8') {
+      } else if (typeof notification === 'object') {
+        // new order
+        const { id } = notification;
+        // make sure its not a call order
+        if (id.substr(0, 3) !== '1.8') {
           this.onNewLimitOrder(notification);
         }
-      } else if (typeof notification == 'string') {
+      } else if (typeof notification === 'string') {
         this.onOrderDelete(notification);
       } else {
-        console.warn("market: unhandled notification ", notification);
+        console.warn('market: unhandled notification ', notification);
       }
-    }
+    };
     notifications.forEach(handleNotification.bind(this));
   }
+  /**
+   * subscribes to exchange rate for specified assets and amount to exchange
+   * @param {Object} from - asset object
+   * @param {Object} to - asset object
+   * @param {number} amount - "from" asset balance
+   * @param {subscribeToMarketCallback} callback
+   */
   async subscribeExchangeRate(from, to, amount, callback) {
-    if(from.id == amount.id) {
+    if (from.id === amount.id) {
       callback(amount);
       return;
     }
@@ -118,56 +164,110 @@ export default class Market {
     this.notifyExchangeRate(subscription);
     this.exchangeRateSubscriptions.push(subscription);
   }
-  unsubscribeExchangeRate(from, to, amount) {
+
+  /**
+   * unsubscribes from exchenge rate updates, in case when balance has changed i.e.
+   * @param {Object} from - asset object
+   * @param {Object} to - asset object
+   * @amount {number} amount - specified for subscription balance
+   */
+  unsubscribeExchangeRate(quote, base, amount) {
     const idx = this.exchangeRateSubscriptions.findIndex(subscription => {
       const { from, to } = subscription;
-      return base == to.id && quote == from.id && subscription.amount == amount
-    })
+      return base === to.id && quote === from.id && subscription.amount === amount;
+    });
     if (idx >= 0) {
       this.exchangeRateSubscriptions.splice(idx, 1);
     }
   }
+  /**
+   * notifies quote -> base exchange rate subscribers
+   * @param {string} baseId
+   * @param {string} quoteId
+   */
   notifyExchangeRateSubscribers(baseId, quoteId) {
     this.exchangeRateSubscriptions.forEach(subscription => {
       const { from, to } = subscription;
-      if (base == to.id && quote == from.id) this.notifyExchangeRate(subscription);
-    })
+      if (baseId === to.id && quoteId === from.id) this.notifyExchangeRate(subscription);
+    });
   }
+  /**
+   * called when exchange rate has changed
+   * @callback exchangeRateCallback
+   * @param {number} value - amount of "to" asset you can get from exchange
+   */
+
+  /**
+   * calls back specified subscription
+   * @param {Object} subscription
+   * @param {Object} subscription.from - asset object
+   * @param {Object} subscription.to - asset object
+   * @param {number} subscription.amount - "from" asset balance
+   * @param {exchangeRateCallback} subscription.callback
+   */
   notifyExchangeRate({ from, to, amount, callback }) {
     callback(this.calcExchangeRate(from, to, amount));
   }
-  getExchangeFees (from, to) {
-    const marketFeePercent = to.options.market_fee_percent/10000;
-    const { options: { core_exchange_rate }} = from;
+  /**
+   * returns market fee percent scaled to 0..1, and create_limit_order
+   * operation fee value in "from" asset
+   * @param {Object} from
+   * @param {Object} to
+   */
+  getExchangeFees(from, to) {
+    const marketFeePercent = to.options.market_fee_percent / 10000;
 
-    //for some uncertain reason core_exchange_rate base is not
-    //always bts, it can be quote too
-    const quotient = core_exchange_rate.base.asset_id == from.id 
-      ? core_exchange_rate.base.amount 
-      : core_exchange_rate.quote.amount
+    if (from.id === to.id) {
+      return {
+        marketFeePercent,
+        transactionFee: this.transactionFee
+      };
+    }
+    const { options: { core_exchange_rate: coreExchangeRate } } = from;
 
-    const divisor = core_exchange_rate.base.asset_id == from.id 
-      ? core_exchange_rate.quote.amount 
-      : core_exchange_rate.base.amount
+    // for some uncertain reason core_exchange_rate base is not
+    // always bts, it can be quote too
+    const quotient = coreExchangeRate.base.asset_id === from.id
+      ? coreExchangeRate.base.amount
+      : coreExchangeRate.quote.amount;
 
-    //transaction fee equivalent in "from" asset
-    const transactionFee = Math.ceil(this.transactionFee * quotient  / divisor);
+    const divisor = coreExchangeRate.base.asset_id === from.id
+      ? coreExchangeRate.quote.amount
+      : coreExchangeRate.base.amount;
+
+    // transaction fee equivalent in 'from' asset
+    const transactionFee = Math.ceil((this.transactionFee * quotient) / divisor);
     return {
       transactionFee,
       marketFeePercent
-    }
+    };
   }
-  calcExchangeRate (from, to, amount) {
-    if (from.id == to.id) return amount;
+  /**
+   * calculates amount of "to" asset you can exchange amount of "from" asset to
+   * @param {Object} from
+   * @param {Object} to
+   * @param {number} amount
+   */
+  calcExchangeRate(from, to, amount) {
+    if (from.id === to.id) return amount;
     const { marketFeePercent } = this.getExchangeFees(from, to);
     const orders = this.getExchangeOrders(from, to, amount);
     return orders.reduce(
-      (res, { order, amount }) => res += Market.calcOrderOutput(order, amount, marketFeePercent),
+      (res, { order, amount: orderAmount }) => {
+        return res + Market.calcOrderOutput(order, orderAmount, marketFeePercent);
+      },
       0
     );
   }
-  static calcOrderOutput (order, amount, marketFeePercent) {
-    const { 
+  /**
+   * calculates amount of base asset you can get from order with specified
+   * amount of quote asset
+   * @param {Object} order - limit order json-api representation
+   * @param {number} amount - quote asset amount
+   * @param {number} marketFeePercent - base asset market fee scaled to 0..1
+   */
+  static calcOrderOutput(order, amount, marketFeePercent) {
+    const {
       sell_price: {
         base: {
           amount: baseAmount
@@ -177,77 +277,136 @@ export default class Market {
         }
       }
     } = order;
-    return Math.floor((amount * (baseAmount/quoteAmount)) * (1 - marketFeePercent));
+    return Math.floor((amount * (baseAmount / quoteAmount)) * (1 - marketFeePercent));
   }
-  static orderMaxToFill (order) {
-    return Math.floor(order.for_sale * order.sell_price.quote.amount / order.sell_price.base.amount);
+  /**
+   * calculates amount of quote asset you can send to seller
+   * @param {Object} order - order json-api representation
+   */
+  static orderMaxToFill(order) {
+    const {
+      for_sale: forSale,
+      sell_price: {
+        quote: {
+          amount: quoteAmount
+        },
+        base: {
+          amount: baseAmount
+        }
+      }
+    } = order;
+    return Math.floor((forSale * quoteAmount) / baseAmount);
   }
-  getExchangeOrders (from, to, amount) {
-    const { transactionFee, marketFeePercent } = this.getExchangeFees(from, to);
+  /**
+   * returns set of orders you need to exchange specified amount of "from" asset
+   * to "to" asset
+   * @param {Object} from
+   * @param {Object} to
+   * @param {number} amount
+   */
+  getExchangeOrders(from, to, amount) {
+    // TODO: calculate optimal orders set
+    const { transactionFee } = this.getExchangeFees(from, to);
     if (transactionFee > amount) {
       return [];
     }
-    //sort function
+    // sort function
     const calcOrderRate = (order) => {
-      //total amount available to fill
-      const orderCanBuy = Market.orderMaxToFill(order);
-      const toSell = amount > orderCanBuy ? orderCanBuy : amount;
-      const toBuy = (toSell - transactionFee) * order.sell_price.base.amount / order.sell_price.quote.amount;
-      return toBuy * (1 - marketFeePercent) / toSell;
-    }
+      const {
+        sell_price: {
+          quote: {
+            amount: quoteAmount
+          },
+          base: {
+            amount: baseAmount
+          }
+        }
+      } = order;
+      return baseAmount / quoteAmount;
+    };
     const orders = this.getLimitOrders(to.id, from.id)
-    //filter orders that sells "from-asset"
-      .filter(o => o.sell_price.base.asset_id == to.id)
-      .sort((a,b) => calcOrderRate(b) - calcOrderRate(a));
+      .filter(o => o.for_sale > 10)
+      .sort((a, b) => calcOrderRate(b) - calcOrderRate(a));
 
-    const res = []
-    for (const order of orders) {
+    const res = [];
+    let accumulator = amount;
+    for (let i = 0; i < orders.length; i += 1) {
+      const order = orders[i];
       const orderCanBuy = Market.orderMaxToFill(order);
 
-      if (orderCanBuy > amount - transactionFee) {
+      if (orderCanBuy > accumulator - transactionFee) {
         res.push({
-          amount: amount - transactionFee,
+          amount: accumulator - transactionFee,
           order
         });
-        break
+        break;
       } else {
         res.push({
           amount: orderCanBuy,
           order
         });
-        amount -= orderCanBuy + transactionFee;
+        accumulator -= orderCanBuy + transactionFee;
       }
     }
     return res;
   }
-  getExchangeToBaseOrders (balances, base, accountId) {
-    return Promise.all(
-      balances.filter(({ asset: { id }}) => id != base.id)
-      .reduce((res, { asset, balance }) => res.concat(this.getExchangeOrders(asset, base, balance)), [])
-      .map(({ amount, order }) => Market.getFillingOrder(order, amount, accountId))
-    );
-  }
-  getExchangeToDistributionOrders (base, amount, distribution, accountId) {
-    return Promise.all(
-      distribution.filter(({ asset: { id }}) => id != base.id)
+  /**
+   * returns set of orders you need to exchange specified set of assets balances
+   * to base asset
+   * @param {Object} balances - { assetId: balance }
+   * @param {Object} base - asset object
+   * @param {string} accountId - seller account id
+   */
+  getExchangeToBaseOrders(balances, base, accountId) {
+    return Promise.all(balances.filter(({ asset: { id } }) => id !== base.id)
       .reduce(
-        (res, { asset, share }) => res.concat(this.getExchangeOrders(base, asset, Math.floor(amount * share))),
+        (res, { asset, balance }) => {
+          return res.concat(this.getExchangeOrders(asset, base, balance));
+        },
         []
       )
-      .map(({ amount, order }) => Market.getFillingOrder(order, amount, accountId))
-    );
+      .map(({ amount, order }) => Market.getFillingOrder(order, amount, accountId)));
   }
+  /**
+   * returns set of orders youn need to exchange specified amount of base asset
+   * to specified distribution of target assets
+   * @param {Object} base - asset object
+   * @param {number} amount - amount of base asset
+   * @param {Object} distribution - {assetId: share}, 0 <= share <= 1
+   * @param {string} accountId
+   */
+  getExchangeToDistributionOrders(base, amount, distribution, accountId) {
+    return Promise.all(distribution.filter(({ asset: { id } }) => id !== base.id)
+      .reduce(
+        (res, { asset, share }) => {
+          return res.concat(this.getExchangeOrders(base, asset, Math.floor(amount * share)));
+        },
+        []
+      )
+      .map(({ amount: orderAmount, order }) => {
+        return Market.getFillingOrder(order, orderAmount, accountId);
+      }));
+  }
+  /**
+   * returns new order object you need to create to fill specified order
+   * with specified amount of quote asset.
+   * @param {Object} order
+   * @param {number} amount
+   * @param {string} accountId
+   * @param {boolean} btsFee - if true, sets order transaction fee in quote,
+   * in bts otherwise
+   */
   static async getFillingOrder(order, amount, accountId, btsFee = false) {
-    //TODO: handle empty fee pool
+    // TODO: handle empty fee pool
     const {
       sell_price: {
-        base: { amount: base, asset_id: baseAsset},
-        quote: { amount: quote, asset_id: quoteAsset}
+        base: { amount: base, asset_id: baseAsset },
+        quote: { amount: quote, asset_id: quoteAsset }
       }
     } = order;
     const expiration = new Date();
     expiration.setYear(expiration.getFullYear() + 5);
-    const toReceive = Math.floor(amount*base/quote);
+    const toReceive = Math.floor((amount * base) / quote);
 
     const newOrder = {
       seller: accountId,
@@ -255,23 +414,26 @@ export default class Market {
         asset_id: quoteAsset,
         amount
       },
-      min_to_receive: { 
+      min_to_receive: {
         asset_id: baseAsset,
         amount: toReceive
       },
-      expiration: expiration,
+      expiration,
       fill_or_kill: true
     };
 
-    const serializedOperation = ops.operation.toObject(
-      (new TransactionBuilder).get_type_operation('limit_order_create', newOrder)
+    const dummyTransaction = new TransactionBuilder();
+    const operation = dummyTransaction.get_type_operation(
+      'limit_order_create',
+      newOrder
     );
+    const serializedOperation = ops.operation.toObject(operation);
     const [fee] = await Apis.instance().db_api().exec(
       'get_required_fees',
-      [[serializedOperation], btsFee ? '1.3.0' : quoteAsset]);
+      [[serializedOperation], btsFee ? '1.3.0' : quoteAsset]
+    );
 
-    return { ...newOrder, fee};
-    //return newOrder;
+    return { ...newOrder, fee };
   }
 }
 
