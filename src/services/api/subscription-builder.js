@@ -1,3 +1,4 @@
+/* eslint no-underscore-dangle: 0 */
 import { ChainTypes } from 'bitsharesjs';
 
 class SignUp {
@@ -13,19 +14,14 @@ class SignUp {
 
   checkOperation(operation) {
     if (operation.id && operation.id.includes('1.11.')
-      && operation.op[0] === ChainTypes.operations.account_create){
+      && operation.op[0] === ChainTypes.operations.account_create) {
       const payload = operation.op[1];
       const { name } = payload;
-      const id = operation.result[1];
       if (this._name === name) {
         return true;
       }
     }
     return false;
-  }
-
-  notify(operation) {
-    this._callback(operation);
   }
 
   getType() {
@@ -54,10 +50,10 @@ class UserOperation {
   }
 
   checkOperation(operation) {
-    if (operation.id.includes('1.11.')){
+    if (operation.id.includes('1.11.')) {
       const _userOperationsCodes = [0, 1, 2, 4];
       const _opCode = operation.op[0];
-       if (_userOperationsCodes.includes(_opCode)) {
+      if (_userOperationsCodes.includes(_opCode)) {
         const usersIds = this._getOperationUserIds(operation);
         if (usersIds.includes(this._userId)) {
           return true;
