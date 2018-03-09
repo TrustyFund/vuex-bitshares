@@ -30,7 +30,7 @@ export default class Market {
         || (baseAsset == quoteId && quoteAsset == baseId);
     });
   }
-  loadLimitOrders(baseId, quoteId, limit = 10000) {
+  loadLimitOrders(baseId, quoteId, limit = 200) {
     return Apis.instance().db_api().exec(
       "get_limit_orders",
       [baseId, quoteId, limit]
