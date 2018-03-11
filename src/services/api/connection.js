@@ -13,18 +13,22 @@ const nodesManager = new NodesManager({
 const connect = (statusCallback, changeNode) => {
   const url = changeNode ? nodesManager.getAnotherNodeUrl() : nodesManager.getInitialNodeUrl();
   console.log('Connecting to node : ', url);
-
+  Apis.setAutoReconnect(false);
   Apis.setRpcConnectionStatusCallback(statusCallback);
   Apis.instance(url, true).init_promise.then(() => {
     statusCallback('realopen');
     nodesManager.testNodesPings();
-  }).catch(error => {
-    console.log('Connection error : ', error);
-    // connect to another node
-    connect(statusCallback, true);
+  }).catch(() => {
+    statusCallback('error');
   });
 };
 
+//
+const disconnect = () => {
+  Apis.setRpcConnectionStatusCallback(null);
+  return Apis.close();
+};
+
 export default {
-  connect
+  connect, disconnect
 };

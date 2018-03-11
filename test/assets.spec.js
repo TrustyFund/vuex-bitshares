@@ -48,7 +48,7 @@ describe('Assets module: getters', () => {
     store.state.assets.assets = testAssets;
     expect(store.getters['assets/getAssets']).toEqual(testAssets);
     expect(store.getters['assets/getAssetById']('1.3.0')).toEqual(testAssets['1.3.0']);
-    expect(store.getters['assets/getAssetById']('aaaa')).toBeFalsy();
+    expect(store.getters['assets/getAssetById']('aaaa')).toEqual({ precision: 1, symbol: '...' });
   });
 });
 
@@ -98,7 +98,7 @@ describe('Assets module: actions', () => {
     // todo: remove
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
-    store.dispatch('assets/fetchAssets', ['1.3.0', '1.3.113']).then(() => {
+    store.dispatch('assets/fetchAssets', { assets: ['1.3.0', '1.3.113'] }).then(() => {
       const recievedAssets = store.state.assets.assets;
       expect(recievedAssets).toBeDefined();
       expect(Object.keys(recievedAssets).length).toBe(2);
@@ -170,8 +170,8 @@ describe('Assets module: actions', () => {
   test('handles bad assets fetch request', done => {
     // todo: remove
     store.state.assets.assets = {};
-    store.dispatch('assets/fetchAssets', null).then(response => {
-      expect(response).toBeNull();
+    store.dispatch('assets/fetchAssets', { assets: ['hzhzhz'] }).then(response => {
+      expect(response).toEqual({});
       expect(store.state.assets.assets).toEqual({});
       done();
     });

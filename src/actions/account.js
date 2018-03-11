@@ -126,10 +126,16 @@ export const login = async (state, { password, brainkey }) => {
   };
 };
 
+/**
+ * Log out
+ */
 export const logout = ({ commit }) => {
   commit(types.ACCOUNT_LOGOUT);
 };
 
+/**
+ * Gets user's data from storage and saves it
+ */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
   if (data) {

@@ -40,3 +40,11 @@ export const getAccountUserId = state => {
 export const getAccountPendingState = state => {
   return state.pending;
 };
+
+export const getOperations = state => {
+  return state.operations;
+};
+
+export const getAccountOperationsPendingState = state => {
+  return state.operationsPending;
+};
