@@ -204,4 +204,43 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
       });
   return Object.assign(result, { buy: distributionFromBalances(result.buy) });
 };
+
+
+export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, balance }) => {
+
+
+
+  // const balanceValuePrecised = balance / (10 ** asset.precision);
+
+  const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
+
+  const baseValuePrecised = baseValue / ( 10 ** baseAsset.precision);
+
+  const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
+
+  let change = calcPercentChange(prices, fiatMultiplier);
+
+  if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
+
+  console.log('========');
+  console.log(asset.symbol);
+  console.log('base precision: ', baseAsset.precision);
+  console.log('balance: ', balance);
+  console.log('base value: ', baseValue);
+  console.log('fiat multiplier: ', fiatMultiplier);
+  console.log('fiat value: ', fiatValue);
+  console.log('base value precised : ', baseValuePrecised );
+  console.log('change: ', change);
+
+  return {
+    name: asset.symbol,
+    balance,
+    // balanceValue,
+    baseValue,
+    baseValuePrecised,
+    basePrecision: baseAsset.precision,
+    fiatValue,
+    change
+  };
+}
   

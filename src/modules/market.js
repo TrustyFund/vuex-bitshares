@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
 
@@ -40,6 +41,10 @@ const getters = {
   getBaseAssetId: state => state.baseAssetId,
   getAssetMultiplier: state => {
     return (assetId) => {
+      if (!state.history[assetId]) return {
+        first: 0,
+        last: 0
+      };
       return {
         first: 1 / state.history[assetId].first,
         last: 1 / state.history[assetId].last
@@ -69,7 +74,8 @@ const mutations = {
   [types.FETCH_MARKET_HISTORY_COMPLETE](state, { prices }) {
     state.fetching = false;
     Object.keys(prices).forEach(assetId => {
-      state.history[assetId] = prices[assetId];
+      // state.history[assetId] = prices[assetId];
+      Vue.set(state.history, assetId, prices[assetId]);
     });
   },
   [types.FETCH_MARKET_HISTORY_ERROR](state) {

@@ -4,7 +4,7 @@ import * as getters from '../getters/user';
 
 const initialState = {
   account: null,
-  balances: [],
+  balances: {},
   fetching: false,
   error: false
 };
