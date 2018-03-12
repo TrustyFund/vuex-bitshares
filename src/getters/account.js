@@ -1,5 +1,4 @@
 import { PrivateKey, key } from 'bitsharesjs';
-import PersistentStorage from '../services/persistent-storage';
 
 const ACTIVE_KEY_INDEX = 0;
 const OWNER_KEY_INDEX = 1;
