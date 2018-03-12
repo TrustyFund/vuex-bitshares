@@ -113,7 +113,8 @@ export const login = async (state, { password, brainkey }) => {
     PersistentStorage.saveUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey,
-      encryptionKey: wallet.encryptionKey
+      encryptionKey: wallet.encryptionKey,
+      passwordPubkey: wallet.passwordPubkey
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {

@@ -64,7 +64,7 @@ const mutations = {
     state.encryptedBrainkey = encryptedBrainkey;
     state.encryptionKey = encryptionKey;
     state.backupDate = backupDate;
-    state.passwordPubkey;
+    state.passwordPubkey = passwordPubkey;
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
     state.passwordPubkey = null;

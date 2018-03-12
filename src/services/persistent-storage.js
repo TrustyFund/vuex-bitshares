@@ -14,7 +14,7 @@ const PersistentStorage = {
     const encryptionKey = Cookies.get('BITSHARES_ENCRYPTION_KEY');
     const backupDate = Cookies.get('BACKUP_DATE');
     const passwordPubkey = Cookies.get('BITSHARES_PASSWORD_PUBKEY');
-    if (!userId || !encryptedBrainkey || !encryptionKey || passwordPubkey) return null;
+    if (!userId || !encryptedBrainkey || !encryptionKey || !passwordPubkey) return null;
     if (typeof (userId) !== 'string') return null;
     return {
       userId,
