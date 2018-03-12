@@ -1,13 +1,11 @@
 /* eslint no-underscore-dangle: 0 */
 /* eslint camelcase: 0 */
 
-import { ChainTypes, ChainValidation } from 'bitsharesjs';
+import { ChainTypes } from 'bitsharesjs';
 
 const { object_type } = ChainTypes;
 
-const limit_order = parseInt(object_type.limit_order, 10);
 const history = parseInt(object_type.operation_history, 10);
-const order_prefix = '1.' + limit_order + '.';
 const history_prefix = '1.' + history + '.';
 
 class Subscription {
@@ -25,32 +23,6 @@ class Subscription {
 
   notify(operation) {
     this._callback(operation);
-  }
-}
-
-class Market extends Subscription {
-  constructor({ base, quote, callback }) {
-    super('market' + base + quote, callback);
-    this._callback = callback;
-  }
-
-  notify(obj) {
-    if (ChainValidation.is_object_id(obj)) {
-      if (obj.search(order_prefix) === 0) {
-        this._callback('deleteOrder', obj);
-      }
-    } else {
-      if (obj.id && obj.id.startsWith(history_prefix)) {
-        const [type] = obj.op;
-        if (type === ChainTypes.operations.fill_order) {
-          this._callback('fillOrder', obj);
-        }
-      }
-
-      if (obj.id && obj.id.startsWith(order_prefix)) {
-        this._callback('newOrder', obj);
-      }
-    }
   }
 }
 
@@ -116,7 +88,6 @@ class UserOperations extends Subscription {
 }
 
 const Subscriptions = {
-  Market,
   SignUp,
   UserOperations
 };
