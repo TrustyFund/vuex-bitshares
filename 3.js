@@ -1,8 +1,9 @@
-import * as utils from '../../utils/market';
-import listener from './chain-listener';
-import Subscriptions from './subscriptions';
+import { Apis } from 'bitsharesjs-ws';
+import * as utils from './src/utils/market';
+import listener from './src/services/api/chain-listener';
+import Subscriptions from './src/services/api/subscriptions';
 
-export default class Markets {
+class Markets {
   constructor(transactionFee) {
     this.markets = {};
     this.transactionFee = transactionFee;
@@ -77,7 +78,7 @@ export default class Markets {
   }
 
   getLimitOrders(baseId, quoteId) {
-    return this.markets[baseId][quoteId];
+    return this.markets[baseId][quoteId].orders;
   }
 
   setDefaultObjects(baseId, quoteId) {
@@ -100,6 +101,7 @@ export default class Markets {
     const { baseOrders, quoteOrders } = await utils.loadLimitOrders(baseId, quoteId);
     this.setLimitOrders(baseId, quoteId, baseOrders);
     this.setLimitOrders(quoteId, baseId, quoteOrders);
+    console.log(this.markets);
   }
 
   /**
@@ -245,3 +247,13 @@ export default class Markets {
       }));
   }
 }
+
+const main = async () => {
+  await Apis.instance('wss://openledger.hk/ws', true).init_promise;
+
+  listener.enable();
+  const market = new Markets(92);
+  await market.subscribeToMarket('1.3.0', '1.3.113');
+};
+
+main().catch(console.error);

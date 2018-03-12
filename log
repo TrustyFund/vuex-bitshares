@@ -1,0 +1,78 @@
+Connected to API node: wss://bitshares.openledger.info/ws
+BTS   1.3.0 :  0.00125
+CNY   1.3.113 :  3.2722
+USD   1.3.121 :  0.1295
+OPEN.ETH   1.3.850 :  0
+OPEN.DASH   1.3.858 :  0
+OPEN.LTC   1.3.859 :  0
+OPEN.BTC   1.3.861 :  0
+OPEN.STEEM   1.3.973 :  0
+TRFND   1.3.1893 :  0
+OPEN.EOS   1.3.1999 :  0.120947
+ELECTRON   1.3.2935 :  0
+FRESHCOIN   1.3.3128 :  0
+CEMENT   1.3.3265 :  0
+need update:  { sell: { '1.3.113': 1, '1.3.121': 1, '1.3.1999': 1 },
+  buy: { '1.3.0': 1 } }
+sell orders:  [ { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.113', amount: 32710 },
+    min_to_receive: { asset_id: '1.3.0', amount: 344536 },
+    expiration: 2023-03-12T07:34:14.065Z,
+    fill_or_kill: true,
+    fee: { amount: 12, asset_id: '1.3.113' } },
+  { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.121', amount: 1293 },
+    min_to_receive: { asset_id: '1.3.0', amount: 87538 },
+    expiration: 2023-03-12T07:34:14.068Z,
+    fill_or_kill: true,
+    fee: { amount: 2, asset_id: '1.3.121' } },
+  { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.1999', amount: 1213 },
+    min_to_receive: { asset_id: '1.3.0', amount: 4360 },
+    expiration: 2023-03-12T07:34:14.069Z,
+    fill_or_kill: true,
+    fee: { amount: 28, asset_id: '1.3.1999' } },
+  { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.1999', amount: 119678 },
+    min_to_receive: { asset_id: '1.3.0', amount: 429759 },
+    expiration: 2023-03-12T07:34:14.069Z,
+    fill_or_kill: true,
+    fee: { amount: 28, asset_id: '1.3.1999' } } ]
+exchange base asset amount:  866193
+buy orders:  []
+exchange result:  {}
+!!! GrapheneApi error:  broadcast_transaction_with_callback [ 30,
+  { ref_block_num: 56708,
+    ref_block_prefix: 2982880835,
+    expiration: '2018-03-12T07:34:31',
+    operations: [ [Array], [Array], [Array], [Array] ],
+    extensions: [],
+    signatures: 
+     [ '201552e3139a6c77addd4a7fd3f596a16a883ed06b5bab4f0a93267cfd42ad61c2413087249b90c47bf3e8b9ac81da91a388b311e808a54a9b13e6e4f352d26a0c' ] } ] { code: 1,
+  message: 'Assert Exception: !op.fill_or_kill || filled: ',
+  data: 
+   { code: 10,
+     name: 'assert_exception',
+     message: 'Assert Exception',
+     stack: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object] ] } } {"code":1,"message":"Assert Exception: !op.fill_or_kill || filled: ","data":{"code":10,"name":"assert_exception","message":"Assert Exception","stack":[{"context":{"level":"error","file":"market_evaluator.cpp","line":95,"method":"do_apply","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"!op.fill_or_kill || filled: ","data":{}},{"context":{"level":"warn","file":"market_evaluator.cpp","line":98,"method":"do_apply","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{"op":{"fee":{"amount":2,"asset_id":"1.3.121"},"seller":"1.2.383374","amount_to_sell":{"amount":1293,"asset_id":"1.3.121"},"min_to_receive":{"amount":87538,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}}},{"context":{"level":"warn","file":"evaluator.cpp","line":51,"method":"start_evaluate","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{}},{"context":{"level":"warn","file":"db_block.cpp","line":642,"method":"apply_operation","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{"op":[1,{"fee":{"amount":2,"asset_id":"1.3.121"},"seller":"1.2.383374","amount_to_sell":{"amount":1293,"asset_id":"1.3.121"},"min_to_receive":{"amount":87538,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}]}},{"context":{"level":"warn","file":"db_block.cpp","line":628,"method":"_apply_transaction","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{"trx":{"ref_block_num":56708,"ref_block_prefix":2982880835,"expiration":"2018-03-12T07:34:31","operations":[[1,{"fee":{"amount":12,"asset_id":"1.3.113"},"seller":"1.2.383374","amount_to_sell":{"amount":32710,"asset_id":"1.3.113"},"min_to_receive":{"amount":344536,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":2,"asset_id":"1.3.121"},"seller":"1.2.383374","amount_to_sell":{"amount":1293,"asset_id":"1.3.121"},"min_to_receive":{"amount":87538,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":28,"asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":1213,"asset_id":"1.3.1999"},"min_to_receive":{"amount":4360,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":28,"asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":119678,"asset_id":"1.3.1999"},"min_to_receive":{"amount":429759,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}]],"extensions":[],"signatures":["201552e3139a6c77addd4a7fd3f596a16a883ed06b5bab4f0a93267cfd42ad61c2413087249b90c47bf3e8b9ac81da91a388b311e808a54a9b13e6e4f352d26a0c"]}}},{"context":{"level":"warn","file":"db_block.cpp","line":227,"method":"push_transaction","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{"trx":{"ref_block_num":56708,"ref_block_prefix":2982880835,"expiration":"2018-03-12T07:34:31","operations":[[1,{"fee":{"amount":12,"asset_id":"1.3.113"},"seller":"1.2.383374","amount_to_sell":{"amount":32710,"asset_id":"1.3.113"},"min_to_receive":{"amount":344536,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":2,"asset_id":"1.3.121"},"seller":"1.2.383374","amount_to_sell":{"amount":1293,"asset_id":"1.3.121"},"min_to_receive":{"amount":87538,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":28,"asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":1213,"asset_id":"1.3.1999"},"min_to_receive":{"amount":4360,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":28,"asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":119678,"asset_id":"1.3.1999"},"min_to_receive":{"amount":429759,"asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}]],"extensions":[],"signatures":["201552e3139a6c77addd4a7fd3f596a16a883ed06b5bab4f0a93267cfd42ad61c2413087249b90c47bf3e8b9ac81da91a388b311e808a54a9b13e6e4f352d26a0c"]}}},{"context":{"level":"warn","file":"websocket_api.cpp","line":122,"method":"on_message","hostname":"","thread_name":"th_a","timestamp":"2018-03-12T07:34:15"},"format":"","data":{"call.method":"call","call.params":[3,"broadcast_transaction_with_callback",[30,{"ref_block_num":56708,"ref_block_prefix":2982880835,"expiration":"2018-03-12T07:34:31","operations":[[1,{"fee":{"amount":"12","asset_id":"1.3.113"},"seller":"1.2.383374","amount_to_sell":{"amount":"32710","asset_id":"1.3.113"},"min_to_receive":{"amount":"344536","asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":"2","asset_id":"1.3.121"},"seller":"1.2.383374","amount_to_sell":{"amount":"1293","asset_id":"1.3.121"},"min_to_receive":{"amount":"87538","asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":"28","asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":"1213","asset_id":"1.3.1999"},"min_to_receive":{"amount":"4360","asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}],[1,{"fee":{"amount":"28","asset_id":"1.3.1999"},"seller":"1.2.383374","amount_to_sell":{"amount":"119678","asset_id":"1.3.1999"},"min_to_receive":{"amount":"429759","asset_id":"1.3.0"},"expiration":"2023-03-12T07:34:14","fill_or_kill":true,"extensions":[]}]],"extensions":[],"signatures":["201552e3139a6c77addd4a7fd3f596a16a883ed06b5bab4f0a93267cfd42ad61c2413087249b90c47bf3e8b9ac81da91a388b311e808a54a9b13e6e4f352d26a0c"]}]]}}]}}
+{ code: 1,
+  message: 'Assert Exception: !op.fill_or_kill || filled: ',
+  data: 
+   { code: 10,
+     name: 'assert_exception',
+     message: 'Assert Exception',
+     stack: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object] ] } }

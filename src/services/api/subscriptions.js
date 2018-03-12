@@ -28,9 +28,9 @@ class Subscription {
   }
 }
 
-class Market extends Subscription {
-  constructor({ base, quote, callback }) {
-    super('market' + base + quote, callback);
+class Markets extends Subscription {
+  constructor({ callback }) {
+    super('markets');
     this._callback = callback;
   }
 
@@ -116,7 +116,7 @@ class UserOperations extends Subscription {
 }
 
 const Subscriptions = {
-  Market,
+  Markets,
   SignUp,
   UserOperations
 };
