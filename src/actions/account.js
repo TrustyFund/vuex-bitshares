@@ -74,7 +74,8 @@ export const signup = async (state, { name, password, dictionary }) => {
     PersistentStorage.saveUserData({
       id: userId,
       encryptedBrainkey: wallet.encryptedBrainkey,
-      encryptionKey: wallet.encryptionKey
+      encryptionKey: wallet.encryptionKey,
+      passwordPubkey: wallet.passwordPubkey
     });
     return { success: true };
   }
@@ -143,7 +144,8 @@ export const checkCachedUserData = ({ commit }) => {
       userId: data.userId,
       encryptedBrainkey: data.encryptedBrainkey,
       encryptionKey: data.encryptionKey,
-      backupDate: data.backupDate
+      backupDate: data.backupDate,
+      passwordPubkey: data.passwordPubkey
     });
   }
 };
