@@ -47,7 +47,6 @@ describe('Account module: getters', () => {
       userId: null,
       error: null,
       pending: false,
-      backupDate: null
     });
   });
 
