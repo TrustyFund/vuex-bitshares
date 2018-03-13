@@ -39,7 +39,21 @@ const PersistentStorage = {
     if (backupDateArray === undefined) {
       backupDateArray = [{ userId, date }];
     } else {
-      backupDateArray.push({ userId, date });
+      try {
+        const backupDateFromString = JSON.parse(backupDateArray);
+        const foundObj = backupDateFromString.find((item, index) => {
+          if (item.userId === userId) {
+            backupDateFromString[index].date = date;
+            return true;
+          }
+          return undefined;
+        });
+        if (!foundObj) {
+          backupDateFromString.push({ userId, date });
+        }
+      } catch (ex) {
+        backupDateArray = [{ userId, date }];
+      }
     }
     Cookies.set('BACKUP_DATE', backupDateArray);
   },
