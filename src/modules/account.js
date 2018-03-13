@@ -12,7 +12,10 @@ const initialState = {
   aesPrivate: null,
   userId: null,
   error: null,
-  pending: false
+  pending: false,
+  userData: null,
+  userFetching: false,
+  userError: false
 };
 
 const mutations = {
@@ -71,6 +74,17 @@ const mutations = {
     state.userId = null;
     state.error = null;
     state.pending = false;
+  },
+  [types.FETCH_CURRENT_USER_REQUEST]: (state) => {
+    state.userFetching = true;
+  },
+  [types.FETCH_CURRENT_USER_COMPLETE]: (state, { data }) => {
+    state.userFetching = false;
+    state.userData = data;
+  },
+  [types.FETCH_CURRENT_USER_ERROR]: (state) => {
+    state.userFetching = false;
+    state.userError = false;
   }
 };
 

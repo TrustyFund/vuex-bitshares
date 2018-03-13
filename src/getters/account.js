@@ -48,3 +48,15 @@ export const getOperations = state => {
 export const getAccountOperationsPendingState = state => {
   return state.operationsPending;
 };
+
+export const getCurrentUserName = state => {
+  return state.userData && state.userData.account.name;
+};
+
+export const getCurrentUserBalances = state => {
+  return state.userData && state.userData.balances;
+}
+
+export const getCurrentUserData = state => {
+  return state.userData;
+}

@@ -143,3 +143,18 @@ export const checkIfUsernameFree = async (state, { username }) => {
   const result = await API.Account.getUser(username);
   return !result.success;
 };
+
+
+export const fetchCurrentUser = async (store) => {
+  const { commit, getters } = store;
+  const userId = getters.getAccountUserId;
+  if (!userId) return;
+  commit(types.FETCH_CURRENT_USER_REQUEST);
+  const result = await API.Account.getUser(userId);
+  if (result.success) {
+    commit(types.FETCH_CURRENT_USER_COMPLETE, { data: result.data });
+  } else {
+    commit(types.FETCH_CURRENT_USER_ERROR);
+  }
+  return result;
+}
