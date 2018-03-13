@@ -67,7 +67,7 @@ export const signup = async (state, { name, password, dictionary }) => {
   });
   console.log('Account created : ', result.success);
   if (result.success) {
-    const userId = await API.ChainListener.listenToSignupId({ name });
+    const userId = await API.ChainListener.addSubscription('userSignUp', { name }, true);
     const wallet = createWallet({ password, brainkey });
     console.log(userId);
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });

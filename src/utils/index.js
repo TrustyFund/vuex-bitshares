@@ -60,7 +60,7 @@ export const formatPrices = (prices, base, quote) => {
  */
 export const calcPercentChange = (prices, multiplier) => {
   return ((((prices.first * multiplier.first) /
-      (prices.last * multiplier.last)) * 100) - 100);
+    (prices.last * multiplier.last)) * 100) - 100);
 };
 
 
@@ -119,4 +119,83 @@ export const decryptMemo = (memo, privateKey) => {
     memo.nonce,
     memo.message
   ).toString('utf-8');
+};
+
+/** Calculates distribution 0..1 of total amount of assets expressed
+ * in base asset
+ * @param {Object} balances - {assetId: baseAssetValue}
+ */
+export const distributionFromBalances = (balances) => {
+  const total = Object.keys(balances).reduce((res, key) => res + balances[key], 0);
+  return Object.keys(balances).reduce(
+    (res, key) => Object.assign(res, { [key]: balances[key] / total }),
+    {}
+  );
+};
+
+/** Corrects distributions to values multiple to 10**accuracy,
+ * keeps summary proportions value equal to 1
+ * @param {Object} proportions - {assetId: rawProportionValue}
+ * @param {number} accuracy - negative number of digits after point
+ */
+export const distributionSampling = (proportions, accuracy) => {
+  const distributionInfo = Object.keys(proportions).map(key => {
+    // proportions rounded dawnward to nearest miltiple of 10 ** accuracy
+    const floored = Math.floor(proportions[key] / (10 ** accuracy)) * (10 ** accuracy);
+    const remainder = proportions[key] - floored;
+    return ({
+      floored,
+      remainder,
+      assetId: key
+    });
+  });
+  // summary proporions correction error
+  const correctionError = distributionInfo
+    .reduce((res, { floored }) => res - floored, 1);
+  const proportionsToCorrect = Math.floor(correctionError / (10 ** accuracy));
+  // if summary error greater than 10**accuracy,
+  // then correct top n proportions sorted by remainder descending,
+  // where n = error/10**accuracy
+  distributionInfo
+    .sort((a, b) => b.remainder - a.remainder)
+    .slice(0, proportionsToCorrect)
+    .forEach(({ assetId }) => {
+      const index = distributionInfo.findIndex(info => assetId === info.assetId);
+      distributionInfo[index].floored += 10 ** accuracy;
+    });
+
+  return distributionInfo.reduce(
+    (r, { floored, assetId }) => Object.assign(r, { [assetId]: floored }),
+    {}
+  );
+};
+
+
+/**
+ * Calculates for each update shares of specified assets balances
+ * to sell and distrubution of assets to buy to fit updates
+ * @param {Object} baseBalances - {assetId: baseAssetValue}
+ * @param {Object} updates - {assetId: distribuitionToSet}
+ */
+export const calcPortfolioDistributionChange = (baseBalances, update) => {
+  const total = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
+  const distribution = distributionFromBalances(baseBalances);
+  const result = {
+    sell: {},
+    buy: {}
+  };
+  Object.keys(update).forEach(assetId => {
+    if (distribution[assetId] > update[assetId]) {
+      const amount = Math.floor((distribution[assetId] - update[assetId]) * total);
+      if (amount > 1) {
+        result.sell[assetId] = amount / baseBalances[assetId];
+      }
+    } else {
+      const amount = Math.floor((update[assetId] - distribution[assetId]) * total);
+      if (amount > 1) {
+        result.buy[assetId] = amount / baseBalances[assetId];
+      }
+    }
+  });
+  return Object.assign(result, { buy: distributionFromBalances(result.buy) });
 };
