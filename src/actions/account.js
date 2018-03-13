@@ -8,6 +8,19 @@ import PersistentStorage from '../services/persistent-storage';
 const OWNER_KEY_INDEX = 1;
 const ACTIVE_KEY_INDEX = 0;
 
+
+/**
+ * Function to convert array of balances to object with keys as assets ids
+ * @param {Array} balancesArr - array of balance objects
+ */
+const balancesToObject = (balancesArr) => {
+  const obj = {};
+  balancesArr.forEach(item => {
+    obj[item.asset_type] = item;
+  });
+  return obj;
+};
+
 // helper fync
 const createWallet = ({ brainkey, password }) => {
   const passwordAes = Aes.fromSeed(password);
@@ -152,6 +165,10 @@ export const fetchCurrentUser = async (store) => {
   commit(types.FETCH_CURRENT_USER_REQUEST);
   const result = await API.Account.getUser(userId);
   if (result.success) {
+    console.log(result.data.balances);
+    const user = result.data;
+    // console.log(balancesToObject(result.data.balances));
+    result.data.balances = balancesToObject(result.data.balances);
     commit(types.FETCH_CURRENT_USER_COMPLETE, { data: result.data });
   } else {
     commit(types.FETCH_CURRENT_USER_ERROR);
