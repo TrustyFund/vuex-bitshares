@@ -13,7 +13,6 @@ const initialState = {
   userId: null,
   error: null,
   pending: false,
-  backupDate: null,
 };
 
 const mutations = {
@@ -49,9 +48,6 @@ const mutations = {
     state.pending = false;
     state.error = error;
   },
-  [types.ACCOUNT_BRAINKEY_BACKUP]: (state) => {
-    state.brainkeyBackupDate = Date();
-  },
   [types.ACCOUNT_LOCK_WALLET]: (state) => {
     state.aesPrivate = null;
   },
@@ -63,7 +59,7 @@ const mutations = {
     state.userId = userId;
     state.encryptedBrainkey = encryptedBrainkey;
     state.encryptionKey = encryptionKey;
-    state.backupDate = backupDate;
+    state.brainkeyBackupDate = backupDate;
     state.passwordPubkey = passwordPubkey;
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
@@ -78,7 +74,7 @@ const mutations = {
     state.pending = false;
   },
   [types.STORE_BACKUP_DATE]: (state, date) => {
-    state.backupDate = date;
+    state.brainkeyBackupDate = date;
   }
 };
 

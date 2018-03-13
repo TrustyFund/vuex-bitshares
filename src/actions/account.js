@@ -87,12 +87,12 @@ export const signup = async (state, { name, password, dictionary }) => {
 };
 
 //  write backup brainkey date to Cookie
-export const storeBackupDate = (state, { date }) => {
+export const storeBackupDate = (state, { date, userId }) => {
   const { commit } = state;
   PersistentStorage.saveBackupDate({
-    date
+    date, userId
   });
-  commit(types.STORE_BACKUP_DATE, date);
+  commit(types.STORE_BACKUP_DATE, date, userId);
 };
 
 /**
@@ -132,6 +132,7 @@ export const login = async (state, { password, brainkey }) => {
  * Log out
  */
 export const logout = ({ commit }) => {
+  console.log('logout');
   commit(types.ACCOUNT_LOGOUT);
 };
 
@@ -140,12 +141,25 @@ export const logout = ({ commit }) => {
  */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
+  let backupDate;
   if (data) {
+    try {
+      const backupArray = JSON.parse(data.backupDate);
+      if (backupArray instanceof Array) {
+        backupArray.forEach((item) => {
+          if (item.userId === data.userId) {
+            backupDate = item.date;
+          }
+        });
+      }
+    } catch (ex) {
+      backupDate = null;
+    }
     commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
       encryptedBrainkey: data.encryptedBrainkey,
       encryptionKey: data.encryptionKey,
-      backupDate: data.backupDate,
+      backupDate,
       passwordPubkey: data.passwordPubkey
     });
   }

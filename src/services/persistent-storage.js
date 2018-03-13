@@ -34,8 +34,14 @@ const PersistentStorage = {
     }
     return {};
   },
-  saveBackupDate: ({ date }) => {
-    Cookies.set('BACKUP_DATE', date);
+  saveBackupDate: ({ date, userId }) => {
+    let backupDateArray = Cookies.get('BACKUP_DATE');
+    if (backupDateArray === undefined) {
+      backupDateArray = [{ userId, date }];
+    } else {
+      backupDateArray.push({ userId, date });
+    }
+    Cookies.set('BACKUP_DATE', backupDateArray);
   },
 
 };
