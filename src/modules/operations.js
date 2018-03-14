@@ -77,6 +77,11 @@ const actions = {
     const { commit } = store;
     API.ChainListener.deleteSubscription('userOperation');
     commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
+  },
+
+  resetState(store) {
+    const { commit } = store;
+    commit(types.RESET_OPERATIONS);
   }
 };
 
@@ -117,6 +122,11 @@ const mutations = {
   },
   [types.UNSUBSCRIBE_FROM_USER_OPERATIONS]: (state) => {
     state.subscribed = false;
+  },
+  [types.RESET_OPERATIONS]: (state) => {
+    state.list = [];
+    state.pending = false;
+    state.error = false;
   }
 };
 
