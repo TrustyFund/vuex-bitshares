@@ -73,6 +73,7 @@ const mutations = {
     state.aesPrivate = null;
     state.userId = null;
     state.error = null;
+    // state.userData = null;
     state.pending = false;
   },
   [types.FETCH_CURRENT_USER_REQUEST]: (state) => {

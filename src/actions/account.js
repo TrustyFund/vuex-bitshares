@@ -133,6 +133,7 @@ export const login = async (state, { password, brainkey }) => {
  */
 export const logout = ({ commit }) => {
   commit(types.ACCOUNT_LOGOUT);
+  PersistentStorage.clearSavedUserData();
 };
 
 /**

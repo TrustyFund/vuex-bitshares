@@ -1,7 +1,7 @@
 import { ChainTypes, TransactionBuilder, ops } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 
-export default class Market {
+class Market {
   constructor(transactionFee) {
     this.limitOrders = [];
     this.marketSubscriptions = [];
@@ -165,14 +165,14 @@ export default class Market {
   }
   /**
    * subscribes to exchange rate for specified assets and amount to exchange
-   * @param {Object} from - asset object
-   * @param {Object} to - asset object
+   * @param {Object} from - asset object (quote)
+   * @param {Object} to - asset object (base)
    * @param {number} amount - "from" asset balance
    * @param {subscribeToMarketCallback} callback
    */
   async subscribeExchangeRate(from, to, amount, callback) {
     if (from.id === amount.id) {
-      callback(amount);
+      callback(from, to, amount);
       return;
     }
     await this.subscribeToMarket(from.id, to.id);
@@ -223,7 +223,7 @@ export default class Market {
    * @param {exchangeRateCallback} subscription.callback
    */
   notifyExchangeRate({ from, to, amount, callback }) {
-    callback(this.calcExchangeRate(from, to, amount));
+    callback(from, to, this.calcExchangeRate(from, to, amount));
   }
   /**
    * returns market fee percent scaled to 0..1, and create_limit_order
@@ -454,3 +454,4 @@ export default class Market {
   }
 }
 
+export default new Market(92);
