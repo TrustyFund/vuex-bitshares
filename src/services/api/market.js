@@ -183,8 +183,8 @@ class Market {
 
   /**
    * unsubscribes from exchenge rate updates, in case when balance has changed i.e.
-   * @param {Object} from - asset object
-   * @param {Object} to - asset object
+   * @param {number} from - asset id
+   * @param {number} to - asset id
    * @amount {number} amount - specified for subscription balance
    */
   unsubscribeExchangeRate(quote, base, amount) {
