@@ -87,6 +87,7 @@ const mutations = {
   [types.FETCH_CURRENT_USER_ERROR]: (state) => {
     state.userFetching = false;
     state.userError = false;
+  },
   [types.STORE_BACKUP_DATE]: (state, date) => {
     state.brainkeyBackupDate = date;
   }
