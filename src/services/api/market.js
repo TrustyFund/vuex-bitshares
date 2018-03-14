@@ -72,6 +72,22 @@ class Market {
       console.warn(`market: already subscribed to ${baseId} <-> ${quoteId}`);
     }
   }
+
+  /**
+   * unsubscribes from specified market
+   * @param {string} baseId
+   * @param {string} quoteId
+   */
+  unsubscribeFromMarket(baseId, quoteId) {
+    if (baseId === quoteId) return;
+    if (this.isSubscribed(baseId, quoteId)) {
+      Apis.instance().db_api().exec(
+        'unsubscribe_from_market',
+        [this.onMarketUpdate.bind(this), baseId, quoteId]
+      );
+    }
+  }
+
   /**
    * called when order was filled in network, corrects for_sale value
    * for specified order. Called by subscription callback
@@ -167,8 +183,8 @@ class Market {
 
   /**
    * unsubscribes from exchenge rate updates, in case when balance has changed i.e.
-   * @param {Object} from - asset object
-   * @param {Object} to - asset object
+   * @param {number} from - asset id
+   * @param {number} to - asset id
    * @amount {number} amount - specified for subscription balance
    */
   unsubscribeExchangeRate(quote, base, amount) {
@@ -178,6 +194,7 @@ class Market {
     });
     if (idx >= 0) {
       this.exchangeRateSubscriptions.splice(idx, 1);
+      this.unsubscribeFromMarket(quote, base);
     }
   }
   /**
