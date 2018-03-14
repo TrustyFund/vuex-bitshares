@@ -166,9 +166,7 @@ export const fetchCurrentUser = async (store) => {
   commit(types.FETCH_CURRENT_USER_REQUEST);
   const result = await API.Account.getUser(userId);
   if (result.success) {
-    console.log(result.data.balances);
     const user = result.data;
-    // console.log(balancesToObject(result.data.balances));
     result.data.balances = balancesToObject(result.data.balances);
     commit(types.FETCH_CURRENT_USER_COMPLETE, { data: result.data });
   } else {
