@@ -26,14 +26,48 @@ const actions = {
       commit(types.FETCH_MARKET_HISTORY_ERROR);
     });
   },
-  subscribeToMarket(store) {
 
-  },
-  unsubscribeFromMarket(store) {
+  subscribeToMarket(store, { balances }) {
+    const { getters, rootGetters } = store;
+    const assets = rootGetters['assets/getAssets'];
+    const baseAssetId = getters.getBaseAssetId;
+    const baseAsset = assets[baseAssetId];
+    const assetsIds = Object.keys(balances);
 
+
+    assetsIds.forEach(id => {
+      const quoteAsset = assets[id];
+      const balance = balances[id].balance;
+      if (!balance) return;
+      API.Market.subscribeExchangeRate(baseAsset, quoteAsset, balance, (from, to, amount) => {
+        const rate = balance / amount;
+        actions.updateMarketPrice(store, { 
+          assetId: quoteAsset.id, 
+          price: rate
+        })
+      });
+    });
   },
+
+  unsubscribeFromMarket(store, { balances }) {
+    const { getters, rootGetters } = store;
+    const assets = rootGetters['assets/getAssets'];
+    const baseAssetId = getters.getBaseAssetId;
+    const baseAsset = assets[baseAssetId];
+    const assetsIds = Object.keys(balances);
+
+    assetsIds.forEach(id => {
+      const quoteAsset = assets[id];
+      const balance = balances[id].balance;
+      if (!balance) return;
+      API.Market.unsubscribeExchangeRate(baseAsset.id, quoteAsset.id, balance);
+    });
+  },
+
   updateMarketPrice(store, { assetId, price }) {
-
+    console.log(assetId + ' : ' + price);
+    const { commit } = store;
+    commit(types.UPDATE_MARKET_PRICE, { assetId, price });
   }
 };
 
@@ -74,7 +108,6 @@ const mutations = {
   [types.FETCH_MARKET_HISTORY_COMPLETE](state, { prices }) {
     state.fetching = false;
     Object.keys(prices).forEach(assetId => {
-      // state.history[assetId] = prices[assetId];
       Vue.set(state.history, assetId, prices[assetId]);
     });
   },
@@ -82,9 +115,9 @@ const mutations = {
     state.fetching = false;
     state.error = true;
   },
-  [types.FETCH_MARKET_PRICES_UPDATE](state, { id, price }) {
-    if (!state.prices[id]) state.prices[id] = {};
-    state.prices[id].last = price;
+  [types.UPDATE_MARKET_PRICE](state, { assetId, price }) {
+    if (!state.history[assetId]) Vue.set(state.history, assetId, {});
+    Vue.set(state.history[assetId], 'last', price);
   }
 };
 
