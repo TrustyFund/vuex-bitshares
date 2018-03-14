@@ -34,12 +34,14 @@ const actions = {
     const baseAsset = assets[baseAssetId];
     const assetsIds = Object.keys(balances);
 
-
     assetsIds.forEach(id => {
       const quoteAsset = assets[id];
       const { balance } = balances[id];
       if (!balance) return;
+      console.log('SUBBING ' + quoteAsset.id + ' : ' + balance);
       API.Market.subscribeExchangeRate(baseAsset, quoteAsset, balance, (from, to, amount) => {
+        if (!amount) return;
+        console.log(quoteAsset.id + ' new rate : ' + amount);
         const rate = balance / amount;
         actions.updateMarketPrice(store, {
           assetId: quoteAsset.id,
