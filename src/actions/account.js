@@ -73,9 +73,7 @@ export const signup = async (state, { name, password, dictionary }) => {
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
     PersistentStorage.saveUserData({
       id: userId,
-      encryptedBrainkey: wallet.encryptedBrainkey,
-      encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      encryptedBrainkey: wallet.encryptedBrainkey
     });
     return { success: true };
   }
@@ -84,15 +82,6 @@ export const signup = async (state, { name, password, dictionary }) => {
     success: false,
     error: result.error
   };
-};
-
-//  write backup brainkey date to Cookie
-export const storeBackupDate = (state, { date, userId }) => {
-  const { commit } = state;
-  PersistentStorage.saveBackupDate({
-    date, userId
-  });
-  commit(types.STORE_BACKUP_DATE, date, userId);
 };
 
 /**
@@ -112,9 +101,7 @@ export const login = async (state, { password, brainkey }) => {
   if (id) {
     PersistentStorage.saveUserData({
       id,
-      encryptedBrainkey: wallet.encryptedBrainkey,
-      encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      encryptedBrainkey: wallet.encryptedBrainkey
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {
@@ -132,7 +119,6 @@ export const login = async (state, { password, brainkey }) => {
  * Log out
  */
 export const logout = ({ commit }) => {
-  console.log('logout');
   commit(types.ACCOUNT_LOGOUT);
 };
 
@@ -141,26 +127,10 @@ export const logout = ({ commit }) => {
  */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
-  let backupDate;
   if (data) {
-    try {
-      const backupArray = JSON.parse(data.backupDate);
-      if (backupArray instanceof Array) {
-        backupArray.forEach((item) => {
-          if (item.userId === data.userId) {
-            backupDate = item.date;
-          }
-        });
-      }
-    } catch (ex) {
-      backupDate = null;
-    }
     commit(types.SET_ACCOUNT_USER_DATA, {
       userId: data.userId,
-      encryptedBrainkey: data.encryptedBrainkey,
-      encryptionKey: data.encryptionKey,
-      backupDate,
-      passwordPubkey: data.passwordPubkey
+      encryptedBrainkey: data.encryptedBrainkey
     });
   }
 };

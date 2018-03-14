@@ -2,26 +2,18 @@ import Cookies from 'js-cookie';
 
 // Persistent Storage for data cache management
 const PersistentStorage = {
-  saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey }) => {
+  saveUserData: ({ id, encryptedBrainkey }) => {
     Cookies.set('BITSHARES_USER_ID', id, 7);
     Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, 7);
-    Cookies.set('BITSHARES_ENCRYPTION_KEY', encryptionKey, 7);
-    Cookies.set('BITSHARES_PASSWORD_PUBKEY', passwordPubkey, 7);
   },
   getSavedUserData: () => {
     const userId = Cookies.get('BITSHARES_USER_ID');
     const encryptedBrainkey = Cookies.get('BITSHARES_USER_BRAINKEY');
-    const encryptionKey = Cookies.get('BITSHARES_ENCRYPTION_KEY');
-    const backupDate = Cookies.get('BACKUP_DATE');
-    const passwordPubkey = Cookies.get('BITSHARES_PASSWORD_PUBKEY');
-    if (!userId || !encryptedBrainkey || !encryptionKey || !passwordPubkey) return null;
+    if (!userId || !encryptedBrainkey) return null;
     if (typeof (userId) !== 'string') return null;
     return {
       userId,
-      encryptedBrainkey,
-      encryptionKey,
-      backupDate,
-      passwordPubkey
+      encryptedBrainkey
     };
   },
   saveNodesData: ({ data }) => {
@@ -33,31 +25,7 @@ const PersistentStorage = {
       return cachedData;
     }
     return {};
-  },
-  saveBackupDate: ({ date, userId }) => {
-    let backupDateArray = Cookies.get('BACKUP_DATE');
-    if (backupDateArray === undefined) {
-      backupDateArray = [{ userId, date }];
-    } else {
-      try {
-        const backupDateFromString = JSON.parse(backupDateArray);
-        const foundObj = backupDateFromString.find((item, index) => {
-          if (item.userId === userId) {
-            backupDateFromString[index].date = date;
-            return true;
-          }
-          return undefined;
-        });
-        if (!foundObj) {
-          backupDateFromString.push({ userId, date });
-        }
-      } catch (ex) {
-        backupDateArray = [{ userId, date }];
-      }
-    }
-    Cookies.set('BACKUP_DATE', backupDateArray);
-  },
-
+  }
 };
 
 export default PersistentStorage;
