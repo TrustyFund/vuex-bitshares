@@ -54,9 +54,9 @@ export const getCurrentUserName = state => {
 };
 
 export const getCurrentUserBalances = state => {
-  return state.userData && state.userData.balances || {};
-}
+  return (state.userData && state.userData.balances) || {};
+};
 
 export const getCurrentUserData = state => {
   return state.userData;
-}
+};

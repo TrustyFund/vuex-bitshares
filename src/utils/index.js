@@ -207,7 +207,7 @@ export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, ba
 
   const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
 
-  const baseValuePrecised = baseValue / ( 10 ** baseAsset.precision);
+  const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
@@ -236,4 +236,5 @@ export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, ba
     fiatValue,
     change
   };
-}
+};
+

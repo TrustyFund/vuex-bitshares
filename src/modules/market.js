@@ -22,7 +22,7 @@ const actions = {
         return result;
       }, {});
       commit(types.FETCH_MARKET_HISTORY_COMPLETE, { prices });
-    }).catch(error => {
+    }).catch(() => {
       commit(types.FETCH_MARKET_HISTORY_ERROR);
     });
   },
@@ -37,14 +37,14 @@ const actions = {
 
     assetsIds.forEach(id => {
       const quoteAsset = assets[id];
-      const balance = balances[id].balance;
+      const { balance } = balances[id];
       if (!balance) return;
       API.Market.subscribeExchangeRate(baseAsset, quoteAsset, balance, (from, to, amount) => {
         const rate = balance / amount;
-        actions.updateMarketPrice(store, { 
-          assetId: quoteAsset.id, 
+        actions.updateMarketPrice(store, {
+          assetId: quoteAsset.id,
           price: rate
-        })
+        });
       });
     });
   },
@@ -58,7 +58,7 @@ const actions = {
 
     assetsIds.forEach(id => {
       const quoteAsset = assets[id];
-      const balance = balances[id].balance;
+      const { balance } = balances[id];
       if (!balance) return;
       API.Market.unsubscribeExchangeRate(baseAsset.id, quoteAsset.id, balance);
     });
@@ -75,15 +75,17 @@ const getters = {
   getBaseAssetId: state => state.baseAssetId,
   getAssetMultiplier: state => {
     return (assetId) => {
-      if (!state.history[assetId]) return {
-        first: 0,
-        last: 0
-      };
+      if (!state.history[assetId]) {
+        return {
+          first: 0,
+          last: 0
+        };
+      }
       return {
         first: 1 / state.history[assetId].first,
         last: 1 / state.history[assetId].last
-      }
-    }
+      };
+    };
   },
   getMarketHistory: state => state.history,
   isFetching: state => state.pending,
