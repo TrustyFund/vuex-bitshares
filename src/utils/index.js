@@ -216,15 +216,15 @@ export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, ba
 
   if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
 
-  console.log('========');
-  console.log(asset.symbol);
-  console.log('base precision: ', baseAsset.precision);
-  console.log('balance: ', balance);
-  console.log('base value: ', baseValue);
-  console.log('fiat multiplier: ', fiatMultiplier);
-  console.log('fiat value: ', fiatValue);
-  console.log('base value precised : ', baseValuePrecised );
-  console.log('change: ', change);
+  // console.log('========');
+  // console.log(asset.symbol);
+  // console.log('base precision: ', baseAsset.precision);
+  // console.log('balance: ', balance);
+  // console.log('base value: ', baseValue);
+  // console.log('fiat multiplier: ', fiatMultiplier);
+  // console.log('fiat value: ', fiatValue);
+  // console.log('base value precised : ', baseValuePrecised );
+  // console.log('change: ', change);
 
   return {
     name: asset.symbol,
