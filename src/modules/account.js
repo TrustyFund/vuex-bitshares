@@ -51,18 +51,19 @@ const mutations = {
     state.pending = false;
     state.error = error;
   },
-  [types.ACCOUNT_BRAINKEY_BACKUP]: (state) => {
-    state.brainkeyBackupDate = Date();
-  },
   [types.ACCOUNT_LOCK_WALLET]: (state) => {
     state.aesPrivate = null;
   },
   [types.ACCOUNT_UNLOCK_WALLET]: (state, aesPrivate) => {
     state.aesPrivate = aesPrivate;
   },
-  [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey }) => {
+  [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey,
+    encryptionKey, backupDate, passwordPubkey }) => {
     state.userId = userId;
     state.encryptedBrainkey = encryptedBrainkey;
+    state.encryptionKey = encryptionKey;
+    state.brainkeyBackupDate = backupDate;
+    state.passwordPubkey = passwordPubkey;
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
     state.passwordPubkey = null;
@@ -86,6 +87,8 @@ const mutations = {
   [types.FETCH_CURRENT_USER_ERROR]: (state) => {
     state.userFetching = false;
     state.userError = false;
+  [types.STORE_BACKUP_DATE]: (state, date) => {
+    state.brainkeyBackupDate = date;
   }
 };
 

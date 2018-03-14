@@ -21,6 +21,7 @@ const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
 
 const localVue = createLocalVue();
+const brainkeyBackupDate = '2018-03-13T16:20:00.396Z';
 localVue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -46,7 +47,7 @@ describe('Account module: getters', () => {
       aesPrivate: null,
       userId: null,
       error: null,
-      pending: false
+      pending: false,
     });
   });
 
@@ -139,10 +140,9 @@ describe('Account module: mutations', () => {
     expect(state.userId).toBe('1.2.3');
   });
 
-  test('ACCOUNT_BRAINKEY_BACKUP', () => {
-    accountModule.mutations.ACCOUNT_BRAINKEY_BACKUP(state);
-    const date = new Date();
-    expect(new Date(state.brainkeyBackupDate).toLocaleString()).toBe(date.toLocaleString());
+  test('STORE_BACKUP_DATE', () => {
+    accountModule.mutations.STORE_BACKUP_DATE(state, brainkeyBackupDate);
+    expect(state.brainkeyBackupDate).toBe(brainkeyBackupDate);
   });
 });
 
