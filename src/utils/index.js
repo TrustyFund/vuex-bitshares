@@ -187,14 +187,14 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
   };
   Object.keys(update).forEach(assetId => {
     if (distribution[assetId] > update[assetId]) {
-      const amount = Math.floor((distribution[assetId] - update[assetId]) * total);
+      const amount = (distribution[assetId] - update[assetId]) * total;
       if (amount > 1) {
         result.sell[assetId] = amount / baseBalances[assetId];
       }
     } else {
-      const amount = Math.floor((update[assetId] - distribution[assetId]) * total);
+      const amount = (update[assetId] - distribution[assetId]) * total;
       if (amount > 1) {
-        result.buy[assetId] = amount / baseBalances[assetId];
+        result.buy[assetId] = amount;
       }
     }
   });
