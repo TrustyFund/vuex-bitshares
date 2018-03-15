@@ -30,7 +30,8 @@ const config = {
   },
   defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
     'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARCOIN'],
-  referrer: 'trfnd'
+  referrer: 'trfnd',
+  removePrefix: 'OPEN.'
 };
 
 export default config;
