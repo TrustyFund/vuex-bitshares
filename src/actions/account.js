@@ -146,9 +146,16 @@ export const login = async (state, { password, brainkey }) => {
  */
 export const logout = ({ commit }) => {
   console.log('logout');
+
   commit(types.ACCOUNT_LOGOUT);
+  commit(types.CLEAR_CURRENT_USER_WALLET_DATA);
   PersistentStorage.clearSavedUserData();
 };
+
+// clears current user data (balances, acount, etc)
+export const clearCurrentUserData = ({ commit }) => {
+  commit(types.CLEAR_CURRENT_USER_DATA);
+}
 
 /**
  * Gets user's data from storage and saves it

@@ -66,16 +66,20 @@ const mutations = {
     state.passwordPubkey = passwordPubkey;
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
+    state.userId = null;
+    state.error = null;
+    state.pending = false;
+  },
+  [types.CLEAR_CURRENT_USER_WALLET_DATA]: (state) => {
     state.passwordPubkey = null;
     state.encryptedBrainkey = null;
     state.brainkeyBackupDate = null;
     state.encryptionKey = null;
     state.created = null;
     state.aesPrivate = null;
-    state.userId = null;
-    state.error = null;
-    // state.userData = null;
-    state.pending = false;
+  },
+  [types.CLEAR_CURRENT_USER_DATA]: (state) => {
+    state.userData = null;
   },
   [types.FETCH_CURRENT_USER_REQUEST]: (state) => {
     state.userFetching = true;
