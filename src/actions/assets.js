@@ -25,7 +25,7 @@ export const fetchAssets = async (store, { assets }) => {
         if (asset.symbol.substring(0, prefix.length) === prefix) {
           asset.symbol = asset.symbol.slice(prefix.length);
         }
-      });      
+      });
     }
 
     const composedResult = arrayToObject(result);

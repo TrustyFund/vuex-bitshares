@@ -117,7 +117,7 @@ export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
   // to be able to update pending state instantly
-  await new Promise(resolve => setTimeout(resolve, 1));
+  await new Promise(resolve => { setTimeout(resolve, 1) });
   const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
@@ -148,7 +148,6 @@ export const login = async (state, { password, brainkey }) => {
  */
 export const logout = ({ commit }) => {
   console.log('logout');
-
   commit(types.ACCOUNT_LOGOUT);
   commit(types.CLEAR_CURRENT_USER_WALLET_DATA);
   PersistentStorage.clearSavedUserData();
@@ -157,7 +156,7 @@ export const logout = ({ commit }) => {
 // clears current user data (balances, acount, etc)
 export const clearCurrentUserData = ({ commit }) => {
   commit(types.CLEAR_CURRENT_USER_DATA);
-}
+};
 
 /**
  * Gets user's data from storage and saves it
