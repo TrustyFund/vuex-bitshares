@@ -140,14 +140,14 @@ export const distributionFromBalances = (balances) => {
  * @param {number} accuracy - negative number of digits after point
  */
 export const distributionSampling = (proportions, accuracy) => {
-  const distributionInfo = Object.keys(proportions).map(assetId => {
+  const distributionInfo = Object.keys(proportions).map(key => {
     // proportions rounded dawnward to nearest miltiple of 10 ** accuracy
-    const floored = Math.floor(proportions[assetId] / (10 ** accuracy)) * (10 ** accuracy);
-    const remainder = proportions[assetId] - floored;
+    const floored = Math.floor(proportions[key] / (10 ** accuracy)) * (10 ** accuracy);
+    const remainder = proportions[key] - floored;
     return ({
       floored,
       remainder,
-      assetId
+      assetId: key
     });
   });
   // summary proporions correction error
