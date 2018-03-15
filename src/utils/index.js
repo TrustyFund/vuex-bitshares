@@ -136,12 +136,13 @@ export const distributionFromBalances = (balances) => {
 /** Corrects distributions to values multiple to 10**accuracy,
  * keeps summary proportions value equal to 1
  * @param {Object} proportions - {assetId: rawProportionValue}
- * @param {number} accuracy - negative number of digits after point
+ * @param {number} accuracy - number of digits after point
  */
 export const distributionSampling = (proportions, accuracy) => {
+  const sampleRate = 10 ** (-accuracy);
   const distributionInfo = Object.keys(proportions).map(key => {
     // proportions rounded dawnward to nearest miltiple of 10 ** accuracy
-    const floored = Math.floor(proportions[key] / (10 ** accuracy)) * (10 ** accuracy);
+    const floored = Math.floor(proportions[key] / sampleRate) * sampleRate;
     const remainder = proportions[key] - floored;
     return ({
       floored,
@@ -152,7 +153,7 @@ export const distributionSampling = (proportions, accuracy) => {
   // summary proporions correction error
   const correctionError = distributionInfo
     .reduce((res, { floored }) => res - floored, 1);
-  const proportionsToCorrect = Math.floor(correctionError / (10 ** accuracy));
+  const proportionsToCorrect = Math.floor(correctionError / sampleRate);
   // if summary error greater than 10**accuracy,
   // then correct top n proportions sorted by remainder descending,
   // where n = error/10**accuracy
@@ -161,7 +162,7 @@ export const distributionSampling = (proportions, accuracy) => {
     .slice(0, proportionsToCorrect)
     .forEach(({ assetId }) => {
       const index = distributionInfo.findIndex(info => assetId === info.assetId);
-      distributionInfo[index].floored += 10 ** accuracy;
+      distributionInfo[index].floored += sampleRate;
     });
 
   return distributionInfo.reduce(
