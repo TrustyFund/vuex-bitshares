@@ -17,7 +17,13 @@ export const fetchAssets = async (store, { assets }) => {
   commit(types.FETCH_ASSETS_REQUEST);
   const result = await API.Assets.fetch(filteredAssets);
   if (result) {
+    result.forEach(asset => {
+      if (asset.symbol.substring(0, 5) === 'OPEN.') {
+        asset.symbol = asset.symbol.slice(5);
+      }
+    });
     const composedResult = arrayToObject(result);
+
     commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
     return composedResult;
   }
