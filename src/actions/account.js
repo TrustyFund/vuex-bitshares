@@ -116,6 +116,8 @@ export const storeBackupDate = (state, { date, userId }) => {
 export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
+  // to be able to update pending state instantly
+  await new Promise(resolve => setTimeout(resolve, 1));
   const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
