@@ -202,8 +202,9 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
 };
 
 
-export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, balance }) => {
+export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, balance, isFiat }) => {
   // const balanceValuePrecised = balance / (10 ** asset.precision);
+  let multiplier = fiatMultiplier;
 
   const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
 
@@ -211,20 +212,20 @@ export const calcPortfolioItem = ({ asset, prices, baseAsset, fiatMultiplier, ba
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-
-  let change = calcPercentChange(prices, fiatMultiplier);
+  if (isFiat) multiplier = { first: 1, last: 1};
+  let change = calcPercentChange(prices, multiplier);
 
   if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
 
-  // console.log('========');
-  // console.log(asset.symbol);
-  // console.log('base precision: ', baseAsset.precision);
-  // console.log('balance: ', balance);
-  // console.log('base value: ', baseValue);
-  // console.log('fiat multiplier: ', fiatMultiplier);
-  // console.log('fiat value: ', fiatValue);
-  // console.log('base value precised : ', baseValuePrecised );
-  // console.log('change: ', change);
+  console.log('========');
+  console.log(asset.symbol);
+  console.log('base precision: ', baseAsset.precision);
+  console.log('balance: ', balance);
+  console.log('base value: ', baseValue);
+  console.log('fiat multiplier: ', fiatMultiplier);
+  console.log('fiat value: ', fiatValue);
+  console.log('base value precised : ', baseValuePrecised );
+  console.log('change: ', change);
 
   return {
     name: asset.symbol,
