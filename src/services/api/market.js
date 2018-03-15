@@ -15,10 +15,10 @@ class Market {
    * @param {string} toId
    */
   isSubscribed(fromId, toId) {
-    const callback = ([quote, base]) => {
+    const searchCb = ([quote, base]) => {
       return quote === fromId && base === toId;
     };
-    return this.marketSubscriptions.find(callback);
+    return this.marketSubscriptions.find(searchCb);
   }
   /**
    * gets limit orders from market store
@@ -81,10 +81,21 @@ class Market {
   unsubscribeFromMarket(baseId, quoteId) {
     if (baseId === quoteId) return;
     if (this.isSubscribed(baseId, quoteId)) {
+      this.removeSubscription(baseId, quoteId);
       Apis.instance().db_api().exec(
         'unsubscribe_from_market',
         [this.onMarketUpdate.bind(this), baseId, quoteId]
       );
+    }
+  }
+
+  removeSubscription(fromId, toId) {
+    const searchCb = ([quote, base]) => {
+      return quote === fromId && base === toId;
+    };
+    const idx = this.marketSubscriptions.findIndex(searchCb);
+    if (idx !== -1) {
+      this.marketSubscriptions.splice(idx, 1);
     }
   }
 
