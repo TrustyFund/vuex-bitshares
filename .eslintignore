@@ -1,4 +1,5 @@
 **/node_modules/*
 test/brainkey_dictionary.js
 coverage/
-1.js
+gist.js
+gist2.js

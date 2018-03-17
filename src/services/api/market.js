@@ -2,7 +2,7 @@ import * as utils from '../../utils/market';
 import listener from './chain-listener';
 import Subscriptions from './subscriptions';
 
-export default class Markets {
+export default class Market {
   constructor(transactionFee) {
     this.markets = {};
     this.transactionFee = transactionFee;
@@ -10,6 +10,7 @@ export default class Markets {
       callback: this.onMarketUpdate.bind(this)
     });
     listener.addSubscription(marketsSubscription);
+    listener.enable();
   }
 
   onMarketUpdate(type, object) {
