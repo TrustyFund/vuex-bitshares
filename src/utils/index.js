@@ -140,10 +140,11 @@ export const distributionFromBalances = (balances) => {
  * @param {number} accuracy - number of digits after point
  */
 export const distributionSampling = (proportions, accuracy) => {
-  const sampleRate = 10 ** (-accuracy);
+  const positiveExponent = `e+${accuracy}`;
+  const negativeExponent = `e-${accuracy}`;
   const distributionInfo = Object.keys(proportions).map(key => {
     // proportions rounded dawnward to nearest miltiple of 10 ** accuracy
-    const floored = Math.floor(proportions[key] / sampleRate) * sampleRate;
+    const floored = +(Math.floor(proportions[key] + positiveExponent) + negativeExponent);
     const remainder = proportions[key] - floored;
     return ({
       floored,
@@ -154,7 +155,7 @@ export const distributionSampling = (proportions, accuracy) => {
   // summary proporions correction error
   const correctionError = distributionInfo
     .reduce((res, { floored }) => res - floored, 1);
-  const proportionsToCorrect = Math.floor(correctionError / sampleRate);
+  const proportionsToCorrect = Math.round(correctionError + positiveExponent);
   // if summary error greater than 10**accuracy,
   // then correct top n proportions sorted by remainder descending,
   // where n = error/10**accuracy
@@ -163,7 +164,9 @@ export const distributionSampling = (proportions, accuracy) => {
     .slice(0, proportionsToCorrect)
     .forEach(({ assetId }) => {
       const index = distributionInfo.findIndex(info => assetId === info.assetId);
-      distributionInfo[index].floored += sampleRate;
+      const integerValue = +(distributionInfo[index].floored + positiveExponent);
+      const correctedInteger = Math.floor(integerValue + 1);
+      distributionInfo[index].floored = +(correctedInteger + negativeExponent);
     });
 
   return distributionInfo.reduce(
