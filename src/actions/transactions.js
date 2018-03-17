@@ -9,7 +9,7 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
 
   const keys = rootGetters['account/getKeys'];
 
-  if (keys === null) {
+  if (!keys) {
     commit(types.TRANSFER_ASSET_ERROR, 'Wallet locked');
     return;
   }
