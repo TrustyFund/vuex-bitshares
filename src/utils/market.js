@@ -1,21 +1,21 @@
 import { Apis } from 'bitsharesjs-ws';
 import { TransactionBuilder, ops } from 'bitsharesjs';
 
-export const loadLimitOrders = async (baseId, quoteId, limit = 20000) => {
+export const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
   const orders = await Apis.instance().db_api().exec(
     'get_limit_orders',
     [baseId, quoteId, limit]
   );
-  const baseOrders = [];
-  const quoteOrders = [];
+  const buyOrders = [];
+  const sellOrders = [];
   orders.forEach((order) => {
     if (order.sell_price.base.asset_id === baseId) {
-      baseOrders.push(order);
+      buyOrders.push(order);
     } else {
-      quoteOrders.push(order);
+      sellOrders.push(order);
     }
   });
-  return { baseOrders, quoteOrders };
+  return { buyOrders, sellOrders };
 };
 
 /**
