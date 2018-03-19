@@ -149,6 +149,7 @@ export default class Market {
     this.markets[assetId].orders.buy = buyOrders;
     this.markets[assetId].orders.sell = sellOrders;
     this.markets[assetId].callback = callback;
+    callback();
   }
 
   unsubscribeFromMarket(assetId) {
@@ -167,10 +168,10 @@ export default class Market {
       const canReceiveInBase = this.calcExchangeRate(assetId, 'sell', amount);
       if (canReceiveInBase !== canReceiveInBasePrev && canReceiveInBase > 0) {
         canReceiveInBasePrev = canReceiveInBase;
-        callback(canReceiveInBase);
+        callback(assetId, canReceiveInBase);
       }
     };
-    this.subscribeToMarket(assetId, wrappedCallback);
+    await this.subscribeToMarket(assetId, wrappedCallback);
   }
 
   calcExchangeRate(assetId, type, amount) {
