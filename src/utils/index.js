@@ -201,7 +201,7 @@ export const calcPortfolioDistributionChange = (baseBalances, update) => {
   return Object.assign(result, { buy: distributionFromBalances(result.buy) });
 };
 
-export const getOrdersToUpdate = (balances, baseBalances, update) => {
+export const getValuesToUpdate = (balances, baseBalances, update) => {
   const totalBase = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
   const distribution = distributionFromBalances(baseBalances);
 

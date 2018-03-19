@@ -33,7 +33,7 @@ const main = async () => {
   update['1.3.121'] = 0.4;
   console.log("BASE BALANCES", baseBalances);
   console.log("BALANCES", balancesObject);
-  const result = utils.getOrdersToUpdate(balancesObject, baseBalances, update);
+  const result = utils.getValuesToUpdate(balancesObject, baseBalances, update);
   console.log(result);
 
 }
