@@ -70,6 +70,7 @@ const actions = {
     console.log(assetId + ' : ' + price);
     const { commit } = store;
     commit(types.UPDATE_MARKET_PRICE, { assetId, price });
+    store.dispatch('transactions/createOrdersFromDistribution', null, { root: true });
   }
 };
 

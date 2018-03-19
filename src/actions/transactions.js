@@ -5,12 +5,13 @@ import { calcPortfolioDistributionChange } from 'lib/src/utils';
 
 export const createOrdersFromDistribution = async (store) => {
   const { commit, rootGetters, getters } = store;
+  const distribution = getters.getPendingDistribution;
+  if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
   const assets = rootGetters['assets/getAssets'];
   const baseId = rootGetters['market/getBaseAssetId'];
   const history = rootGetters['market/getMarketHistory'];
-  const distribution = getters.getPendingDistribution;
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 

@@ -3,7 +3,7 @@ import * as types from '../mutations';
 import * as actions from '../actions/transactions';
 
 const initialState = {
-  pendingDistributionUpdate: {},
+  pendingDistributionUpdate: null,
   pendingOrders: {},
   pending: false,
   error: null
@@ -32,7 +32,7 @@ const mutations = {
     state.pendingDistributionUpdate = distribution;
   },
   [types.REMOVE_PENDING_DISTRIBUTION](state) {
-    state.pendingDistributionUpdate = {};
+    state.pendingDistributionUpdate = null;
   }
 };
 
