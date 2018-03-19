@@ -3,13 +3,15 @@ import * as types from '../mutations';
 import * as actions from '../actions/transactions';
 
 const initialState = {
+  pendingDistributionUpdate: {},
   pendingOrders: {},
   pending: false,
   error: null
 };
 
 const getters = {
-  getPendingOrders: state => state.pendingOrders
+  getPendingOrders: state => state.pendingOrders,
+  getPendingDistribution: state => state.pendingDistributionUpdate
 };
 
 const mutations = {
@@ -25,6 +27,12 @@ const mutations = {
   },
   [types.UPDATE_PENDING_ORDERS](state, { orders }) {
     Vue.set(state, 'pendingOrders', orders);
+  },
+  [types.SET_PENDING_DISTRIBUTION](state, { distribution }) {
+    state.pendingDistributionUpdate = distribution;
+  },
+  [types.REMOVE_PENDING_DISTRIBUTION](state) {
+    state.pendingDistributionUpdate = {};
   }
 };
 

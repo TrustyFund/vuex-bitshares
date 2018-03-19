@@ -1,14 +1,16 @@
 import * as types from '../mutations';
 import API from '../services/api';
+// eslint-disable-next-line
+import { calcPortfolioDistributionChange } from 'lib/src/utils';
 
-
-export const createOrdersFromUpdate = async (store, { update }) => {
-  const { commit, rootGetters } = store;
+export const createOrdersFromDistribution = async (store) => {
+  const { commit, rootGetters, getters } = store;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
   const assets = rootGetters['assets/getAssets'];
   const baseId = rootGetters['market/getBaseAssetId'];
   const history = rootGetters['market/getMarketHistory'];
+  const distribution = getters.getPendingDistribution;
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 
@@ -25,6 +27,8 @@ export const createOrdersFromUpdate = async (store, { update }) => {
     baseBalances[id] = combinedBalances[id].balance * history[id].last;
   });
 
+  const update = calcPortfolioDistributionChange(baseBalances, distribution);
+
   const orders = await API.Market.generateOrders({
     update,
     balances: combinedBalances,
@@ -35,6 +39,17 @@ export const createOrdersFromUpdate = async (store, { update }) => {
   });
 
   commit(types.UPDATE_PENDING_ORDERS, { orders });
+};
+
+export const setPendingDistribution = (store, { distribution }) => {
+  const { commit } = store;
+  commit(types.SET_PENDING_DISTRIBUTION, { distribution });
+  createOrdersFromDistribution(store);
+};
+
+export const removePendingDistribution = (store) => {
+  const { commit } = store;
+  commit(types.REMOVE_PENDING_DISTRIBUTION);
 };
 
 export const processPendingOrders = (store) => {
