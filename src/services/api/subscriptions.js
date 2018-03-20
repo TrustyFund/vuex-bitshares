@@ -24,6 +24,7 @@ class Subscription {
   }
 
   notify(operation) {
+    console.log('notify : ', operation);
     this._callback(operation);
   }
 }

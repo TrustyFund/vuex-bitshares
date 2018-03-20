@@ -98,8 +98,7 @@ const placeOrders = async ({ orders, keys }) => {
 
     try {
       await transaction.set_required_fees();
-      await transaction.update_head_block();
-      const res = await transaction.broadcast();
+      await transaction.broadcast();
       clearTimeout(broadcastTimeout);
       resolve({ success: true });
     } catch (error) {

@@ -9,13 +9,11 @@ export const createOrdersFromDistribution = async (store) => {
   if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
-  const assets = rootGetters['assets/getAssets'];
-  const baseId = rootGetters['market/getBaseAssetId'];
   const history = rootGetters['market/getMarketHistory'];
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 
-  const combinedBalances = { ...balances };
+  const combinedBalances = JSON.parse(JSON.stringify(balances));
   defaultAssetsIds.forEach(id => {
     if (combinedBalances[id]) return;
     combinedBalances[id] = { balance: 0 };
@@ -29,17 +27,19 @@ export const createOrdersFromDistribution = async (store) => {
   const baseBalances = {};
 
   assetsIds.forEach(id => {
-    baseBalances[id] = combinedBalances[id] * history[id].last;
+    if (id === '1.3.0') {
+      baseBalances[id] = combinedBalances[id];
+    } else {
+      baseBalances[id] = combinedBalances[id] * history[id].last;
+    }
   });
 
   // const update = calcPortfolioDistributionChange(baseBalances, distribution);
 
   const orders = API.Market.generateOrders({
+    userId,
     update: distribution,
     balances: combinedBalances,
-    // assets,
-    userId,
-    // baseId,
     baseBalances
   });
   console.log(orders);

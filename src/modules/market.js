@@ -33,7 +33,7 @@ const actions = {
     assetsIds.forEach(assetId => {
       const { balance } = balances[assetId];
       // if (!balance) return;
-      console.log('SUBBING ' + assetId + ' : ' + balance);
+      // console.log('SUBBING ' + assetId + ' : ' + balance);
       API.Market.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
         const rate = amount / balance;
@@ -57,7 +57,6 @@ const actions = {
   },
 
   updateMarketPrice(store, { assetId, price }) {
-    console.log(assetId + ' : ' + price);
     const { commit } = store;
     commit(types.UPDATE_MARKET_PRICE, { assetId, price });
     store.dispatch('transactions/createOrdersFromDistribution', null, { root: true });
