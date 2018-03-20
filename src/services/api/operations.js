@@ -16,12 +16,13 @@ const Operations = {
   },
 
   // Gets operation's data based on it's block number
-  _getOperationDate: (operation, ApiObject, ApiObjectDyn) => {
+  _getOperationDate: (operation, ApiObject, ApiObjectDyn, operationType) => {
     const blockInterval = ApiObject[0].parameters.block_interval;
     const headBlock = ApiObjectDyn[0].head_block_number;
     const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
     const secondsBelow = (headBlock - operation.block_num) * blockInterval;
     const date = new Date(headBlockTime - (secondsBelow * 1000));
+    if (operationType === 'fill_order') date.setSeconds(date.getSeconds() + 1);
     return date;
   },
 
@@ -50,7 +51,7 @@ const Operations = {
   _parseOperation: async (operation, userId, ApiObject, ApiObjectDyn) => {
     const [type, payload] = operation.op;
     const operationType = Operations._operationTypes[type];
-    const date = Operations._getOperationDate(operation, ApiObject, ApiObjectDyn);
+    const date = Operations._getOperationDate(operation, ApiObject, ApiObjectDyn, operationType);
 
     let isBid = false;
     let otherUserName = null;

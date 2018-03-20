@@ -10,6 +10,7 @@ const actions = {
    * @param {String} userId - user's id
    */
   fetchAndSubscribe: async (store, { userId, limit }) => {
+    // await actions.fetchUserOperations(store, { userId, limit });
     await actions.fetchUserOperations(store, { userId, limit });
     await actions.subscribeToUserOperations(store, { userId });
   },

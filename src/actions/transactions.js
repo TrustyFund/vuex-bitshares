@@ -60,8 +60,8 @@ export const removePendingDistribution = (store) => {
 
 export const processPendingOrders = async (store) => {
   const { getters, commit, rootGetters } = store;
-  const keys = rootGetters['account/getKeys'];
   commit(types.PROCESS_PENDING_ORDERS_REQUEST);
+  const keys = rootGetters['account/getKeys'];
   if (!keys) {
     commit(types.PROCESS_PENDING_ORDERS_ERROR);
     return {
@@ -75,6 +75,7 @@ export const processPendingOrders = async (store) => {
       orders: pendingOrders.sellOrders,
       keys });
     if (!sellResult.success) {
+      commit(types.PROCESS_PENDING_ORDERS_ERROR);
       return {
         success: false,
         error: sellResult.error
@@ -88,6 +89,7 @@ export const processPendingOrders = async (store) => {
     });
     console.log(buyResult);
     if (!buyResult.success) {
+      commit(types.PROCESS_PENDING_ORDERS_ERROR);
       return {
         success: false,
         error: buyResult.error
