@@ -24,11 +24,16 @@ export default class Market {
   constructor(base) {
     this.base = base;
     this.markets = {};
+    this.fee = 578;
     const marketsSubscription = new Subscriptions.Markets({
       callback: this.onMarketUpdate.bind(this)
     });
     listener.addSubscription(marketsSubscription);
     listener.enable();
+  }
+
+  getFee() {
+    return this.fee;
   }
 
   getCallback(pays, receives) {

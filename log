@@ -1,3 +1,68 @@
-Connected to API node: wss://bitshares.openledger.info/ws
-SELL EOS:  25799 97391
-BUY EOS:  100000 25799
+Connected to API node: wss://ws.winex.pro 
+BALANCES { '1.3.0': 65870,
+  '1.3.113': 0,
+  '1.3.121': 0,
+  '1.3.850': 0,
+  '1.3.858': 0,
+  '1.3.859': 0,
+  '1.3.861': 0,
+  '1.3.973': 523,
+  '1.3.1893': 101,
+  '1.3.1999': 27250,
+  '1.3.2935': 0,
+  '1.3.3128': 0,
+  '1.3.3265': 0,
+  '1.3.3403': 600 }
+DISTR { '1.3.0': 0.07829754254836095,
+  '1.3.113': 0,
+  '1.3.121': 0,
+  '1.3.850': 0,
+  '1.3.858': 0,
+  '1.3.859': 0,
+  '1.3.861': 0,
+  '1.3.973': 0.799348134623751,
+  '1.3.1893': 0,
+  '1.3.1999': 0.12227587075853642,
+  '1.3.2935': 0,
+  '1.3.3128': 0,
+  '1.3.3265': 0,
+  '1.3.3403': 0.00007845206935162931 }
+{ sell: { '1.3.973': 523 },
+  buy: { '1.3.1999': 359834, '1.3.113': 252383 } }
+SELL ORDERS:  [ { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.973', amount: 523 },
+    min_to_receive: { asset_id: '1.3.0', amount: 671896 },
+    expiration: 2023-03-20T03:47:03.041Z,
+    fill_or_kill: true } ]
+[ { id: '3dfa35fb946fd7955b3871d1670b5c3babaa4c1d',
+    block_num: 25382120,
+    trx_num: 0,
+    trx: 
+     { ref_block_num: 19686,
+       ref_block_prefix: 2883702380,
+       expiration: '2018-03-20T03:47:19',
+       operations: [Array],
+       extensions: [],
+       signatures: [Array],
+       operation_results: [Array] } } ]
+BUY ORDERS:  [ { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.0', amount: 359256 },
+    min_to_receive: { asset_id: '1.3.1999', amount: 92687 },
+    expiration: 2023-03-20T03:47:06.440Z,
+    fill_or_kill: true },
+  { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.0', amount: 251805 },
+    min_to_receive: { asset_id: '1.3.113', amount: 22996 },
+    expiration: 2023-03-20T03:47:06.442Z,
+    fill_or_kill: true } ]
+[ { id: 'dd7a68e309db88a62d7f5195643ea8b776072c70',
+    block_num: 25382121,
+    trx_num: 1,
+    trx: 
+     { ref_block_num: 19688,
+       ref_block_prefix: 1311916337,
+       expiration: '2018-03-20T03:47:22',
+       operations: [Array],
+       extensions: [],
+       signatures: [Array],
+       operation_results: [Array] } } ]

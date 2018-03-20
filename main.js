@@ -19,7 +19,7 @@ const createOrder = ({ sell, receive, userId}) => {
     amount_to_sell: sell,
     min_to_receive: receive,
     expiration,
-    fill_or_kill: false
+    fill_or_kill: true
   };
 }
 
@@ -32,7 +32,7 @@ const processOrders = async (orders) => {
 }
 
 const main = async () => {
-  await Apis.instance("wss://bitshares.openledger.info/ws", true).init_promise;
+  await Apis.instance("wss://ws.winex.pro ", true).init_promise;
   let { data: { balances }} = await API.Account.getUser(testAccount);
   
   const baseId = '1.3.0';
@@ -64,7 +64,8 @@ const main = async () => {
 
   const update = {};
   update['1.3.1999'] = 0.55;
-  update['1.3.113'] = 0.30;
+  update['1.3.113'] = 0.3;
+  update['1.3.973'] = 0;
   
   //console.log("BASE BALANCES", baseBalances);
   console.log("BALANCES", balancesObject);
@@ -150,5 +151,5 @@ const test = async () => {
   await market.subscribeToExchangeRate(quoteId, quoteAmount, callback)
 }
  
-test().catch(console.error);
+main().catch(console.error);
 
