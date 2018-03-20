@@ -87,12 +87,26 @@ const placeOrders = async ({ orders, keys }) => {
   console.log('placing orders : ', orders);
   orders.forEach(o => transaction.add_type_operation('limit_order_create', o));
 
-  const { active, owner } = keys;
-  const signedTransaction = await signTransaction(transaction, { active, owner });
-  await signedTransaction.set_required_fees();
-  const res = await signedTransaction.broadcast();
-  console.log('BROADCASTED : ', res);
-  return res;
+
+  return new Promise(async (resolve) => {
+    const broadcastTimeout = setTimeout(() => {
+      resolve({ success: false, error: 'expired' });
+    }, ChainConfig.expire_in_secs * 2000);
+
+    const { active, owner } = keys;
+    signTransaction(transaction, { active, owner });
+
+    try {
+      await transaction.set_required_fees();
+      await transaction.update_head_block();
+      const res = await transaction.broadcast();
+      clearTimeout(broadcastTimeout);
+      resolve({ success: true });
+    } catch (error) {
+      clearTimeout(broadcastTimeout);
+      resolve({ success: false, error: 'broadcast error' });
+    }
+  });
 };
 
 export default {

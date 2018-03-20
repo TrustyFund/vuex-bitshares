@@ -65,6 +65,7 @@ const actions = {
     const userOperations = new Subscriptions.UserOperations({
       userId,
       callback: (operation) => {
+        console.log('new operation: ', operation);
         actions.addUserOperation(store, { operation, userId });
       }
     });

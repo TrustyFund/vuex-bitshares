@@ -74,7 +74,12 @@ export const processPendingOrders = async (store) => {
     const sellResult = await API.Transactions.placeOrders({
       orders: pendingOrders.sellOrders,
       keys });
-    console.log(sellResult);
+    if (!sellResult.success) {
+      return {
+        success: false,
+        error: sellResult.error
+      };
+    }
   }
   if (pendingOrders.buyOrders.length) {
     const buyResult = await API.Transactions.placeOrders({
@@ -82,6 +87,12 @@ export const processPendingOrders = async (store) => {
       keys
     });
     console.log(buyResult);
+    if (!buyResult.success) {
+      return {
+        success: false,
+        error: buyResult.error
+      };
+    }
   }
   commit(types.PROCESS_PENDING_ORDERS_COMPLETE);
   console.log('TADAM');

@@ -14,7 +14,6 @@ const getters = {
   getPendingOrders: state => state.pendingOrders,
   getPendingDistribution: state => state.pendingDistributionUpdate,
   areTransactionsProcessing: state => state.transactionsProcessing
-
 };
 
 const mutations = {

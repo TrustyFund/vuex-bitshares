@@ -52,6 +52,7 @@ export const unlockWallet = ({ commit, state }, password) => {
   const passwordAes = Aes.fromSeed(password);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(state.encryptionKey);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+  console.log('unlocking, new aes private : ', aesPrivate);
   commit(types.ACCOUNT_UNLOCK_WALLET, aesPrivate);
 };
 
