@@ -136,7 +136,7 @@ class Market {
   }
 
   setDefaultObjects(assetId) {
-    if (this.markets[assetId] === undefined) {
+    if (!this.markets[assetId]) {
       this.markets[assetId] = {
         orders: {
           buy: [], sell: []
@@ -150,6 +150,7 @@ class Market {
     if (assetId === this.base) return;
     const { buyOrders, sellOrders } = await utils.loadLimitOrders(this.base, assetId);
     this.setDefaultObjects(assetId);
+    // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
     this.markets[assetId].orders.buy = buyOrders;
     this.markets[assetId].orders.sell = sellOrders;
     this.markets[assetId].callback = callback;
@@ -183,7 +184,7 @@ class Market {
     let totalReceive = 0;
 
     const requiredType = (weWantTo === 'sell') ? 'buy' : 'sell';
-
+    // console.log('cakc exchange rate for ' + assetId + ': ', this.markets[assetId]);
     const orders = [...this.markets[assetId].orders[requiredType]].sort((a, b) =>
       calcOrderRate(b) - calcOrderRate(a));
     for (let i = 0; i < orders.length; i += 1) {
@@ -205,10 +206,9 @@ class Market {
     const sellOrders = [];
     const buyOrders = [];
 
-    console.log('update: ', calculated);
-
     Object.keys(calculated.sell).forEach((assetId) => {
       const toSell = calculated.sell[assetId];
+      // if (!toSell) return;
       let toReceive = this.calcExchangeRate(assetId, 'sell', toSell);
       const fee = this.getFee(assetId);
       if (toReceive > fee) {
@@ -225,6 +225,7 @@ class Market {
           userId
         };
         const order = utils.createOrder(orderObject);
+
         sellOrders.push(order);
       }
     });
@@ -238,6 +239,7 @@ class Market {
       if (toSellBase > fee) {
         toSellBase -= fee;
         const toReceive = this.calcExchangeRate(assetId, 'buy', toSellBase);
+        if (!toReceive) return;
         const orderObject = {
           sell: {
             asset_id: this.base,

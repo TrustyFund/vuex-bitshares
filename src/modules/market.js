@@ -32,7 +32,7 @@ const actions = {
 
     assetsIds.forEach(assetId => {
       const { balance } = balances[assetId];
-      if (!balance) return;
+      // if (!balance) return;
       console.log('SUBBING ' + assetId + ' : ' + balance);
       API.Market.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
@@ -42,6 +42,8 @@ const actions = {
           assetId: id,
           price: rate
         });
+      }).then(() => {
+        console.log('SUBSCRIBED TO : ' + assetId + ' : ' + balance);
       });
     });
   },
@@ -49,6 +51,7 @@ const actions = {
   unsubscribeFromMarket(store, { balances }) {
     const assetsIds = Object.keys(balances);
     assetsIds.forEach(id => {
+      console.log('unsubscribing: ', id);
       API.Market.unsubscribeFromExchangeRate(id);
     });
   },

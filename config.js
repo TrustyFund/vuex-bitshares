@@ -9,7 +9,7 @@ const config = {
       'wss://japan.bitshares.apasia.tech/ws': { location: 'Tokyo, Japan' },
       'wss://bitshares.dacplay.org/ws': { location: 'Hangzhou, China' },
       'wss://bitshares-api.wancloud.io/ws': { location: 'China' },
-      'wss://openledger.hk/ws': { location: 'Hong Kong' },
+      // 'wss://openledger.hk/ws': { location: 'Hong Kong' },
       'wss://bitshares.crypto.fans/ws': { location: 'Munich, Germany' },
       'wss://ws.gdex.top': { location: 'China' },
       'wss://dex.rnglab.org': { location: 'Netherlands' },

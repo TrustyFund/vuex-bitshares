@@ -143,8 +143,10 @@ export const getValuesToUpdate = (balances, baseBalances, update) => {
   };
 
   Object.keys(update).forEach((assetId) => {
+    if (assetId === '1.3.0') return;
     const futureShare = update[assetId];
     const currentShare = distribution[assetId];
+
 
     if (futureShare === 0) {
       result.sell[assetId] = balances[assetId];

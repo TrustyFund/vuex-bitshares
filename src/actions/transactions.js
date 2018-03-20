@@ -58,18 +58,13 @@ export const removePendingDistribution = (store) => {
   commit(types.REMOVE_PENDING_DISTRIBUTION);
 };
 
-export const processPendingOrders = (store) => {
-  const { getters, commit } = store;
+export const processPendingOrders = async (store) => {
+  const { getters, commit, rootGetters } = store;
+  const keys = rootGetters['account/getKeys'];
   const pendingOrders = getters.getPendingOrders;
-  pendingOrders.toSell.forEach(order => {
-    // transfer assets
-    // transferAsset(store, {
-    //   to: ,
-    //   assetId: ,
-    //   amount: ,
-    //   memo:
-    // });
-  });
+  await API.Transactions.placeOrders({ orders: pendingOrders.sellOrders, keys });
+  await API.Transactions.placeOrders({ orders: pendingOrders.buyOrders, keys });
+  console.log('TADAM');
 };
 
 export const resetPendingOrders = (store) => {
