@@ -16,6 +16,10 @@ const PersistentStorage = {
   },
   getSavedNodesData: () => {
     return PersistentStorage.storage.nodes;
+  },
+  clearSavedUserData: () => {
+    delete PersistentStorage.storage.userId;
+    delete PersistentStorage.storage.encryptedBrainkey;
   }
 };
 

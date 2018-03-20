@@ -48,6 +48,9 @@ describe('Account module: getters', () => {
       userId: null,
       error: null,
       pending: false,
+      userData: null,
+      userError: false,
+      userFetching: false
     });
   });
 

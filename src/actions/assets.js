@@ -16,8 +16,20 @@ export const fetchAssets = async (store, { assets }) => {
 
   commit(types.FETCH_ASSETS_REQUEST);
   const result = await API.Assets.fetch(filteredAssets);
+
   if (result) {
+    // to remove prefix specified in config (e.x. ".OPEN")
+    const prefix = config.removePrefix;
+    if (prefix) {
+      result.forEach(asset => {
+        if (asset.symbol.substring(0, prefix.length) === prefix) {
+          asset.symbol = asset.symbol.slice(prefix.length);
+        }
+      });
+    }
+
     const composedResult = arrayToObject(result);
+
     commit(types.FETCH_ASSETS_COMPLETE, { assets: composedResult });
     return composedResult;
   }

@@ -121,6 +121,7 @@ export const decryptMemo = (memo, privateKey) => {
   ).toString('utf-8');
 };
 
+
 /** Calculates distribution 0..1 of total amount of assets expressed
  * in base asset
  * @param {Object} balances - {assetId: baseAssetValue}
@@ -174,32 +175,92 @@ export const distributionSampling = (proportions, accuracy) => {
   );
 };
 
+export const createOrder = ({ sell, receive, userId }) => {
+  const expiration = new Date();
+  expiration.setYear(expiration.getFullYear() + 5);
+  return {
+    seller: userId,
+    amount_to_sell: sell,
+    min_to_receive: receive,
+    expiration,
+    fill_or_kill: false
+  };
+};
 
-/**
- * Calculates for each update shares of specified assets balances
- * to sell and distrubution of assets to buy to fit updates
- * @param {Object} baseBalances - {assetId: baseAssetValue}
- * @param {Object} updates - {assetId: distribuitionToSet}
- */
-export const calcPortfolioDistributionChange = (baseBalances, update) => {
-  const total = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
+
+export const getValuesToUpdate = (balances, baseBalances, update) => {
+  const totalBase = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
   const distribution = distributionFromBalances(baseBalances);
+
   const result = {
     sell: {},
     buy: {}
   };
-  Object.keys(update).forEach(assetId => {
-    if (distribution[assetId] > update[assetId]) {
-      const amount = (distribution[assetId] - update[assetId]) * total;
-      if (amount > 1) {
-        result.sell[assetId] = amount / baseBalances[assetId];
-      }
+
+  Object.keys(update).forEach((assetId) => {
+    if (assetId === '1.3.0') return;
+    const futureShare = update[assetId];
+    const currentShare = distribution[assetId];
+
+    console.log('CALC VALUES:', assetId);
+    console.log(futureShare);
+    console.log(currentShare);
+
+
+    if (futureShare === 0) {
+      result.sell[assetId] = balances[assetId];
+    } else if (futureShare > currentShare) {
+      const futureBase = Math.floor(totalBase * futureShare);
+      const currentBase = Math.floor(totalBase * currentShare);
+      result.buy[assetId] = futureBase - currentBase;
     } else {
-      const amount = (update[assetId] - distribution[assetId]) * total;
-      if (amount > 1) {
-        result.buy[assetId] = amount;
-      }
+      const fullAmmountInCurrent = Math.floor(balances[assetId] / currentShare);
+      const amountInFuture = Math.floor(fullAmmountInCurrent * futureShare);
+      const otherPortfolioAmount = fullAmmountInCurrent - balances[assetId];
+      const amountToSell = fullAmmountInCurrent - otherPortfolioAmount - amountInFuture;
+      result.sell[assetId] = amountToSell;
     }
   });
-  return Object.assign(result, { buy: distributionFromBalances(result.buy) });
+  return result;
+};
+
+export const calcPortfolioItem = ({
+  asset,
+  prices,
+  baseAsset,
+  fiatMultiplier,
+  balance,
+  isFiat }) => {
+  let multiplier = fiatMultiplier;
+
+  const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
+
+  const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
+
+  const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
+
+  if (isFiat) multiplier = { first: 1, last: 1 };
+  let change = calcPercentChange(prices, multiplier);
+
+  if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
+
+  // console.log('========');
+  // console.log(asset.symbol);
+  // console.log('base precision: ', baseAsset.precision);
+  // console.log('balance: ', balance);
+  // console.log('base value: ', baseValue);
+  // console.log('fiat multiplier: ', fiatMultiplier);
+  // console.log('fiat value: ', fiatValue);
+  // console.log('base value precised : ', baseValuePrecised);
+  // console.log('change: ', change);
+
+  return {
+    name: asset.symbol,
+    balance,
+    baseValue,
+    baseValuePrecised,
+    basePrecision: baseAsset.precision,
+    fiatValue,
+    change
+  };
 };
