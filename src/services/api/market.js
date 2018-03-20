@@ -205,6 +205,7 @@ class Market {
     const sellOrders = [];
     const buyOrders = [];
 
+    console.log('update: ', calculated);
 
     Object.keys(calculated.sell).forEach((assetId) => {
       const toSell = calculated.sell[assetId];
@@ -228,6 +229,9 @@ class Market {
       }
     });
 
+    console.log('sell orders: ', sellOrders);
+
+
     Object.keys(calculated.toBuy).forEach((assetId) => {
       let toSellBase = calculated.toBuy[assetId];
       const fee = this.getFee(assetId);
@@ -249,6 +253,8 @@ class Market {
         buyOrders.push(order);
       }
     });
+
+    console.log('buy orders: ', buyOrders);
     return {
       sellOrders,
       buyOrders

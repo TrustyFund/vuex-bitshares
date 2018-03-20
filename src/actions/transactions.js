@@ -28,16 +28,17 @@ export const createOrdersFromDistribution = async (store) => {
     baseBalances[id] = combinedBalances[id].balance * history[id].last;
   });
 
-  const update = calcPortfolioDistributionChange(baseBalances, distribution);
+  // const update = calcPortfolioDistributionChange(baseBalances, distribution);
 
   const orders = await API.Market.generateOrders({
-    update,
+    update: distribution,
     balances: combinedBalances,
-    assets,
+    // assets,
     userId,
-    baseId,
+    // baseId,
     baseBalances
   });
+  console.log(orders);
 
   commit(types.UPDATE_PENDING_ORDERS, { orders });
 };

@@ -107,3 +107,45 @@ export const getFillingOrder = async (order, amount, accountId, btsFee = false) 
 
   return { ...newOrder, fee };
 };
+
+/** Calculates distribution 0..1 of total amount of assets expressed
+ * in base asset
+ * @param {Object} balances - {assetId: baseAssetValue}
+ */
+export const distributionFromBalances = (balances) => {
+  const total = Object.keys(balances).reduce((res, key) => res + balances[key], 0);
+  return Object.keys(balances).reduce(
+    (res, key) => Object.assign(res, { [key]: balances[key] / total }),
+    {}
+  );
+};
+
+export const getValuesToUpdate = (balances, baseBalances, update) => {
+  const totalBase = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
+  const distribution = distributionFromBalances(baseBalances);
+
+  const result = {
+    sell: {},
+    buy: {}
+  };
+
+  Object.keys(update).forEach((assetId) => {
+    const futureShare = update[assetId];
+    const currentShare = distribution[assetId];
+
+    if (futureShare === 0) {
+      result.sell[assetId] = balances[assetId];
+    } else if (futureShare > currentShare) {
+      const futureBase = Math.floor(totalBase * futureShare);
+      const currentBase = Math.floor(totalBase * currentShare);
+      result.buy[assetId] = futureBase - currentBase;
+    } else {
+      const fullAmmountInCurrent = Math.floor(balances[assetId] / currentShare);
+      const amountInFuture = Math.floor(fullAmmountInCurrent * futureShare);
+      const otherPortfolioAmount = fullAmmountInCurrent - balances[assetId];
+      const amountToSell = fullAmmountInCurrent - otherPortfolioAmount - amountInFuture;
+      result.sell[assetId] = amountToSell;
+    }
+  });
+  return result;
+};
