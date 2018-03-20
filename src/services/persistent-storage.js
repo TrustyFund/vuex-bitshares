@@ -38,6 +38,17 @@ const PersistentStorage = {
     }
     return {};
   },
+  getOpenledgerAddresses: () => {
+    const cachedData = Cookies.getJSON('BITSHARES_OPENLEDGER_ADDRESSES');
+    if (typeof (cachedData) === 'object' && cachedData !== null) {
+      return cachedData;
+    }
+    return {};
+  },
+  setOpenledgerAddresses: (data) => {
+    console.log('SET COOKIES', data);
+    Cookies.set('BITSHARES_OPENLEDGER_ADDRESSES', data);
+  },
   saveBackupDate: ({ date, userId }) => {
     let backupDateArray = Cookies.get('BACKUP_DATE');
     if (backupDateArray === undefined) {
