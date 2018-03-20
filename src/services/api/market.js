@@ -232,8 +232,8 @@ class Market {
     console.log('sell orders: ', sellOrders);
 
 
-    Object.keys(calculated.toBuy).forEach((assetId) => {
-      let toSellBase = calculated.toBuy[assetId];
+    Object.keys(calculated.buy).forEach((assetId) => {
+      let toSellBase = calculated.buy[assetId];
       const fee = this.getFee(assetId);
       if (toSellBase > fee) {
         toSellBase -= fee;
