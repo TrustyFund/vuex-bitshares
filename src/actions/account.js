@@ -3,6 +3,7 @@ import * as types from '../mutations';
 import config from '../../config';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
+import Subscriptions from '../services/api/subscriptions';
 import PersistentStorage from '../services/persistent-storage';
 
 const OWNER_KEY_INDEX = 1;
@@ -80,7 +81,8 @@ export const signup = async (state, { name, password, dictionary }) => {
   });
   console.log('Account created : ', result.success);
   if (result.success) {
-    const userId = await API.ChainListener.addSubscription('userSignUp', { name }, true);
+    const signUpSubscription = new Subscriptions.SignUp({ name });
+    const userId = await API.ChainListener.processSubscription(signUpSubscription);
     const wallet = createWallet({ password, brainkey });
     console.log(userId);
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });

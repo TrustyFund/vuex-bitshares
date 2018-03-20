@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
+import Subscriptions from '../services/api/subscriptions';
 
 
 const actions = {
@@ -61,12 +62,13 @@ const actions = {
    */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
-    API.ChainListener.addSubscription('userOperation', {
+    const userOperations = new Subscriptions.UserOperations({
       userId,
       callback: (operation) => {
         actions.addUserOperation(store, { operation, userId });
       }
     });
+    API.ChainListener.addSubscription(userOperations);
     commit(types.SUBSCRIBE_TO_USER_OPERATIONS);
   },
 
