@@ -20,7 +20,7 @@ const calcOrderRate = (order) => {
   return baseAmount / quoteAmount;
 };
 
-export default class Market {
+class Market {
   constructor(base) {
     this.base = base;
     this.markets = {};
@@ -29,7 +29,6 @@ export default class Market {
       callback: this.onMarketUpdate.bind(this)
     });
     listener.addSubscription(marketsSubscription);
-    listener.enable();
   }
 
   getFee() {
@@ -201,54 +200,60 @@ export default class Market {
     return Math.floor(totalReceive);
   }
 
-  async generateOrders({ update, balances, assets, userId, baseId, baseBalances }) {
-    const baseAsset = assets[baseId];
-    const toSell = Object.keys(update.sell).map(assetId => ({
-      asset: assets[assetId],
-      balance: Math.floor(update.sell[assetId] * balances[assetId].balance)
-    }));
+  generateOrders({ update, balances, baseBalances, userId }) {
+    const calculated = utils.getValuesToUpdate(balances, baseBalances, update);
+    const sellOrders = [];
+    const buyOrders = [];
 
-    const sellOrders = await this.getExchangeToBaseOrders(toSell, assets[baseId], userId);
-    console.log('sell orders: ', sellOrders);
-    let baseAssetExchangeAmount = sellOrders.reduce(
-      (res, order) => {
-        const marketFeePercent = assets[order.min_to_receive.asset_id].options.market_fee_percent;
-        // const { options: { market_fee_percent } } = assets[order.min_to_receive.assetId];
-        return res + Math.floor(order.min_to_receive.amount * (1 - (marketFeePercent / 10000)));
-      },
-      0
-    );
-    if (update.sell[baseAsset.id]) {
-      baseAssetExchangeAmount += Math.floor(baseBalances[baseAsset.id] * update.sell[baseAsset.id]);
-    }
-    console.log('exchange base asset amount: ', baseAssetExchangeAmount);
-    const toBuy = Object.keys(update.buy).map(assetId => ({
-      asset: assets[assetId],
-      share: update.buy[assetId]
-    }));
 
-    const buyOrders = await this.getExchangeToDistributionOrders(
-      baseAsset,
-      baseAssetExchangeAmount,
-      toBuy,
-      userId
-    );
-    console.log('buy orders: ', buyOrders);
+    Object.keys(calculated.sell).forEach((assetId) => {
+      const toSell = calculated.sell[assetId];
+      let toReceive = this.calcExchangeRate(assetId, 'sell', toSell);
+      const fee = this.getFee(assetId);
+      if (toReceive > fee) {
+        toReceive -= fee;
+        const orderObject = {
+          sell: {
+            asset_id: assetId,
+            amount: toSell
+          },
+          receive: {
+            asset_id: this.base,
+            amount: toReceive
+          },
+          userId
+        };
+        const order = utils.createOrder(orderObject);
+        sellOrders.push(order);
+      }
+    });
 
-    const exchangeResult = buyOrders.reduce(
-      (res, order) => {
-        const marketFeePercent = assets[order.min_to_receive.asset_id].options.market_fee_percent;
-        const result = Math.floor(order.min_to_receive.amount * (1 - (marketFeePercent / 10000)));
-        return Object.assign(res, {
-          [order.min_to_receive.assetId]: result
-        });
-      },
-      {}
-    );
-    console.log('exchange result: ', exchangeResult);
+    Object.keys(calculated.toBuy).forEach((assetId) => {
+      let toSellBase = calculated.toBuy[assetId];
+      const fee = this.getFee(assetId);
+      if (toSellBase > fee) {
+        toSellBase -= fee;
+        const toReceive = this.calcExchangeRate(assetId, 'buy', toSellBase);
+        const orderObject = {
+          sell: {
+            asset_id: this.base,
+            amount: toSellBase
+          },
+          receive: {
+            asset_id: assetId,
+            amount: toReceive
+          },
+          userId
+        };
+        const order = utils.createOrder(orderObject);
+        buyOrders.push(order);
+      }
+    });
     return {
       sellOrders,
       buyOrders
     };
   }
 }
+
+export default new Market('1.3.0');

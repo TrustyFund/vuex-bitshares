@@ -275,3 +275,15 @@ export const getValuesToUpdate = (balances, baseBalances, update) => {
   });
   return result;
 };
+
+export const createOrder = ({ sell, receive, userId }) => {
+  const expiration = new Date();
+  expiration.setYear(expiration.getFullYear() + 5);
+  return {
+    seller: userId,
+    amount_to_sell: sell,
+    min_to_receive: receive,
+    expiration,
+    fill_or_kill: true
+  };
+};

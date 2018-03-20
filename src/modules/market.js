@@ -28,23 +28,18 @@ const actions = {
   },
 
   subscribeToMarket(store, { balances }) {
-    const { getters, rootGetters } = store;
-    const assets = rootGetters['assets/getAssets'];
-    const baseAssetId = getters.getBaseAssetId;
-    const baseAsset = assets[baseAssetId];
     const assetsIds = Object.keys(balances);
 
-    assetsIds.forEach(id => {
-      const quoteAsset = assets[id];
-      const { balance } = balances[id];
+    assetsIds.forEach(assetId => {
+      const { balance } = balances[assetId];
       if (!balance) return;
-      console.log('SUBBING ' + quoteAsset.id + ' : ' + balance);
-      API.Market.subscribeExchangeRate(baseAsset, quoteAsset, balance, (from, to, amount) => {
+      console.log('SUBBING ' + assetId + ' : ' + balance);
+      API.Market.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
-        console.log(quoteAsset.id + ' new rate : ' + amount);
+        console.log(assetId + ' new rate : ' + amount);
         const rate = balance / amount;
         actions.updateMarketPrice(store, {
-          assetId: quoteAsset.id,
+          assetId: id,
           price: rate
         });
       });
@@ -52,17 +47,9 @@ const actions = {
   },
 
   unsubscribeFromMarket(store, { balances }) {
-    const { getters, rootGetters } = store;
-    const assets = rootGetters['assets/getAssets'];
-    const baseAssetId = getters.getBaseAssetId;
-    const baseAsset = assets[baseAssetId];
     const assetsIds = Object.keys(balances);
-
     assetsIds.forEach(id => {
-      const quoteAsset = assets[id];
-      const { balance } = balances[id];
-      if (!balance) return;
-      API.Market.unsubscribeExchangeRate(baseAsset.id, quoteAsset.id, balance);
+      API.Market.unsubscribeFromExchangeRate(id);
     });
   },
 
