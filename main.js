@@ -1,6 +1,6 @@
 import { Apis } from 'bitsharesjs-ws';
 import API from './src/services/api';
-import * as utils from './src/utils/index.js';
+import * as utils from './src/utils/market.js';
 import { key, TransactionBuilder } from 'bitsharesjs';
 
 const findAsset = (assetId) => {
@@ -33,22 +33,21 @@ const processOrders = async (orders) => {
 
 const main = async () => {
   await Apis.instance("wss://ws.winex.pro ", true).init_promise;
-  let { data: { balances }} = await API.Account.getUser(testAccount);
-  
+  API.ChainListener.enable();
   const baseId = '1.3.0';
 
-  const baseBalances = {};
   const balancesObject = {};
-  balances.forEach(({ asset_type, balance }) => {
-    baseBalances[asset_type] = 0;
-    balancesObject[asset_type] = balance;
-    if (asset_type === baseId) {
-      baseBalances[asset_type] = balance;
-    }
-  });
+  const baseBalances = {};
+  balancesObject['1.3.0'] = 100000000;
+  balancesObject['1.3.1999'] = 0;
+  balancesObject['1.3.973'] = 0;
 
-  const market = new API.Market(baseId);
+  baseBalances['1.3.0'] = 100000000;
+  baseBalances['1.3.1999'] = 0;
+  baseBalances['1.3.973'] = 0;
 
+
+  console.log("BALANCES", balancesObject, '\n\n');
 
   const balancesPromises = [];
   Object.keys(balancesObject).forEach((assetId) => {
@@ -56,19 +55,18 @@ const main = async () => {
       const callback = (assetId, baseValue) => {
         baseBalances[assetId] = baseValue;
       }
-      balancesPromises.push(market.subscribeToExchangeRate(assetId, balancesObject[assetId], callback));
+      balancesPromises.push(API.Market.subscribeToExchangeRate(assetId, balancesObject[assetId], callback));
     }
   });
 
   await Promise.all(balancesPromises);
 
   const update = {};
-  update['1.3.1999'] = 0.55;
-  update['1.3.113'] = 0.3;
-  update['1.3.973'] = 0;
+  update['1.3.1999'] = 0.5;
+  update['1.3.973'] = 0.5;
   
   //console.log("BASE BALANCES", baseBalances);
-  console.log("BALANCES", balancesObject);
+  
   console.log("DISTR",utils.distributionFromBalances(baseBalances));
   const result = utils.getValuesToUpdate(balancesObject, baseBalances, update);
   console.log(result);
@@ -78,8 +76,8 @@ const main = async () => {
 
   Object.keys(result.sell).forEach((assetId) => {
     const toSell = result.sell[assetId];
-    let toReceive = market.calcExchangeRate(assetId, 'sell', toSell);
-    const fee = market.getFee(assetId);
+    let toReceive = API.Market.calcExchangeRate(assetId, 'sell', toSell);
+    const fee = API.Market.getFee(assetId);
     if (toReceive > fee) {
       toReceive -= fee;
       const orderObject = {
@@ -97,18 +95,18 @@ const main = async () => {
       sellOrders.push(order);
     }
   });
- console.log("SELL ORDERS: ", sellOrders);
+ //console.log("SELL ORDERS: ", sellOrders);
 
   if (sellOrders.length) {
-    await processOrders(sellOrders);
+    //await processOrders(sellOrders);
   }
 
   Object.keys(result.buy).forEach((assetId) => {
     let toSellBase = result.buy[assetId];
-    const fee = market.getFee(assetId);
+    const fee = API.Market.getFee(assetId);
     if (toSellBase > fee){
       toSellBase -= fee;
-      const toReceive = market.calcExchangeRate(assetId, 'buy', toSellBase);
+      const toReceive = API.Market.calcExchangeRate(assetId, 'buy', toSellBase);
       const orderObject = {
         sell: {
           asset_id: baseId, 
@@ -127,7 +125,7 @@ const main = async () => {
   console.log("BUY ORDERS: ", buyOrders);
 
   if (buyOrders.length) {
-    await processOrders(buyOrders);
+    //await processOrders(buyOrders);
   }
 
   let { data: { balances: b2 }} = await API.Account.getUser(testAccount);
@@ -142,13 +140,12 @@ const test = async () => {
   const quoteAmount = 25799;
 
 
-  const market = new API.Market(baseId);
   const callback = (assetId, amount) => {
-    const toReceive = market.calcExchangeRate(assetId, 'buy', baseAmount);
+    const toReceive = API.Market.calcExchangeRate(assetId, 'buy', baseAmount);
     console.log("SELL EOS: ", quoteAmount, amount);
     console.log("BUY EOS: ", baseAmount, toReceive);
   }
-  await market.subscribeToExchangeRate(quoteId, quoteAmount, callback)
+  await API.Market.subscribeToExchangeRate(quoteId, quoteAmount, callback)
 }
  
 main().catch(console.error);

@@ -1,6 +1,8 @@
-import * as utils from '../../utils/market';
+import { Apis } from 'bitsharesjs-ws';
+import * as utils from '../../utils';
 import listener from './chain-listener';
 import Subscriptions from './subscriptions';
+
 
 const findOrder = (orderId) => {
   return (order) => orderId === order.id;
@@ -18,6 +20,23 @@ const calcOrderRate = (order) => {
     }
   } = order;
   return baseAmount / quoteAmount;
+};
+
+const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
+  const orders = await Apis.instance().db_api().exec(
+    'get_limit_orders',
+    [baseId, quoteId, limit]
+  );
+  const buyOrders = [];
+  const sellOrders = [];
+  orders.forEach((order) => {
+    if (order.sell_price.base.asset_id === baseId) {
+      buyOrders.push(order);
+    } else {
+      sellOrders.push(order);
+    }
+  });
+  return { buyOrders, sellOrders };
 };
 
 class Market {
@@ -148,7 +167,7 @@ class Market {
 
   async subscribeToMarket(assetId, callback) {
     if (assetId === this.base) return;
-    const { buyOrders, sellOrders } = await utils.loadLimitOrders(this.base, assetId);
+    const { buyOrders, sellOrders } = await loadLimitOrders(this.base, assetId);
     this.setDefaultObjects(assetId);
     // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
     this.markets[assetId].orders.buy = buyOrders;
