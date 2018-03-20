@@ -174,30 +174,25 @@ export default class Market {
     await this.subscribeToMarket(assetId, wrappedCallback);
   }
 
-  calcExchangeRate(assetId, type, amount) {
+  calcExchangeRate(assetId, weWantTo, amount) {
     let totalPay = amount;
     let totalReceive = 0;
-    let orders = [];
 
-    if (type === 'sell') {
-      orders = this.markets[assetId].orders.buy.sort((a, b) =>
-        calcOrderRate(b) - calcOrderRate(a));
-    } else {
-      orders = this.markets[assetId].orders.sell.sort((a, b) =>
-        calcOrderRate(b) - calcOrderRate(a));
-    }
+    const requiredType = (weWantTo === 'sell') ? 'buy' : 'sell';
 
+    const orders = [...this.markets[assetId].orders[requiredType]].sort((a, b) =>
+      calcOrderRate(b) - calcOrderRate(a));
     for (let i = 0; i < orders.length; i += 1) {
       const { for_sale: saleAmount, sell_price: price } = orders[i];
-      const weCanPay = Math.round(saleAmount * (price.base.amount / price.quote.amount));
-      if (totalPay > weCanPay) {
-        totalReceive += Math.round(weCanPay * (price.base.amount / price.quote.amount));
-        totalPay -= weCanPay;
+      const orderPrice = price.base.amount / price.quote.amount;
+      if (totalPay > saleAmount) {
+        totalReceive += saleAmount * orderPrice;
+        totalPay -= saleAmount;
       } else {
-        totalReceive += Math.round(totalPay * (price.base.amount / price.quote.amount));
+        totalReceive += totalPay * orderPrice;
         break;
       }
     }
-    return totalReceive;
+    return Math.floor(totalReceive);
   }
 }
