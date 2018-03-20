@@ -36,8 +36,8 @@ const actions = {
       console.log('SUBBING ' + assetId + ' : ' + balance);
       API.Market.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
-        console.log(assetId + ' new rate : ' + amount);
-        const rate = balance / amount;
+        const rate = amount / balance;
+        console.log(assetId + ' new bts amount: : ' + amount + ' , rate: ', rate);
         actions.updateMarketPrice(store, {
           assetId: id,
           price: rate
