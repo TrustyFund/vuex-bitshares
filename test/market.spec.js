@@ -71,7 +71,7 @@ const order2 = {
 
 
 describe('market service', () => {
-  const market = new Market(createLimitOrderFee);
+  const market = Market;
   test('subscribes to market', async done => {
     await market.subscribeToMarket(btsId, eosId);
     expect(market.getLimitOrders(btsId, eosId))

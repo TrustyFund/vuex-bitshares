@@ -24,6 +24,10 @@ const PersistentStorage = {
       passwordPubkey
     };
   },
+  clearSavedUserData: () => {
+    Cookies.remove('BITSHARES_USER_ID');
+    Cookies.remove('BITSHARES_USER_BRAINKEY');
+  },
   saveNodesData: ({ data }) => {
     Cookies.set('BITSHARES_NODES', data);
   },

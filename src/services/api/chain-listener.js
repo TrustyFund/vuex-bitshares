@@ -1,6 +1,5 @@
 /* eslint no-underscore-dangle: 0 */
 import { Apis } from 'bitsharesjs-ws';
-import SubscriptionBuilder from './subscription-builder';
 /**
  * Subscribe to updates from bitsharesjs-ws
  */
@@ -8,8 +7,6 @@ import SubscriptionBuilder from './subscription-builder';
 class ChainListener {
   constructor() {
     this._subscribers = [];
-    this._signUpWaitingList = {};
-    this._hasSignUpOperationsPending = false;
     this._enabled = false;
   }
   enable() {
@@ -23,24 +20,34 @@ class ChainListener {
     });
   }
 
-  addSubscription(type, payload, wait = false) {
-    if (wait) {
-      return new Promise((resolve) => {
-        payload.callback = (operation) => {
-          this.deleteSubscription(type);
-          resolve(operation.result[1]);
-        };
-        this._subscribers.push(new SubscriptionBuilder(type, payload));
-      });
-    }
-    this._subscribers.push(new SubscriptionBuilder(type, payload));
+  processSubscription(subscription) {
+    return new Promise((resolve) => {
+      const wrapped = (result) => {
+        this.deleteSubscription(subscription.getType());
+        resolve(result);
+      };
+      subscription.setCallback(wrapped);
+      this._subscribers.push(subscription);
+    });
+  }
+
+  addSubscription(subscription) {
+    this._subscribers.push(subscription);
     return true;
   }
 
-  deleteSubscription(type) {
+  deleteSubscription(subscription) {
     let subscriptionIndex = -1;
+
+    let typeToRemove = '';
+    if (typeof subscription === 'string') {
+      typeToRemove = subscription;
+    } else {
+      typeToRemove = subscription.getType();
+    }
+
     this._subscribers.forEach((sub, index) => {
-      if (sub.getType() === type) {
+      if (sub.getType() === typeToRemove) {
         subscriptionIndex = index;
       }
     });
@@ -51,14 +58,9 @@ class ChainListener {
 
   _mainCallback(data) {
     data[0].forEach(operation => {
-      if (typeof (operation) === 'object') this._operationCb(operation);
-    });
-  }
-  _operationCb(operation) {
-    this._subscribers.forEach((subscriber) => {
-      if (subscriber.checkOperation(operation)) {
+      this._subscribers.forEach((subscriber) => {
         subscriber.notify(operation);
-      }
+      });
     });
   }
 }

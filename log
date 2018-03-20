@@ -1,0 +1,16 @@
+Connected to API node: wss://ws.winex.pro 
+BALANCES { '1.3.0': 100000000, '1.3.1999': 0, '1.3.973': 0 } 
+
+
+DISTR { '1.3.0': 1, '1.3.1999': 0, '1.3.973': 0 }
+{ sell: {}, buy: { '1.3.1999': 50000000, '1.3.973': 50000000 } }
+BUY ORDERS:  [ { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.0', amount: 49999422 },
+    min_to_receive: { asset_id: '1.3.1999', amount: 13115959 },
+    expiration: 2023-03-20T12:14:08.493Z,
+    fill_or_kill: true },
+  { seller: '1.2.383374',
+    amount_to_sell: { asset_id: '1.3.0', amount: 49999422 },
+    min_to_receive: { asset_id: '1.3.973', amount: 11955 },
+    expiration: 2023-03-20T12:14:08.495Z,
+    fill_or_kill: true } ]

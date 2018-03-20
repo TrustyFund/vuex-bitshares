@@ -74,7 +74,42 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
   });
 };
 
+// const processOrders = async (orders) => {
+//   const transaction = new TransactionBuilder();
+//   orders.forEach(o => transaction.add_type_operation('limit_order_create', o));
+//   API.Transactions.signTransaction(transaction, {active: k, owner: k});
+//   await transaction.set_required_fees()
+//   console.log(await transaction.broadcast());
+// }
+
+const placeOrders = async ({ orders, keys }) => {
+  const transaction = new TransactionBuilder();
+  console.log('placing orders : ', orders);
+  orders.forEach(o => transaction.add_type_operation('limit_order_create', o));
+
+
+  return new Promise(async (resolve) => {
+    const broadcastTimeout = setTimeout(() => {
+      resolve({ success: false, error: 'expired' });
+    }, ChainConfig.expire_in_secs * 2000);
+
+    const { active, owner } = keys;
+    signTransaction(transaction, { active, owner });
+
+    try {
+      await transaction.set_required_fees();
+      await transaction.broadcast();
+      clearTimeout(broadcastTimeout);
+      resolve({ success: true });
+    } catch (error) {
+      clearTimeout(broadcastTimeout);
+      resolve({ success: false, error: 'broadcast error' });
+    }
+  });
+};
+
 export default {
   transferAsset,
-  signTransaction
+  signTransaction,
+  placeOrders
 };

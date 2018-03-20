@@ -3,13 +3,13 @@ const config = {
     list: {
       'wss://bitshares.openledger.info/ws': { location: 'Nuremberg, Germany' },
       'wss://eu.openledger.info/ws': { location: 'Berlin, Germany' },
-      'wss://bit.btsabc.org/ws': { location: 'Hong Kong' },
+      // 'wss://bit.btsabc.org/ws': { location: 'Hong Kong' },
       'wss://bts.ai.la/ws': { location: 'Hong Kong' },
       'wss://bitshares.apasia.tech/ws': { location: 'Bangkok, Thailand' },
       'wss://japan.bitshares.apasia.tech/ws': { location: 'Tokyo, Japan' },
       'wss://bitshares.dacplay.org/ws': { location: 'Hangzhou, China' },
       'wss://bitshares-api.wancloud.io/ws': { location: 'China' },
-      'wss://openledger.hk/ws': { location: 'Hong Kong' },
+      // 'wss://openledger.hk/ws': { location: 'Hong Kong' },
       'wss://bitshares.crypto.fans/ws': { location: 'Munich, Germany' },
       'wss://ws.gdex.top': { location: 'China' },
       'wss://dex.rnglab.org': { location: 'Netherlands' },
@@ -30,7 +30,8 @@ const config = {
   },
   defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
     'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARCOIN'],
-  referrer: 'trfnd'
+  referrer: 'trfnd',
+  removePrefix: 'OPEN.'
 };
 
 export default config;

@@ -3,10 +3,24 @@ import * as types from '../mutations';
 import config from '../../config';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
+import Subscriptions from '../services/api/subscriptions';
 import PersistentStorage from '../services/persistent-storage';
 
 const OWNER_KEY_INDEX = 1;
 const ACTIVE_KEY_INDEX = 0;
+
+
+/**
+ * Function to convert array of balances to object with keys as assets ids
+ * @param {Array} balancesArr - array of balance objects
+ */
+const balancesToObject = (balancesArr) => {
+  const obj = {};
+  balancesArr.forEach(item => {
+    obj[item.asset_type] = item;
+  });
+  return obj;
+};
 
 // helper fync
 const createWallet = ({ brainkey, password }) => {
@@ -67,7 +81,8 @@ export const signup = async (state, { name, password, dictionary }) => {
   });
   console.log('Account created : ', result.success);
   if (result.success) {
-    const userId = await API.ChainListener.addSubscription('userSignUp', { name }, true);
+    const signUpSubscription = new Subscriptions.SignUp({ name });
+    const userId = await API.ChainListener.processSubscription(signUpSubscription);
     const wallet = createWallet({ password, brainkey });
     console.log(userId);
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
@@ -103,6 +118,8 @@ export const storeBackupDate = (state, { date, userId }) => {
 export const login = async (state, { password, brainkey }) => {
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
+  // to be able to update pending state instantly
+  await new Promise(resolve => { setTimeout(resolve, 1); });
   const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
@@ -134,6 +151,13 @@ export const login = async (state, { password, brainkey }) => {
 export const logout = ({ commit }) => {
   console.log('logout');
   commit(types.ACCOUNT_LOGOUT);
+  commit(types.CLEAR_CURRENT_USER_WALLET_DATA);
+  PersistentStorage.clearSavedUserData();
+};
+
+// clears current user data (balances, acount, etc)
+export const clearCurrentUserData = ({ commit }) => {
+  commit(types.CLEAR_CURRENT_USER_DATA);
 };
 
 /**
@@ -172,4 +196,20 @@ export const checkCachedUserData = ({ commit }) => {
 export const checkIfUsernameFree = async (state, { username }) => {
   const result = await API.Account.getUser(username);
   return !result.success;
+};
+
+
+export const fetchCurrentUser = async (store) => {
+  const { commit, getters } = store;
+  const userId = getters.getAccountUserId;
+  if (!userId) return;
+  commit(types.FETCH_CURRENT_USER_REQUEST);
+  const result = await API.Account.getUser(userId);
+  if (result.success) {
+    const user = result.data;
+    result.data.balances = balancesToObject(user.balances);
+    commit(types.FETCH_CURRENT_USER_COMPLETE, { data: user });
+  } else {
+    commit(types.FETCH_CURRENT_USER_ERROR);
+  }
 };

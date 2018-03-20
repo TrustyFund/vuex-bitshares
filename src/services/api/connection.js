@@ -16,9 +16,10 @@ const connect = (statusCallback, changeNode) => {
   Apis.setAutoReconnect(false);
   Apis.setRpcConnectionStatusCallback(statusCallback);
   Apis.instance(url, true).init_promise.then(() => {
-    statusCallback('realopen');
     nodesManager.testNodesPings();
+    statusCallback('realopen');
   }).catch(() => {
+    nodesManager.testNodesPings();
     statusCallback('error');
   });
 };

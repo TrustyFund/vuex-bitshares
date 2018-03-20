@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
+import Subscriptions from '../services/api/subscriptions';
 
 
 const actions = {
@@ -9,6 +10,7 @@ const actions = {
    * @param {String} userId - user's id
    */
   fetchAndSubscribe: async (store, { userId, limit }) => {
+    // await actions.fetchUserOperations(store, { userId, limit });
     await actions.fetchUserOperations(store, { userId, limit });
     await actions.subscribeToUserOperations(store, { userId });
   },
@@ -61,12 +63,14 @@ const actions = {
    */
   subscribeToUserOperations(store, { userId }) {
     const { commit } = store;
-    API.ChainListener.addSubscription('userOperation', {
+    const userOperations = new Subscriptions.UserOperations({
       userId,
       callback: (operation) => {
+        console.log('new operation: ', operation);
         actions.addUserOperation(store, { operation, userId });
       }
     });
+    API.ChainListener.addSubscription(userOperations);
     commit(types.SUBSCRIBE_TO_USER_OPERATIONS);
   },
 
@@ -77,6 +81,11 @@ const actions = {
     const { commit } = store;
     API.ChainListener.deleteSubscription('userOperation');
     commit(types.UNSUBSCRIBE_FROM_USER_OPERATIONS);
+  },
+
+  resetState(store) {
+    const { commit } = store;
+    commit(types.RESET_OPERATIONS);
   }
 };
 
@@ -117,6 +126,11 @@ const mutations = {
   },
   [types.UNSUBSCRIBE_FROM_USER_OPERATIONS]: (state) => {
     state.subscribed = false;
+  },
+  [types.RESET_OPERATIONS]: (state) => {
+    state.list = [];
+    state.pending = false;
+    state.error = false;
   }
 };
 
