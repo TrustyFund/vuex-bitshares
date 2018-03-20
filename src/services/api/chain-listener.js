@@ -21,7 +21,6 @@ class ChainListener {
   }
 
   processSubscription(subscription) {
-    console.log('processing subscription : ', subscription);
     return new Promise((resolve) => {
       const wrapped = (result) => {
         this.deleteSubscription(subscription.getType());
@@ -33,7 +32,6 @@ class ChainListener {
   }
 
   addSubscription(subscription) {
-    console.log('adding subscription : ', subscription);
     this._subscribers.push(subscription);
     return true;
   }

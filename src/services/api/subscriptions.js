@@ -24,7 +24,6 @@ class Subscription {
   }
 
   notify(operation) {
-    console.log('notify : ', operation);
     this._callback(operation);
   }
 }
@@ -106,9 +105,9 @@ class UserOperations extends Subscription {
     if (operation.id && operation.id.startsWith(history_prefix)) {
       const _userOperationsCodes = [0, 1, 2, 4];
       const _opCode = operation.op[0];
-      if (_userOperationsCodes.includes(_opCode)) {
+      if (_userOperationsCodes.indexOf(_opCode) > -1) {
         const usersIds = this._getOperationUserIds(operation);
-        if (usersIds.includes(this._userId)) {
+        if (usersIds.indexOf(this._userId) > -1) {
           this._callback(operation);
         }
       }
