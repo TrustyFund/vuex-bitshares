@@ -33,6 +33,7 @@ const mutations = {
   },
   [types.REMOVE_PENDING_DISTRIBUTION](state) {
     state.pendingDistributionUpdate = null;
+    state.pendingOrders = {};
   }
 };
 

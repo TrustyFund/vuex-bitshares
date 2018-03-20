@@ -67,6 +67,11 @@ export const processPendingOrders = (store) => {
   });
 };
 
+export const resetPendingOrders = (store) => {
+  const { commit } = store;
+  commit(types.RESET_PENDING_ORDERS);
+};
+
 
 export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amount, memo }) => {
   commit(types.TRANSFER_ASSET_REQUEST);
