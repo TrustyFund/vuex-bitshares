@@ -108,6 +108,18 @@ export const getFillingOrder = async (order, amount, accountId, btsFee = false) 
   return { ...newOrder, fee };
 };
 
+export const createOrder = ({ sell, receive, userId }) => {
+  const expiration = new Date();
+  expiration.setYear(expiration.getFullYear() + 5);
+  return {
+    seller: userId,
+    amount_to_sell: sell,
+    min_to_receive: receive,
+    expiration,
+    fill_or_kill: true
+  };
+};
+
 /** Calculates distribution 0..1 of total amount of assets expressed
  * in base asset
  * @param {Object} balances - {assetId: baseAssetValue}
