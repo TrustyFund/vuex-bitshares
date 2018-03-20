@@ -61,10 +61,33 @@ export const removePendingDistribution = (store) => {
 export const processPendingOrders = async (store) => {
   const { getters, commit, rootGetters } = store;
   const keys = rootGetters['account/getKeys'];
+  commit(types.PROCESS_PENDING_ORDERS_REQUEST);
+  if (!keys) {
+    commit(types.PROCESS_PENDING_ORDERS_ERROR);
+    return {
+      success: false,
+      error: 'Account is locked'
+    };
+  }
   const pendingOrders = getters.getPendingOrders;
-  await API.Transactions.placeOrders({ orders: pendingOrders.sellOrders, keys });
-  await API.Transactions.placeOrders({ orders: pendingOrders.buyOrders, keys });
+  if (pendingOrders.sellOrders.length) {
+    const sellResult = await API.Transactions.placeOrders({
+      orders: pendingOrders.sellOrders,
+      keys });
+    console.log(sellResult);
+  }
+  if (pendingOrders.buyOrders.length) {
+    const buyResult = await API.Transactions.placeOrders({
+      orders: pendingOrders.buyOrders,
+      keys
+    });
+    console.log(buyResult);
+  }
+  commit(types.PROCESS_PENDING_ORDERS_COMPLETE);
   console.log('TADAM');
+  return {
+    success: true
+  };
 };
 
 export const resetPendingOrders = (store) => {

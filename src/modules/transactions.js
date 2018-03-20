@@ -6,12 +6,15 @@ const initialState = {
   pendingDistributionUpdate: null,
   pendingOrders: {},
   pending: false,
-  error: null
+  error: null,
+  transactionsProcessing: false
 };
 
 const getters = {
   getPendingOrders: state => state.pendingOrders,
-  getPendingDistribution: state => state.pendingDistributionUpdate
+  getPendingDistribution: state => state.pendingDistributionUpdate,
+  areTransactionsProcessing: state => state.transactionsProcessing
+
 };
 
 const mutations = {
@@ -34,6 +37,15 @@ const mutations = {
   [types.REMOVE_PENDING_DISTRIBUTION](state) {
     state.pendingDistributionUpdate = null;
     state.pendingOrders = {};
+  },
+  [types.PROCESS_PENDING_ORDERS_REQUEST](state) {
+    state.transactionsProcessing = true;
+  },
+  [types.PROCESS_PENDING_ORDERS_ERROR](state) {
+    state.transactionsProcessing = false;
+  },
+  [types.PROCESS_PENDING_ORDERS_COMPLETE](state) {
+    state.transactionsProcessing = false;
   }
 };
 
