@@ -21,16 +21,20 @@ export const createOrdersFromDistribution = async (store) => {
     combinedBalances[id] = { balance: 0 };
   });
 
+  Object.keys(combinedBalances).forEach(id => {
+    combinedBalances[id] = combinedBalances[id].balance;
+  });
+
   const assetsIds = Object.keys(combinedBalances);
   const baseBalances = {};
 
   assetsIds.forEach(id => {
-    baseBalances[id] = combinedBalances[id].balance * history[id].last;
+    baseBalances[id] = combinedBalances[id] * history[id].last;
   });
 
   // const update = calcPortfolioDistributionChange(baseBalances, distribution);
 
-  const orders = await API.Market.generateOrders({
+  const orders = API.Market.generateOrders({
     update: distribution,
     balances: combinedBalances,
     // assets,

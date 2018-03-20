@@ -121,6 +121,7 @@ export const distributionFromBalances = (balances) => {
 };
 
 export const getValuesToUpdate = (balances, baseBalances, update) => {
+  console.log('calculating to :', balances, baseBalances, update);
   const totalBase = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
   const distribution = distributionFromBalances(baseBalances);
 
