@@ -2,6 +2,15 @@ import Cookies from 'js-cookie';
 
 // Persistent Storage for data cache management
 const PersistentStorage = {
+  set(key, data) {
+    Cookies.set(key, data, 7);
+  },
+  get(key) {
+    return Cookies.get(key);
+  },
+  remove(key) {
+    return Cookies.remove(key);
+  },
   saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey }) => {
     Cookies.set('BITSHARES_USER_ID', id, 7);
     Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, 7);
