@@ -128,3 +128,7 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
     commit(types.TRANSFER_ASSET_ERROR, res.error);
   }
 };
+
+export const setPendingTransfer = ({ commit }, { transaction }) => {
+  commit(types.SET_PENDING_TRANSACTION, { transaction });
+};
