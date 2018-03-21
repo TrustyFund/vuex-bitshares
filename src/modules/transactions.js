@@ -50,7 +50,7 @@ const mutations = {
   [types.PROCESS_PENDING_ORDERS_COMPLETE](state) {
     state.transactionsProcessing = false;
   },
-  [types.SET_PENDING_TRANSACTION](state, { transaction }) {
+  [types.SET_PENDING_TRANSFER](state, { transaction }) {
     state.pendingTransfer = transaction;
   }
 };

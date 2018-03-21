@@ -128,5 +128,5 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
 };
 
 export const setPendingTransfer = ({ commit }, { transaction }) => {
-  commit(types.SET_PENDING_TRANSACTION, { transaction });
+  commit(types.SET_PENDING_TRANSFER, { transaction });
 };
