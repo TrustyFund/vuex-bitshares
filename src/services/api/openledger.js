@@ -1,7 +1,7 @@
-
-const baseUrl = 'https://ol-api1.openledger.info/api/v0/ol/support/simple-api/';
-const newAdressUri = 'initiate-trade';
-const lastAdressUri = 'get-last-address';
+const baseUrl = 'https://ol-api1.openledger.info/api/v0/ol/support';
+const newAdressUri = '/simple-api/initiate-trade';
+const lastAdressUri = '/simple-api/get-last-address';
+const coinsUri = '/coins';
 
 const processRequest = async ({ url, request }) => {
   try {
@@ -16,6 +16,19 @@ const processRequest = async ({ url, request }) => {
   } catch (error) {
     return { success: false, error };
   }
+};
+
+const fetchCoins = async () => {
+  const url = baseUrl + coinsUri;
+  const request = { method: 'GET' };
+
+  const result = await processRequest({ url, request });
+
+  if (!result.success) {
+    return { success: false, error: result.error };
+  }
+
+  return result;
 };
 
 const requestDepositAdress = async ({ asset, user }) => {
@@ -63,5 +76,6 @@ const getLastDepositAdress = async ({ asset, user }) => {
 
 export default {
   requestDepositAdress,
-  getLastDepositAdress
+  getLastDepositAdress,
+  fetchCoins
 };

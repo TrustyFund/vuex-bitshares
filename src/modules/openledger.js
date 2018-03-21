@@ -5,6 +5,7 @@ import * as types from '../mutations';
 const initialState = {
   depositAddress: 'No address',
   pending: false,
+  coins: {},
   error: false
 };
 
@@ -50,11 +51,32 @@ const actions = {
         }
       }
     }
+  },
+  async fetchCoins({ commit }) {
+    commit(types.FETCH_OPENLEDGER_COINS_REQUEST);
+
+    const fetchResult = await API.Openledger.fetchCoins();
+
+
+    if (!fetchResult.success) {
+      const { error } = fetchResult;
+      commit(types.FETCH_OPENLEDGER_COINS_ERROR, { error });
+    }
+
+    const coins = {};
+
+    fetchResult.data.forEach((coin) => {
+      const { coinType, gateFee, intermediateAccount } = coin;
+      coins[coinType] = { gateFee, intermediateAccount };
+    });
+
+    commit(types.FETCH_OPENLEDGER_COINS_COMPLETE, { coins });
   }
 };
 
 const getters = {
-  getDepositAddress: state => state.depositAddress
+  getDepositAddress: state => state.depositAddress,
+  getCoinsData: state => state.coins
 };
 
 const mutations = {
@@ -71,6 +93,17 @@ const mutations = {
     state.error = error;
     state.pending = false;
   },
+  [types.FETCH_OPENLEDGER_COINS_REQUEST]: (state) => {
+    state.pending = true;
+  },
+  [types.FETCH_OPENLEDGER_COINS_COMPLETE]: (state, { coins }) => {
+    state.pending = false;
+    state.coins = coins;
+  },
+  [types.FETCH_OPENLEDGER_COINS_ERROR]: (state, { error }) => {
+    state.pending = false;
+    state.error = error;
+  }
 };
 
 export default {
