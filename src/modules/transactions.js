@@ -22,14 +22,14 @@ const getters = {
 
 const mutations = {
   [types.TRANSFER_ASSET_REQUEST](state) {
-    state.pending = true;
+    state.transactionsProcessing = true;
   },
   [types.TRANSFER_ASSET_ERROR](state, error) {
     state.error = error;
-    state.pending = false;
+    state.transactionsProcessing = false;
   },
   [types.TRANSFER_ASSET_COMPLETE](state) {
-    state.pending = false;
+    state.transactionsProcessing = false;
   },
   [types.UPDATE_PENDING_ORDERS](state, { orders }) {
     Vue.set(state, 'pendingOrders', orders);
