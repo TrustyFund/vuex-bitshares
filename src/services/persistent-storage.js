@@ -40,35 +40,20 @@ const PersistentStorage = {
   },
   saveBackupDate: ({ date, userId }) => {
     let backupDateArray = Cookies.get('BACKUP_DATE');
-    console.log(backupDateArray);
     if (backupDateArray === undefined) {
       backupDateArray = [{ userId, date }];
     } else {
       try {
         const backupDateFromString = JSON.parse(backupDateArray);
-        console.log(backupDateFromString);
-        // const foundObj = backupDateFromString.find((item, index) => {
-        //   if (item.userId === userId) {
-        //     console.log('found same user');
-        //     backupDateFromString[index].date = date;
-        //     return true;
-        //   }
-        //   return false;
-        // });
         const foundObj = backupDateFromString.some(item => item.userId === userId);
-        console.log('foundObj', foundObj);
         if (!foundObj) {
-          console.log('not found obj');
           backupDateFromString.push({ userId, date });
           backupDateArray = JSON.stringify(backupDateFromString);
         }
       } catch (ex) {
-        console.log(ex);
-        console.log('parsing exeption');
         backupDateArray = [{ userId, date }];
       }
     }
-    console.log(backupDateArray);
     Cookies.set('BACKUP_DATE', backupDateArray);
   },
 
