@@ -65,15 +65,10 @@ const PersistentStorage = {
     } else {
       try {
         const backupDateFromString = JSON.parse(backupDateArray);
-        const foundObj = backupDateFromString.find((item, index) => {
-          if (item.userId === userId) {
-            backupDateFromString[index].date = date;
-            return true;
-          }
-          return undefined;
-        });
+        const foundObj = backupDateFromString.some(item => item.userId === userId);
         if (!foundObj) {
           backupDateFromString.push({ userId, date });
+          backupDateArray = JSON.stringify(backupDateFromString);
         }
       } catch (ex) {
         backupDateArray = [{ userId, date }];
