@@ -1,6 +1,5 @@
 import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
-import config from '../../config';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
 import Subscriptions from '../services/api/subscriptions';
