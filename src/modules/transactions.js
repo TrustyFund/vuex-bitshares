@@ -5,6 +5,7 @@ import * as actions from '../actions/transactions';
 const initialState = {
   pendingDistributionUpdate: null,
   pendingOrders: {},
+  pendingTransfer: false,
   pending: false,
   error: null,
   transactionsProcessing: false
@@ -12,20 +13,23 @@ const initialState = {
 
 const getters = {
   getPendingOrders: state => state.pendingOrders,
+  hasPendingOrders: state => state.pendingOrders.sellOrders || state.pendingOrders.buyOrders,
   getPendingDistribution: state => state.pendingDistributionUpdate,
-  areTransactionsProcessing: state => state.transactionsProcessing
+  hasPendingTransfer: state => state.pendingTransfer !== false,
+  areTransactionsProcessing: state => state.transactionsProcessing,
+  getPendingTransfer: state => state.pendingTransfer
 };
 
 const mutations = {
   [types.TRANSFER_ASSET_REQUEST](state) {
-    state.pending = true;
+    state.transactionsProcessing = true;
   },
   [types.TRANSFER_ASSET_ERROR](state, error) {
     state.error = error;
-    state.pending = false;
+    state.transactionsProcessing = false;
   },
   [types.TRANSFER_ASSET_COMPLETE](state) {
-    state.pending = false;
+    state.transactionsProcessing = false;
   },
   [types.UPDATE_PENDING_ORDERS](state, { orders }) {
     Vue.set(state, 'pendingOrders', orders);
@@ -45,6 +49,9 @@ const mutations = {
   },
   [types.PROCESS_PENDING_ORDERS_COMPLETE](state) {
     state.transactionsProcessing = false;
+  },
+  [types.SET_PENDING_TRANSFER](state, { transaction }) {
+    state.pendingTransfer = transaction;
   }
 };
 

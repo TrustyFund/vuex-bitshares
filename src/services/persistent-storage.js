@@ -2,6 +2,15 @@ import Cookies from 'js-cookie';
 
 // Persistent Storage for data cache management
 const PersistentStorage = {
+  set(key, data) {
+    Cookies.set(key, data, 7);
+  },
+  get(key) {
+    return Cookies.get(key);
+  },
+  remove(key) {
+    return Cookies.remove(key);
+  },
   saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey }) => {
     Cookies.set('BITSHARES_USER_ID', id, 7);
     Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, 7);
@@ -37,6 +46,17 @@ const PersistentStorage = {
       return cachedData;
     }
     return {};
+  },
+  getOpenledgerAddresses: () => {
+    const cachedData = Cookies.getJSON('BITSHARES_OPENLEDGER_ADDRESSES');
+    if (typeof (cachedData) === 'object' && cachedData !== null) {
+      return cachedData;
+    }
+    return {};
+  },
+  setOpenledgerAddresses: (data) => {
+    console.log('SET COOKIES', data);
+    Cookies.set('BITSHARES_OPENLEDGER_ADDRESSES', data);
   },
   saveBackupDate: ({ date, userId }) => {
     let backupDateArray = Cookies.get('BACKUP_DATE');

@@ -111,20 +111,33 @@ export const resetPendingOrders = (store) => {
 
 export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amount, memo }) => {
   commit(types.TRANSFER_ASSET_REQUEST);
-
+  console.log('transferAsset to1', to);
   const fromId = rootGetters['account/getAccountUserId'];
 
   const keys = rootGetters['account/getKeys'];
 
   if (!keys) {
     commit(types.TRANSFER_ASSET_ERROR, 'Wallet locked');
-    return;
+    return {
+      success: false,
+      error: 'Wallet is locked'
+    };
   }
-
+  console.log('transferAsset to2', to);
   const res = await API.Transactions.transferAsset(fromId, to, assetId, amount, keys, memo);
   if (res.success) {
     commit(types.TRANSFER_ASSET_COMPLETE);
-  } else {
-    commit(types.TRANSFER_ASSET_ERROR, res.error);
+    return {
+      success: true
+    };
   }
+  commit(types.TRANSFER_ASSET_ERROR, res.error);
+  return {
+    success: false,
+    error: res.error
+  };
+};
+
+export const setPendingTransfer = ({ commit }, { transaction }) => {
+  commit(types.SET_PENDING_TRANSFER, { transaction });
 };
