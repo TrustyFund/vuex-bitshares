@@ -33,7 +33,7 @@ export const getAccountIdByOwnerPubkey = async ownerPubkey => {
   return res ? res[0] : null;
 };
 
-const searchParams = (params) => {
+const encodeBody = (params) => {
   return Object.keys(params).map((bodyKey) => {
     return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
   }).join('&');
@@ -53,7 +53,7 @@ export const createAccount = async ({ name, activeKey, ownerKey }) => {
       headers: {
         'Content-type': 'application/x-www-form-urlencoded'
       },
-      body: searchParams(body)
+      body: encodeBody(body)
     });
     const result = await response.json();
     if (result.result === 'OK') {
