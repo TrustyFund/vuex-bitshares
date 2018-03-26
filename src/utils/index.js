@@ -144,7 +144,8 @@ export const distributionSampling = (proportions, accuracy) => {
   const negativeExponent = `e-${accuracy}`;
   const distributionInfo = Object.keys(proportions).map(key => {
     // proportions rounded dawnward to nearest miltiple of 10 ** accuracy
-    const floored = +(Math.floor(proportions[key] + positiveExponent) + negativeExponent);
+    const integer = Math.floor(proportions[key].toFixed(accuracy + 1) + positiveExponent);
+    const floored = +(integer + negativeExponent);
     const remainder = proportions[key] - floored;
     return ({
       floored,
