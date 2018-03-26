@@ -77,7 +77,6 @@ export const signup = async (state, { name, password, dictionary }) => {
     name,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
-    referrer: config.referrer || ''
   });
   console.log('Account created : ', result.success);
   if (result.success) {
