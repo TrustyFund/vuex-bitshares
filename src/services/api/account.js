@@ -1,5 +1,6 @@
 import { key } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
+import config from '../../../config';
 
 export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
@@ -40,7 +41,7 @@ const encodeBody = (params) => {
 };
 
 export const createAccount = async ({ name, activeKey, ownerKey }) => {
-  const faucetUrl = 'http://localhost:3000/signup';
+  const { faucetUrl } = config;
   try {
     const body = {
       name,

@@ -31,7 +31,8 @@ const config = {
   defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
     'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARCOIN'],
   referrer: 'trfnd',
-  removePrefix: 'OPEN.'
+  removePrefix: 'OPEN.',
+  faucetUrl: 'https://faucet.trusty.fund/signup'
 };
 
 export default config;
