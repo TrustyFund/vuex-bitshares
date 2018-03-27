@@ -3,7 +3,7 @@ import API from '../services/api';
 import * as types from '../mutations';
 
 const initialState = {
-  depositAddress: 'No address',
+  depositAddress: '',
   pending: false,
   coins: {},
   error: false
