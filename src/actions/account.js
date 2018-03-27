@@ -1,6 +1,5 @@
 import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
-import config from '../../config';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
 import Subscriptions from '../services/api/subscriptions';
@@ -77,7 +76,6 @@ export const signup = async (state, { name, password, dictionary }) => {
     name,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
-    referrer: config.referrer || ''
   });
   console.log('Account created : ', result.success);
   if (result.success) {

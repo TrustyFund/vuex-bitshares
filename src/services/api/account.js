@@ -1,5 +1,6 @@
 import { key } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
+import config from '../../../config';
 
 export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
@@ -33,36 +34,37 @@ export const getAccountIdByOwnerPubkey = async ownerPubkey => {
   return res ? res[0] : null;
 };
 
-export const createAccount = async ({ name, ownerKey, activeKey, referrer }) => {
-  const faucetUrl = 'https://faucet.bitshares.eu/onboarding';
+const encodeBody = (params) => {
+  return Object.keys(params).map((bodyKey) => {
+    return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
+  }).join('&');
+};
+
+export const createAccount = async ({ name, activeKey, ownerKey }) => {
+  const { faucetUrl } = config;
   try {
-    const response = await fetch(faucetUrl + '/api/v1/accounts', {
+    const body = {
+      name,
+      active_key: activeKey.toPublicKey().toPublicKeyString(),
+      owner_key: ownerKey.toPublicKey().toPublicKeyString()
+    };
+    const response = await fetch(faucetUrl, {
       method: 'post',
       mode: 'cors',
       headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/x-www-form-urlencoded'
       },
-      body: JSON.stringify({
-        account: {
-          name,
-          owner_key: ownerKey.toPublicKey().toPublicKeyString(),
-          active_key: activeKey.toPublicKey().toPublicKeyString(),
-          memo_key: activeKey.toPublicKey().toPublicKeyString(),
-          refcode: null,
-          referrer
-        }
-      })
+      body: encodeBody(body)
     });
     const result = await response.json();
-    if (!result || (result && result.error)) {
+    if (result.result === 'OK') {
       return {
-        success: false,
-        error: result.error.base[0]
+        success: true
       };
     }
     return {
-      success: true
+      success: false,
+      error: 'Account creation error'
     };
   } catch (error) {
     return {
