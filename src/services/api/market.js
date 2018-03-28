@@ -209,9 +209,11 @@ class Market {
     for (let i = 0; i < orders.length; i += 1) {
       const { for_sale: saleAmount, sell_price: price } = orders[i];
       const orderPrice = price.base.amount / price.quote.amount;
-      if (totalPay > saleAmount) {
-        totalReceive += saleAmount * orderPrice;
-        totalPay -= saleAmount;
+      const weCanPayHere = saleAmount / orderPrice;
+
+      if (totalPay > weCanPayHere) {
+        totalReceive += saleAmount;
+        totalPay -= weCanPayHere;
       } else {
         totalReceive += totalPay * orderPrice;
         break;
