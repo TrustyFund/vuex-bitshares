@@ -28,8 +28,8 @@ const config = {
     },
     defaultNode: 'wss://bitshares.openledger.info/ws'
   },
-  defaultAssetsNames: ['BTS', 'OPEN.EOS', 'USD', 'OPEN.OMG', 'CNY',
-    'OPEN.LTC', 'TRFND', 'OPEN.BTC', 'ARCOIN'],
+  defaultAssetsNames: ['OPEN.BTC', 'OPEN.ETH', 'OPEN.DASH', 'OPEN.LTC',
+    'OPEN.EOS', 'OPEN.STEEM', 'BTS', 'TRUSTY'],
   referrer: 'trfnd',
   removePrefix: 'OPEN.',
   faucetUrl: 'https://faucet.trusty.fund/signup'
