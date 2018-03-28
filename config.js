@@ -28,7 +28,7 @@ const config = {
     },
     defaultNode: 'wss://bitshares.openledger.info/ws'
   },
-  defaultAssetsNames: ['OPEN.BTC', 'OPEN.ETH', 'OPEN.DASH', 'OPEN.LTC',
+  defaultAssetsNames: ['USD', 'OPEN.BTC', 'OPEN.ETH', 'OPEN.DASH', 'OPEN.LTC',
     'OPEN.EOS', 'OPEN.STEEM', 'BTS', 'TRUSTY'],
   referrer: 'trfnd',
   removePrefix: 'OPEN.',
