@@ -4,7 +4,6 @@ let cacheParameters = false;
 
 const get = async () => {
   if (cacheParameters) {
-    console.log('From cache');
     return cacheParameters;
   }
 
