@@ -78,7 +78,7 @@ const Operations = {
   // that were user in it
   parseOperations: async ({ operations, userId }) => {
     const ApiInstance = Apis.instance();
-    const Parameters = await API.Parameters.get();
+    const Parameters = await API.Parameters.getParameters();
     const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
 
     const operationTypes = [0, 1, 2, 4];
