@@ -5,7 +5,7 @@ import * as types from '../mutations';
 const initialState = {
   depositAddress: '',
   pending: false,
-  coins: {},
+  coins: false,
   error: false
 };
 
@@ -56,8 +56,12 @@ const actions = {
       }
     }
   },
-  async fetchCoins({ commit }) {
+  async fetchCoins({ state, commit }) {
     commit(types.FETCH_OPENLEDGER_COINS_REQUEST);
+
+    if (state.coins) {
+      commit(types.FETCH_OPENLEDGER_COINS_COMPLETE, { coins: state.coins });
+    }
 
     const fetchResult = await API.Openledger.fetchCoins();
 
