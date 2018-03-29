@@ -14,16 +14,22 @@ const getParameters = async () => {
   return cacheParameters;
 };
 
-const getComissions = async () => {
-  if (cacheParameters) {
-    return cacheParameters.current_fees;
-  }
-
-  const { current_fees: { parameters: fees, scale } } = await getParameters();
+export const getCachedComissions = () => {
+  const { current_fees: { parameters: fees, scale } } = cacheParameters;
   return { fees, scale };
 };
 
-const getComission = async (type) => {
+export const getComissions = async () => {
+  if (cacheParameters) {
+    return getCachedComissions();
+  }
+
+  const { current_fees: { parameters: fees, scale } } = await getParameters();
+  console.log('Service:', fees);
+  return { fees, scale };
+};
+
+export const getComission = async (type) => {
   const ops = Object.keys(operations);
   const opIndex = ops.indexOf(type);
   const { fees } = await getComissions();
@@ -33,4 +39,4 @@ const getComission = async (type) => {
   return false;
 };
 
-export default { getParameters, getComission };
+export default { getParameters, getComissions, getComission, getCachedComissions };

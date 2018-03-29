@@ -23,7 +23,6 @@ const actions = {
     const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
 
     if (cachedAddresses[asset]) {
-      console.log('FROM CACHE');
       const address = cachedAddresses[asset];
       commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE, { address });
     } else {
@@ -61,6 +60,7 @@ const actions = {
 
     if (state.coins) {
       commit(types.FETCH_OPENLEDGER_COINS_COMPLETE, { coins: state.coins });
+      return;
     }
 
     const fetchResult = await API.Openledger.fetchCoins();
