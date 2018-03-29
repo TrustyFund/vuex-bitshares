@@ -16,8 +16,8 @@ const Operations = {
   },
 
   // Gets operation's data based on it's block number
-  _getOperationDate: (operation, ApiObject, ApiObjectDyn, operationType) => {
-    const blockInterval = ApiObject[0].parameters.block_interval;
+  _getOperationDate: (operation, Parameters, ApiObjectDyn, operationType) => {
+    const blockInterval = Parameters.block_interval;
     const headBlock = ApiObjectDyn[0].head_block_number;
     const headBlockTime = new Date(ApiObjectDyn[0].time + 'Z');
     const secondsBelow = (headBlock - operation.block_num) * blockInterval;
@@ -48,10 +48,10 @@ const Operations = {
   },
 
   // Parses operation for improved format
-  _parseOperation: async (operation, userId, ApiObject, ApiObjectDyn) => {
+  _parseOperation: async (operation, userId, Parameters, ApiObjectDyn) => {
     const [type, payload] = operation.op;
     const operationType = Operations._operationTypes[type];
-    const date = Operations._getOperationDate(operation, ApiObject, ApiObjectDyn, operationType);
+    const date = Operations._getOperationDate(operation, Parameters, ApiObjectDyn, operationType);
 
     let isBid = false;
     let otherUserName = null;
@@ -78,14 +78,14 @@ const Operations = {
   // that were user in it
   parseOperations: async ({ operations, userId }) => {
     const ApiInstance = Apis.instance();
-    const ApiObject = await ApiInstance.db_api().exec('get_objects', [['2.0.0']]);
+    const Parameters = await API.Parameters.get();
     const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
 
     const operationTypes = [0, 1, 2, 4];
     const filteredOperations = operations.filter(op => operationTypes.includes(op.op[0]));
 
     const parsedOperations = await Promise.all(filteredOperations.map(async operation => {
-      return Operations._parseOperation(operation, userId, ApiObject, ApiObjectDyn);
+      return Operations._parseOperation(operation, userId, Parameters, ApiObjectDyn);
     }));
 
     const assetsIds = Operations._getOperationsAssetsIds(parsedOperations);
