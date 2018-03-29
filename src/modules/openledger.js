@@ -24,7 +24,7 @@ const actions = {
       commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE, { address });
     } else {
       console.log('LOAD', asset, user);
-      const lastAddress = await API.Openledger.getLastDepositAdress({
+      const lastAddress = await API.Openledger.getLastDepositAddress({
         asset,
         user
       });
@@ -35,7 +35,7 @@ const actions = {
         PersistentStorage.setOpenledgerAddresses(cachedAddresses);
         commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE, { address });
       } else {
-        const newAddress = await API.Openledger.requestDepositAdress({
+        const newAddress = await API.Openledger.requestDepositAddress({
           asset,
           user
         });
