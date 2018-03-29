@@ -10,6 +10,9 @@ const initialState = {
 };
 
 const actions = {
+  async checkIfAddressIsValid(state, { asset, address }) {
+    return API.Openledger.validateAddress({ asset, address });
+  },
   async fetchDepositAddress(store, { asset }) {
     const { commit, rootGetters } = store;
     const user = rootGetters['account/getCurrentUserName'];
