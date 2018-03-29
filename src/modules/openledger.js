@@ -11,7 +11,8 @@ const initialState = {
 
 const actions = {
   async checkIfAddressIsValid(state, { asset, address }) {
-    return API.Openledger.validateAddress({ asset, address });
+    const valid = await API.Openledger.validateAddress({ asset, address });
+    return valid;
   },
   async fetchDepositAddress(store, { asset }) {
     const { commit, rootGetters } = store;
