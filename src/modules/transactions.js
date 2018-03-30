@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import API from '../services/api';
+import * as utils from '../utils';
 import * as types from '../mutations';
 import * as actions from '../actions/transactions';
 
@@ -9,7 +9,16 @@ const initialState = {
   pendingTransfer: false,
   pending: false,
   error: null,
-  transactionsProcessing: false
+  transactionsProcessing: false,
+  fees: {
+    order: {
+      fee: 0
+    },
+    transfer: {
+      fee: 0,
+      kbytePrice: 0
+    }
+  }
 };
 
 const getters = {
@@ -19,14 +28,13 @@ const getters = {
   hasPendingTransfer: state => state.pendingTransfer !== false,
   areTransactionsProcessing: state => state.transactionsProcessing,
   getPendingTransfer: state => state.pendingTransfer,
-  getMemoPrice: () => {
+  getOrderFee: state => state.fees.order.fee,
+  getTransferFee: state => state.fees.transfer.fee,
+  getMemoPrice: (state) => {
     return (memo) => {
-      const price = API.Transactions.getMemoPrice(memo);
-      return price;
+      const kbytes = utils.getMemoSize(memo);
+      return state.fees.transfer.fee + (state.fees.transfer.kbytePrice * kbytes);
     };
-  },
-  getTransferPrice: () => {
-    return API.Transactions.getTransferPrice().fee;
   }
 };
 
@@ -62,6 +70,9 @@ const mutations = {
   },
   [types.SET_PENDING_TRANSFER](state, { transaction }) {
     state.pendingTransfer = transaction;
+  },
+  [types.FETCH_FEES](state, { fees }) {
+    state.fees = fees;
   }
 };
 
