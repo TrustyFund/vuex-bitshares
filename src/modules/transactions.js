@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import API from '../services/api';
 import * as types from '../mutations';
 import * as actions from '../actions/transactions';
 
@@ -17,7 +18,13 @@ const getters = {
   getPendingDistribution: state => state.pendingDistributionUpdate,
   hasPendingTransfer: state => state.pendingTransfer !== false,
   areTransactionsProcessing: state => state.transactionsProcessing,
-  getPendingTransfer: state => state.pendingTransfer
+  getPendingTransfer: state => state.pendingTransfer,
+  getMemoPrice: () => {
+    return (memo) => {
+      const price = API.Transactions.getMemoPrice(memo);
+      return price;
+    };
+  }
 };
 
 const mutations = {

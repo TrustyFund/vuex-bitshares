@@ -2,6 +2,8 @@ const baseUrl = 'https://ol-api1.openledger.info/api/v0/ol/support';
 const newAdressUri = '/simple-api/initiate-trade';
 const lastAdressUri = '/simple-api/get-last-address';
 const coinsUri = '/coins';
+const validateStart = '/wallets/';
+const validateEnd = '/address-validator?address=';
 
 const processRequest = async ({ url, request }) => {
   try {
@@ -31,7 +33,7 @@ const fetchCoins = async () => {
   return result;
 };
 
-const requestDepositAdress = async ({ asset, user }) => {
+const requestDepositAddress = async ({ asset, user }) => {
   const url = baseUrl + newAdressUri;
   const inputCoinType = asset.toLowerCase();
   const outputCoinType = 'open.' + inputCoinType;
@@ -53,7 +55,7 @@ const requestDepositAdress = async ({ asset, user }) => {
   return { success: true, data: result.data.inputAddress };
 };
 
-const getLastDepositAdress = async ({ asset, user }) => {
+const getLastDepositAddress = async ({ asset, user }) => {
   const url = baseUrl + lastAdressUri;
   const coin = 'open.' + asset.toLowerCase();
   const account = user;
@@ -74,8 +76,22 @@ const getLastDepositAdress = async ({ asset, user }) => {
   return { success: true, data: result.data.address };
 };
 
+const validateAddress = async ({ asset, address }) => {
+  const headers = new Headers({ Accept: 'application/json' });
+  const url = baseUrl + validateStart + asset + validateEnd + encodeURIComponent(address);
+
+  try {
+    const reply = await fetch(url, { method: 'GET', headers });
+    const json = await reply.json();
+    return json.isValid;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
-  requestDepositAdress,
-  getLastDepositAdress,
+  requestDepositAddress,
+  getLastDepositAddress,
+  validateAddress,
   fetchCoins
 };

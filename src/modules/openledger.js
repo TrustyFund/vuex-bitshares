@@ -5,12 +5,16 @@ import * as types from '../mutations';
 const initialState = {
   depositAddress: '',
   pending: false,
-  coins: {},
+  coins: false,
   error: false,
   pendingAddress: false
 };
 
 const actions = {
+  async checkIfAddressIsValid(state, { asset, address }) {
+    const valid = await API.Openledger.validateAddress({ asset, address });
+    return valid;
+  },
   async fetchDepositAddress(store, { asset }) {
     const { commit, rootGetters } = store;
     const user = rootGetters['account/getCurrentUserName'];
@@ -20,12 +24,11 @@ const actions = {
     const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
 
     if (cachedAddresses[asset]) {
-      console.log('FROM CACHE');
       const address = cachedAddresses[asset];
       commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE, { address });
     } else {
       console.log('LOAD', asset, user);
-      const lastAddress = await API.Openledger.getLastDepositAdress({
+      const lastAddress = await API.Openledger.getLastDepositAddress({
         asset,
         user
       });
@@ -36,7 +39,7 @@ const actions = {
         PersistentStorage.setOpenledgerAddresses(cachedAddresses);
         commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE, { address });
       } else {
-        const newAddress = await API.Openledger.requestDepositAdress({
+        const newAddress = await API.Openledger.requestDepositAddress({
           asset,
           user
         });
@@ -53,8 +56,13 @@ const actions = {
       }
     }
   },
-  async fetchCoins({ commit }) {
+  async fetchCoins({ state, commit }) {
     commit(types.FETCH_OPENLEDGER_COINS_REQUEST);
+
+    if (state.coins) {
+      commit(types.FETCH_OPENLEDGER_COINS_COMPLETE, { coins: state.coins });
+      return;
+    }
 
     const fetchResult = await API.Openledger.fetchCoins();
 
