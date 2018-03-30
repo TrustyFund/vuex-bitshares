@@ -6,7 +6,8 @@ const initialState = {
   depositAddress: '',
   pending: false,
   coins: {},
-  error: false
+  error: false,
+  pendingAddress: false
 };
 
 const actions = {
@@ -16,7 +17,8 @@ const actions = {
 
     commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_REQUEST);
 
-    const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
+    // const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
+    const cachedAddresses = {};
 
     if (cachedAddresses[asset]) {
       console.log('FROM CACHE');
@@ -76,22 +78,24 @@ const actions = {
 
 const getters = {
   getDepositAddress: state => state.depositAddress,
-  getCoinsData: state => state.coins
+  getCoinsData: state => state.coins,
+  getAddressPending: state => state.pendingAddress
 };
 
 const mutations = {
   [types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_REQUEST]: (state) => {
-    state.pending = true;
+    state.pendingAddress = true;
     state.depositAddress = initialState.depositAddress;
     state.error = null;
   },
   [types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_COMPLETE]: (state, { address }) => {
     state.depositAddress = address;
-    state.pending = false;
+    state.pendingAddress = false;
   },
   [types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_ERROR]: (state, { error }) => {
     state.error = error;
-    state.pending = false;
+    state.depositAddress = null;
+    state.pendingAddress = false;
   },
   [types.FETCH_OPENLEDGER_COINS_REQUEST]: (state) => {
     state.pending = true;
