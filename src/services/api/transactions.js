@@ -1,7 +1,7 @@
 import { TransactionBuilder, ChainTypes, ops, PrivateKey } from 'bitsharesjs';
 import { ChainConfig } from 'bitsharesjs-ws';
 import { getUser } from './account';
-import { encryptMemo } from '../../utils';
+import { encryptMemo, getMemoPrivKey } from '../../utils';
 import { getCachedComissions } from './parameters';
 
 
@@ -36,7 +36,21 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
     return { success: false, error: 'Destination user not found' };
   }
 
-  const { active, owner } = keys;
+  const {
+    data: {
+      account: {
+        options: {
+          memo_key: memoKey
+        }
+      }
+    }
+  } = await getUser(fromId);
+
+  const memoPrivate = getMemoPrivKey(keys, memoKey);
+
+  if (!memoPrivate) {
+    return { success: false, error: 'Cant find key to encrypt memo' };
+  }
 
   const transferObject = {
     fee: {
@@ -53,7 +67,7 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
 
   if (memo) {
     try {
-      transferObject.memo = encryptMemo(memo, active, toAccount.data.account.options.memo_key);
+      transferObject.memo = encryptMemo(memo, memoPrivate, toAccount.data.account.options.memo_key);
     } catch (error) {
       return { success: false, error: 'Encrypt memo failed' };
     }
@@ -65,7 +79,7 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
     }, ChainConfig.expire_in_secs * 2000);
 
     try {
-      await buildAndBroadcast('transfer', transferObject, { active, owner });
+      await buildAndBroadcast('transfer', transferObject, keys);
       clearTimeout(broadcastTimeout);
       resolve({ success: true });
     } catch (error) {
