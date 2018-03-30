@@ -6,6 +6,7 @@ import Transactions from './api/transactions';
 import Market from './api/market';
 import Operations from './api/operations';
 import Openledger from './api/openledger';
+import Parameters from './api/parameters';
 
 const API = {
   Connection,
@@ -15,7 +16,8 @@ const API = {
   Transactions,
   Market,
   Operations,
-  Openledger
+  Openledger,
+  Parameters
 };
 
 export default API;

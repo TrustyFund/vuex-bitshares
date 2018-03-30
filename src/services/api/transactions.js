@@ -1,7 +1,8 @@
-import { TransactionBuilder } from 'bitsharesjs';
+import { TransactionBuilder, ChainTypes, ops, PrivateKey } from 'bitsharesjs';
 import { ChainConfig } from 'bitsharesjs-ws';
 import { getUser } from './account';
 import { encryptMemo } from '../../utils';
+import { getCachedComissions } from './parameters';
 
 
 const signTransaction = async (transaction, { active, owner }) => {
@@ -74,13 +75,25 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
   });
 };
 
-// const processOrders = async (orders) => {
-//   const transaction = new TransactionBuilder();
-//   orders.forEach(o => transaction.add_type_operation('limit_order_create', o));
-//   API.Transactions.signTransaction(transaction, {active: k, owner: k});
-//   await transaction.set_required_fees()
-//   console.log(await transaction.broadcast());
-// }
+const getMemoPrice = (memo) => {
+  const privKey = '5KikQ23YhcM7jdfHbFBQg1G7Do5y6SgD9sdBZq7BqQWXmNH7gqo';
+  const memoToKey = 'BTS8eLeqSZZtB1YHdw7KjQxRSRmaKAseCxhUSqaLxUdqvdGpp6nck';
+  const pKey = PrivateKey.fromWif(privKey);
+
+  const { fees } = getCachedComissions();
+  const operations = Object.keys(ChainTypes.operations);
+  const opIndex = operations.indexOf('transfer');
+  const { fee, price_per_kbyte: kbytePrice } = fees[opIndex][1];
+
+  const encrypted = encryptMemo(memo, pKey, memoToKey);
+
+  const serialized = ops.memo_data.fromObject(encrypted);
+  const stringified = JSON.stringify(ops.memo_data.toHex(serialized));
+  const byteLength = Buffer.byteLength(stringified, 'hex');
+  const memoFee = Math.floor((kbytePrice * byteLength) / 1024);
+
+  return fee + memoFee;
+};
 
 const placeOrders = async ({ orders, keys }) => {
   const transaction = new TransactionBuilder();
@@ -111,5 +124,6 @@ const placeOrders = async ({ orders, keys }) => {
 export default {
   transferAsset,
   signTransaction,
-  placeOrders
+  placeOrders,
+  getMemoPrice
 };
