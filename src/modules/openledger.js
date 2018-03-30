@@ -17,8 +17,7 @@ const actions = {
 
     commit(types.FETCH_OPENLEDGER_DEPOSIT_ADDRESS_REQUEST);
 
-    // const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
-    const cachedAddresses = {};
+    const cachedAddresses = PersistentStorage.getOpenledgerAddresses();
 
     if (cachedAddresses[asset]) {
       console.log('FROM CACHE');
