@@ -1,7 +1,30 @@
+import { ChainTypes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
 // eslint-disable-next-line
 import { calcPortfolioDistributionChange } from 'lib/src/utils';
+
+export const fetchComissions = async ({ commit }) => {
+  const { fees } = await API.Parameters.getComissions();
+  const operations = Object.keys(ChainTypes.operations);
+  const orderIdx = operations.indexOf('limit_order_create');
+  const transferIdx = operations.indexOf('transfer');
+
+  const { fee: orderFee } = fees[orderIdx][1];
+  const { fee: transeferFee, price_per_kbyte: kbytePrice } = fees[transferIdx][1];
+
+  const comissions = {
+    order: {
+      fee: orderFee
+    },
+    transfer: {
+      fee: transeferFee,
+      kbytePrice
+    }
+  };
+
+  commit(types.FETCH_FEES, { fees: comissions });
+};
 
 export const createOrdersFromDistribution = async (store) => {
   const { commit, rootGetters, getters } = store;

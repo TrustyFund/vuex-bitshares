@@ -1,4 +1,4 @@
-import { Aes, TransactionHelper } from 'bitsharesjs';
+import { Aes, TransactionHelper, PrivateKey, ops } from 'bitsharesjs';
 /**
  * Return object with keys = id of each element of array (element.id)
  * @param {Array} array - array of data elements
@@ -132,6 +132,19 @@ export const getMemoPrivKey = (keys, publicKey) => {
     return active;
   }
   return false;
+};
+
+export const getMemoSize = (memo) => {
+  const privKey = '5KikQ23YhcM7jdfHbFBQg1G7Do5y6SgD9sdBZq7BqQWXmNH7gqo';
+  const memoToKey = 'BTS8eLeqSZZtB1YHdw7KjQxRSRmaKAseCxhUSqaLxUdqvdGpp6nck';
+  const pKey = PrivateKey.fromWif(privKey);
+
+  const encrypted = encryptMemo(memo, pKey, memoToKey);
+
+  const serialized = ops.memo_data.fromObject(encrypted);
+  const stringified = JSON.stringify(ops.memo_data.toHex(serialized));
+  const byteLength = Buffer.byteLength(stringified, 'hex');
+  return Math.floor(byteLength / 1024);
 };
 
 

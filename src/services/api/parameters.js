@@ -1,7 +1,5 @@
 import { Apis } from 'bitsharesjs-ws';
-import { ChainTypes } from 'bitsharesjs';
 
-const { operations } = ChainTypes;
 let cacheParameters = false;
 
 const getParameters = async () => {
@@ -29,14 +27,4 @@ export const getComissions = async () => {
   return { fees, scale };
 };
 
-export const getComission = async (type) => {
-  const ops = Object.keys(operations);
-  const opIndex = ops.indexOf(type);
-  const { fees } = await getComissions();
-  if (opIndex > -1) {
-    return fees[opIndex][1].fee;
-  }
-  return false;
-};
-
-export default { getParameters, getComissions, getComission, getCachedComissions };
+export default { getParameters, getComissions, getCachedComissions };
