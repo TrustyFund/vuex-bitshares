@@ -121,6 +121,19 @@ export const decryptMemo = (memo, privateKey) => {
   ).toString('utf-8');
 };
 
+export const getMemoPrivKey = (keys, publicKey) => {
+  const { active, owner } = keys;
+  const ownerPubkey = owner.toPublicKey().toPublicKeyString();
+  const activePubkey = active.toPublicKey().toPublicKeyString();
+  if (publicKey === ownerPubkey) {
+    return owner;
+  }
+  if (publicKey === activePubkey) {
+    return active;
+  }
+  return false;
+};
+
 
 /** Calculates distribution 0..1 of total amount of assets expressed
  * in base asset
