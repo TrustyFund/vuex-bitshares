@@ -144,7 +144,7 @@ export const getMemoSize = (memo) => {
   const serialized = ops.memo_data.fromObject(encrypted);
   const stringified = JSON.stringify(ops.memo_data.toHex(serialized));
   const byteLength = Buffer.byteLength(stringified, 'hex');
-  return Math.floor(byteLength / 1024);
+  return byteLength;
 };
 
 

@@ -32,8 +32,10 @@ const getters = {
   getTransferFee: state => state.fees.transfer.fee,
   getMemoPrice: (state) => {
     return (memo) => {
-      const kbytes = utils.getMemoSize(memo);
-      return state.fees.transfer.fee + (state.fees.transfer.kbytePrice * kbytes);
+      const byteLength = utils.getMemoSize(memo);
+      const transferPrice = state.fees.transfer.fee;
+      const memoPrice = Math.floor((byteLength * state.fees.transfer.kbytePrice) / 1024);
+      return transferPrice + memoPrice;
     };
   }
 };
