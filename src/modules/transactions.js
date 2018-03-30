@@ -24,6 +24,9 @@ const getters = {
       const price = API.Transactions.getMemoPrice(memo);
       return price;
     };
+  },
+  getTransferPrice: () => {
+    return API.Transactions.getTransferPrice().fee;
   }
 };
 

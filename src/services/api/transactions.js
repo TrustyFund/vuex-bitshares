@@ -89,15 +89,20 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
   });
 };
 
+const getTransferPrice = () => {
+  const { fees } = getCachedComissions();
+  const operations = Object.keys(ChainTypes.operations);
+  const opIndex = operations.indexOf('transfer');
+  const { fee, price_per_kbyte: kbytePrice } = fees[opIndex][1];
+  return { fee, kbytePrice };
+};
+
 const getMemoPrice = (memo) => {
   const privKey = '5KikQ23YhcM7jdfHbFBQg1G7Do5y6SgD9sdBZq7BqQWXmNH7gqo';
   const memoToKey = 'BTS8eLeqSZZtB1YHdw7KjQxRSRmaKAseCxhUSqaLxUdqvdGpp6nck';
   const pKey = PrivateKey.fromWif(privKey);
 
-  const { fees } = getCachedComissions();
-  const operations = Object.keys(ChainTypes.operations);
-  const opIndex = operations.indexOf('transfer');
-  const { fee, price_per_kbyte: kbytePrice } = fees[opIndex][1];
+  const { fee, kbytePrice } = getTransferPrice();
 
   const encrypted = encryptMemo(memo, pKey, memoToKey);
 
@@ -139,5 +144,6 @@ export default {
   transferAsset,
   signTransaction,
   placeOrders,
-  getMemoPrice
+  getMemoPrice,
+  getTransferPrice
 };
