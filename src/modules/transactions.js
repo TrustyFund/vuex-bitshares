@@ -75,6 +75,9 @@ const mutations = {
   },
   [types.FETCH_FEES](state, { fees }) {
     state.fees = fees;
+  },
+  [types.PROCESS_PENDING_ORDERS_SELL_COMPLETE](state) {
+    state.pendingOrders.sellOrders = [];
   }
 };
 

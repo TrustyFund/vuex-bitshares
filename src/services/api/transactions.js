@@ -105,6 +105,7 @@ const placeOrders = async ({ orders, keys }) => {
     try {
       await transaction.set_required_fees();
       await transaction.broadcast();
+      console.log('finish await broadcast');
       clearTimeout(broadcastTimeout);
       resolve({ success: true });
     } catch (error) {
