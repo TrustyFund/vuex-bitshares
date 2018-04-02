@@ -104,6 +104,7 @@ export const processPendingOrders = async (store) => {
         error: sellResult.error
       };
     }
+    commit(types.PROCESS_PENDING_ORDERS_SELL_COMPLETE);
   }
   if (pendingOrders.buyOrders.length) {
     const buyResult = await API.Transactions.placeOrders({
