@@ -186,6 +186,10 @@ class Market {
     this.unsubscribeFromMarket(assetId);
   }
 
+  unsubscribeFromMarkets() {
+    this.markets = {};
+  }
+
   async subscribeToExchangeRate(assetId, amount, callback) {
     let canReceiveInBasePrev = 0;
     const wrappedCallback = () => {
