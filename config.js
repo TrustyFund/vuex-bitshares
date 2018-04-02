@@ -7,7 +7,7 @@ const config = {
       'wss://bts.ai.la/ws': { location: 'Hong Kong' },
       'wss://bitshares.apasia.tech/ws': { location: 'Bangkok, Thailand' },
       'wss://japan.bitshares.apasia.tech/ws': { location: 'Tokyo, Japan' },
-      'wss://bitshares.dacplay.org/ws': { location: 'Hangzhou, China' },
+      // 'wss://bitshares.dacplay.org/ws': { location: 'Hangzhou, China' },
       'wss://bitshares-api.wancloud.io/ws': { location: 'China' },
       // 'wss://openledger.hk/ws': { location: 'Hong Kong' },
       'wss://bitshares.crypto.fans/ws': { location: 'Munich, Germany' },
@@ -17,6 +17,7 @@ const config = {
       'wss://kc-us-dex.xeldal.com/ws': { location: 'Kansas City, USA' },
       'wss://btsza.co.za:8091/ws': { location: 'Cape Town, South Africa' },
       'wss://api.bts.blckchnd.com': { location: 'Falkenstein, Germany' },
+      'wss://api-ru.bts.blckchnd.com': { location: 'Moscow, Russia' },
       'wss://eu.nodes.bitshares.ws': {
         location: 'Central Europe - BitShares Infrastructure Program'
       },
