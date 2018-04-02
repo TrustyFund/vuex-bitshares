@@ -14,6 +14,7 @@ export const initConnection = ({ commit, getters }, changeNode) => {
     if (status === 'error' || status === 'closed') {
       commit(types.WS_DISCONNECTED);
       active = false;
+      API.ChainListener.disable();
       await API.Connection.disconnect();
       initConnection({ commit, getters }, true);
     }

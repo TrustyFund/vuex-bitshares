@@ -14,6 +14,7 @@ class NodesManager {
   // gets nodes ping data from storage
   _retrieveCachedNodesData() {
     const cachedData = PersistentStorage.getSavedNodesData();
+    if (!cachedData) return;
     Object.keys(this._nodes).forEach(url => {
       const cachedNode = cachedData[url];
       if (cachedNode && cachedNode.ping && typeof (cachedNode.ping) === 'number') {
@@ -54,16 +55,13 @@ class NodesManager {
   testNodesPings() {
     const cachedData = PersistentStorage.getSavedNodesData();
     if (cachedData) return;
-    // return new Promise((resolve) => {
     Promise.all(Object.keys(this._nodes).map(async (url) => {
       if (url !== this._selectedNodeUrl) {
         this._nodes[url].ping = await NodesManager._pingNode(url);
       }
     })).then(() => {
-      PersistentStorage.saveNodesData({ data: this._nodes }, { expires: 1 });
-      // resolve();
+      PersistentStorage.saveNodesData({ data: this._nodes });
     });
-    // });
   }
 
   // retrieves nodes data from cache, selects fastest & returns it's url
