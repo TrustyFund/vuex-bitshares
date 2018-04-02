@@ -38,14 +38,14 @@ const PersistentStorage = {
     Cookies.remove('BITSHARES_USER_BRAINKEY');
   },
   saveNodesData: ({ data }) => {
-    Cookies.set('BITSHARES_NODES', data);
+    Cookies.set('BITSHARES_NODES', data, { expires: 1 });
   },
   getSavedNodesData: () => {
     const cachedData = Cookies.getJSON('BITSHARES_NODES');
     if (typeof (cachedData) === 'object' && cachedData !== null) {
       return cachedData;
     }
-    return {};
+    return null;
   },
   getOpenledgerAddresses: () => {
     const cachedData = Cookies.getJSON('BITSHARES_OPENLEDGER_ADDRESSES');

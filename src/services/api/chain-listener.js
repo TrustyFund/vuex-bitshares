@@ -9,13 +9,13 @@ class ChainListener {
     this._subscribers = [];
     this._enabled = false;
   }
-  enable() {
-    if (this._enabled) this.disable();
+  async enable() {
+    if (this._enabled) await this.disable();
     Apis.instance().db_api().exec('set_subscribe_callback', [this._mainCallback.bind(this), true]);
     this._enabled = true;
   }
   disable() {
-    Apis.instance().db_api().exec('cancel_all_subscriptions', []).then(() => {
+    return Apis.instance().db_api().exec('cancel_all_subscriptions', []).then(() => {
       this._enabled = false;
     });
   }
