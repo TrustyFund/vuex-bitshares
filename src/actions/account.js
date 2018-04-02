@@ -71,18 +71,15 @@ export const signup = async (state, { name, password, dictionary }) => {
   const { commit } = state;
   commit(types.ACCOUNT_SIGNUP_REQUEST);
   const brainkey = API.Account.suggestBrainkey(dictionary);
-  console.log(brainkey);
   const result = await API.Account.createAccount({
     name,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
   });
-  console.log('Account created : ', result.success);
+  console.log('Account created : ', result);
   if (result.success) {
-    const signUpSubscription = new Subscriptions.SignUp({ name });
-    const userId = await API.ChainListener.processSubscription(signUpSubscription);
+    const userId = result.id;
     const wallet = createWallet({ password, brainkey });
-    console.log(userId);
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
     PersistentStorage.saveUserData({
       id: userId,
