@@ -2,7 +2,6 @@ import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
 // import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
-import Subscriptions from '../services/api/subscriptions';
 import PersistentStorage from '../services/persistent-storage';
 
 const OWNER_KEY_INDEX = 1;
