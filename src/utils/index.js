@@ -202,7 +202,7 @@ export const distributionSampling = (proportions, accuracy) => {
   );
 };
 
-export const createOrder = ({ sell, receive, userId }) => {
+export const createOrder = ({ sell, receive, userId, fillOrKill = false }) => {
   const expiration = new Date();
   expiration.setYear(expiration.getFullYear() + 5);
   return {
@@ -210,7 +210,7 @@ export const createOrder = ({ sell, receive, userId }) => {
     amount_to_sell: sell,
     min_to_receive: receive,
     expiration,
-    fill_or_kill: false
+    fill_or_kill: fillOrKill
   };
 };
 

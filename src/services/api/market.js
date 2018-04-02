@@ -247,7 +247,8 @@ class Market {
             asset_id: this.base,
             amount: toReceive
           },
-          userId
+          userId,
+          fillOrKill: true
         };
         const order = utils.createOrder(orderObject);
 
