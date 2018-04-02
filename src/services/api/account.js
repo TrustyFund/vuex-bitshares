@@ -59,12 +59,13 @@ export const createAccount = async ({ name, activeKey, ownerKey }) => {
     const result = await response.json();
     if (result.result === 'OK') {
       return {
-        success: true
+        success: true,
+        id: result.id
       };
     }
     return {
       success: false,
-      error: 'Account creation error'
+      error: result.result
     };
   } catch (error) {
     return {

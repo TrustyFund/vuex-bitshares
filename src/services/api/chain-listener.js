@@ -20,17 +20,6 @@ class ChainListener {
     });
   }
 
-  processSubscription(subscription) {
-    return new Promise((resolve) => {
-      const wrapped = (result) => {
-        this.deleteSubscription(subscription.getType());
-        resolve(result);
-      };
-      subscription.setCallback(wrapped);
-      this._subscribers.push(subscription);
-    });
-  }
-
   addSubscription(subscription) {
     this._subscribers.push(subscription);
     return true;

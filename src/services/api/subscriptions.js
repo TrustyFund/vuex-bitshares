@@ -54,24 +54,6 @@ class Markets extends Subscription {
   }
 }
 
-class SignUp extends Subscription {
-  constructor({ name }) {
-    super('userSignUp');
-    this.name = name;
-  }
-
-  notify(operation) {
-    if (operation.id && operation.id.startsWith(history_prefix)
-      && operation.op[0] === ChainTypes.operations.account_create) {
-      const payload = operation.op[1];
-      const { name } = payload;
-      if (this.name === name) {
-        this._callback(operation.result[1]);
-      }
-    }
-  }
-}
-
 class UserOperations extends Subscription {
   constructor({ userId, callback }) {
     super('userOperation');
@@ -117,7 +99,6 @@ class UserOperations extends Subscription {
 
 const Subscriptions = {
   Markets,
-  SignUp,
   UserOperations
 };
 
