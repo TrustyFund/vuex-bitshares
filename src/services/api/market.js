@@ -2,6 +2,7 @@ import { Apis } from 'bitsharesjs-ws';
 import * as utils from '../../utils';
 import listener from './chain-listener';
 import Subscriptions from './subscriptions';
+import config from '../../../config';
 
 
 const findOrder = (orderId) => {
@@ -290,4 +291,9 @@ class Market {
   }
 }
 
-export default new Market('1.3.0');
+const result = {};
+config.defaultMarkets.forEach(item => {
+  result[item] = new Market(item);
+});
+
+export default result;

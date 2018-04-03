@@ -59,7 +59,7 @@ export const createOrdersFromDistribution = async (store) => {
 
   // const update = calcPortfolioDistributionChange(baseBalances, distribution);
 
-  const orders = API.Market.generateOrders({
+  const orders = API.Market['1.3.0'].generateOrders({
     userId,
     update: distribution,
     balances: combinedBalances,
