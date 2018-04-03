@@ -28,6 +28,7 @@ export const fetchComissions = async ({ commit }) => {
 
 export const createOrdersFromDistribution = async (store) => {
   const { commit, rootGetters, getters } = store;
+  if (getters.areTransactionsProcessing) return;
   const distribution = getters.getPendingDistribution;
   if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
@@ -57,7 +58,6 @@ export const createOrdersFromDistribution = async (store) => {
     }
   });
 
-  // const update = calcPortfolioDistributionChange(baseBalances, distribution);
 
   const orders = API.Market.generateOrders({
     userId,
@@ -66,6 +66,8 @@ export const createOrdersFromDistribution = async (store) => {
     baseBalances
   });
   console.log(orders);
+
+  // if sell finished, only update buy orders
 
   commit(types.UPDATE_PENDING_ORDERS, { orders });
 };
@@ -87,6 +89,7 @@ export const processPendingOrders = async (store) => {
   const keys = rootGetters['account/getKeys'];
   if (!keys) {
     commit(types.PROCESS_PENDING_ORDERS_ERROR);
+    createOrdersFromDistribution(store);
     return {
       success: false,
       error: 'Account is locked'
@@ -99,6 +102,7 @@ export const processPendingOrders = async (store) => {
       keys });
     if (!sellResult.success) {
       commit(types.PROCESS_PENDING_ORDERS_ERROR);
+      createOrdersFromDistribution(store);
       return {
         success: false,
         error: sellResult.error
@@ -114,6 +118,7 @@ export const processPendingOrders = async (store) => {
     console.log(buyResult);
     if (!buyResult.success) {
       commit(types.PROCESS_PENDING_ORDERS_ERROR);
+      createOrdersFromDistribution(store);
       return {
         success: false,
         error: buyResult.error
