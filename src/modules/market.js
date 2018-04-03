@@ -53,6 +53,7 @@ const actions = {
     assetsIds.forEach(id => {
       console.log('unsubscribing: ', id);
       API.Market.unsubscribeFromExchangeRate(id);
+      API.Market.unsubscribeFromMarkets();
     });
   },
 
