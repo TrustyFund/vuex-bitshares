@@ -291,9 +291,9 @@ class Market {
   }
 }
 
-const result = {};
+const markets = {};
 config.defaultMarkets.forEach(item => {
-  result[item] = new Market(item);
+  markets[item] = new Market(item);
 });
 
-export default result;
+export default markets;
