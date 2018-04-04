@@ -2,7 +2,7 @@ import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
 
-const btsMarket = API.Market['1.3.0'];
+const BtsMarket = API.Market['1.3.0'];
 
 const actions = {
   fetchMarketHistory: (store, { assetsIds, baseId, days }) => {
@@ -30,13 +30,12 @@ const actions = {
   },
 
   subscribeToMarket(store, { balances }) {
+    const { commit } = store;
     const assetsIds = Object.keys(balances);
 
-    assetsIds.forEach(assetId => {
+    Promise.all(assetsIds.map(assetId => {
       const { balance } = balances[assetId];
-      // if (!balance) return;
-      // console.log('SUBBING ' + assetId + ' : ' + balance);
-      btsMarket.subscribeToExchangeRate(assetId, balance, (id, amount) => {
+      return BtsMarket.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
         const rate = amount / balance;
         console.log(assetId + ' new bts amount: : ' + amount);
@@ -47,15 +46,22 @@ const actions = {
       }).then(() => {
         console.log('SUBSCRIBED TO : ' + assetId + ' : ' + balance);
       });
+    })).then(() => {
+      commit(types.SUB_TO_MARKET_COMPLETE);
+      console.log('subscribed to market successfully');
     });
   },
 
   unsubscribeFromMarket(store, { balances }) {
+    const { commit } = store;
     const assetsIds = Object.keys(balances);
-    assetsIds.forEach(id => {
+    BtsMarket.unsubscribeFromMarkets();
+    Promise.all(assetsIds.map(id => {
       console.log('unsubscribing: ', id);
-      btsMarket.unsubscribeFromExchangeRate(id);
-      btsMarket.unsubscribeFromMarkets();
+      return BtsMarket.unsubscribeFromExchangeRate(id);
+    })).then(() => {
+      commit(types.UNSUB_FROM_MARKET_COMPLETE);
+      console.log('unsubscribed from market');
     });
   },
 
@@ -84,7 +90,8 @@ const getters = {
   },
   getMarketHistory: state => state.history,
   isFetching: state => state.pending,
-  isError: state => state.error
+  isError: state => state.error,
+  isSubscribed: state => state.subscribed
 };
 
 const initialState = {
@@ -93,6 +100,7 @@ const initialState = {
   pending: false,
   error: false,
   baseAssetId: null,
+  subscribed: false,
   prices: {}
 };
 
@@ -115,6 +123,12 @@ const mutations = {
   [types.UPDATE_MARKET_PRICE](state, { assetId, price }) {
     if (!state.history[assetId]) Vue.set(state.history, assetId, {});
     Vue.set(state.history[assetId], 'last', price);
+  },
+  [types.SUB_TO_MARKET_COMPLETE](state) {
+    state.subscribed = true;
+  },
+  [types.UNSUB_FROM_MARKET_COMPLETE](state) {
+    state.subscribed = false;
   }
 };
 
