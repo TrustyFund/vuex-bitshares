@@ -2,6 +2,8 @@ import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
 
+const BtsMarket = API.Market['1.3.0'];
+
 const actions = {
   fetchMarketHistory: (store, { assetsIds, baseId, days }) => {
     const { commit, rootGetters } = store;
@@ -33,9 +35,7 @@ const actions = {
 
     Promise.all(assetsIds.map(assetId => {
       const { balance } = balances[assetId];
-      // if (!balance) return;
-      // console.log('SUBBING ' + assetId + ' : ' + balance);
-      return API.Market.subscribeToExchangeRate(assetId, balance, (id, amount) => {
+      return BtsMarket.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
         const rate = amount / balance;
         console.log(assetId + ' new bts amount: : ' + amount);
@@ -55,10 +55,10 @@ const actions = {
   unsubscribeFromMarket(store, { balances }) {
     const { commit } = store;
     const assetsIds = Object.keys(balances);
-    API.Market.unsubscribeFromMarkets();
+    BtsMarket.unsubscribeFromMarkets();
     Promise.all(assetsIds.map(id => {
       console.log('unsubscribing: ', id);
-      return API.Market.unsubscribeFromExchangeRate(id);
+      return BtsMarket.unsubscribeFromExchangeRate(id);
     })).then(() => {
       commit(types.UNSUB_FROM_MARKET_COMPLETE);
       console.log('unsubscribed from market');
