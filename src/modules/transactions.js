@@ -5,11 +5,15 @@ import * as actions from '../actions/transactions';
 
 const initialState = {
   pendingDistributionUpdate: null,
-  pendingOrders: {},
+  pendingOrders: {
+    sellOrders: [],
+    buyOrders: []
+  },
   pendingTransfer: false,
   pending: false,
   error: null,
   transactionsProcessing: false,
+  sellOrdersProcessed: false,
   fees: {
     order: {
       fee: 0
@@ -23,7 +27,8 @@ const initialState = {
 
 const getters = {
   getPendingOrders: state => state.pendingOrders,
-  hasPendingOrders: state => state.pendingOrders.sellOrders || state.pendingOrders.buyOrders,
+  hasPendingOrders: state => state.pendingOrders.sellOrders.length
+    || state.pendingOrders.buyOrders.length,
   getPendingDistribution: state => state.pendingDistributionUpdate,
   hasPendingTransfer: state => state.pendingTransfer !== false,
   areTransactionsProcessing: state => state.transactionsProcessing,
@@ -52,6 +57,7 @@ const mutations = {
     state.transactionsProcessing = false;
   },
   [types.UPDATE_PENDING_ORDERS](state, { orders }) {
+    if (state.sellOrdersProcessed) orders.sellOrders = [];
     Vue.set(state, 'pendingOrders', orders);
   },
   [types.SET_PENDING_DISTRIBUTION](state, { distribution }) {
@@ -59,7 +65,9 @@ const mutations = {
   },
   [types.REMOVE_PENDING_DISTRIBUTION](state) {
     state.pendingDistributionUpdate = null;
-    state.pendingOrders = {};
+    state.pendingOrders.sellOrders = [];
+    state.pendingOrders.buyOrders = [];
+    state.sellOrdersProcessed = false;
   },
   [types.PROCESS_PENDING_ORDERS_REQUEST](state) {
     state.transactionsProcessing = true;
@@ -78,6 +86,7 @@ const mutations = {
   },
   [types.PROCESS_PENDING_ORDERS_SELL_COMPLETE](state) {
     state.pendingOrders.sellOrders = [];
+    state.sellOrdersProcessed = true;
   }
 };
 

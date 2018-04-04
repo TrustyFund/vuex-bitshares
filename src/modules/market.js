@@ -55,6 +55,7 @@ const actions = {
   unsubscribeFromMarket(store, { balances }) {
     const { commit } = store;
     const assetsIds = Object.keys(balances);
+    API.Market.unsubscribeFromMarkets();
     Promise.all(assetsIds.map(id => {
       console.log('unsubscribing: ', id);
       return API.Market.unsubscribeFromExchangeRate(id);
