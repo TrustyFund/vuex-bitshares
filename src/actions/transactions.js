@@ -83,13 +83,20 @@ export const removePendingDistribution = (store) => {
   commit(types.REMOVE_PENDING_DISTRIBUTION);
 };
 
+
+export const handleOrdersError = (store) => {
+  const { commit } = store;
+  commit(types.PROCESS_PENDING_ORDERS_ERROR);
+  createOrdersFromDistribution(store);
+};
+
+
 export const processPendingOrders = async (store) => {
   const { getters, commit, rootGetters } = store;
   commit(types.PROCESS_PENDING_ORDERS_REQUEST);
   const keys = rootGetters['account/getKeys'];
   if (!keys) {
-    commit(types.PROCESS_PENDING_ORDERS_ERROR);
-    createOrdersFromDistribution(store);
+    handleOrdersError(store);
     return {
       success: false,
       error: 'Account is locked'
@@ -101,8 +108,7 @@ export const processPendingOrders = async (store) => {
       orders: pendingOrders.sellOrders,
       keys });
     if (!sellResult.success) {
-      commit(types.PROCESS_PENDING_ORDERS_ERROR);
-      createOrdersFromDistribution(store);
+      handleOrdersError(store);
       return {
         success: false,
         error: sellResult.error
@@ -117,8 +123,7 @@ export const processPendingOrders = async (store) => {
     });
     console.log(buyResult);
     if (!buyResult.success) {
-      commit(types.PROCESS_PENDING_ORDERS_ERROR);
-      createOrdersFromDistribution(store);
+      handleOrdersError(store);
       return {
         success: false,
         error: buyResult.error
