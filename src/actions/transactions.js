@@ -4,6 +4,8 @@ import API from '../services/api';
 // eslint-disable-next-line
 import { calcPortfolioDistributionChange } from 'lib/src/utils';
 
+const baseMarket = API.Market['1.3.0'];
+
 export const fetchComissions = async ({ commit }) => {
   const { fees } = await API.Parameters.getComissions();
   const operations = Object.keys(ChainTypes.operations);
@@ -59,7 +61,7 @@ export const createOrdersFromDistribution = async (store) => {
   });
 
 
-  const orders = API.Market['1.3.0'].generateOrders({
+  const orders = baseMarket.generateOrders({
     userId,
     update: distribution,
     balances: combinedBalances,
