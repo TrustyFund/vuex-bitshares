@@ -33,7 +33,14 @@ const config = {
     'OPEN.EOS', 'OPEN.STEEM', 'BTS', 'TRUSTY'],
   referrer: 'trfnd',
   removePrefix: 'OPEN.',
-  faucetUrl: 'https://faucet.trusty.fund/signup'
+  faucetUrl: 'https://faucet.trusty.fund/signup',
+  defaultMarkets: [
+    '1.3.121',
+    '1.3.861',
+    '1.3.113',
+    '1.3.0',
+    '1.3.103'
+  ]
 };
 
 export default config;
