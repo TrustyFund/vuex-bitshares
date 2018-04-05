@@ -219,7 +219,14 @@ describe('market service', () => {
       expect(market.markets['1.3.850'].orders.buy).toEqual(buyOrders);
       expect(market.markets['1.3.850'].orders.sell).toEqual(sellOrders);
     }
-    await market.subscribeToMarket('1.3.850', callback);
+    await market.subscribeToExchangeRate('1.3.850', 1758, callback);
     done();
   });
+  test('unsubscribe from exchangeRate', () => {
+    market.unsubscribeFromExchangeRate('1.3.850');
+    expect(market.markets['1.3.850']).toBe(undefined);
+  });
 });
+
+
+// assetId balance 1.3.850 1758

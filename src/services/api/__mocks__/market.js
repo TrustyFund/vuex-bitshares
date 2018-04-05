@@ -197,6 +197,20 @@ const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
   });
 };
 
+const calcOrderRate = (order) => {
+  const {
+    sell_price: {
+      quote: {
+        amount: quoteAmount
+      },
+      base: {
+        amount: baseAmount
+      }
+    }
+  } = order;
+  return baseAmount / quoteAmount;
+};
+
 class Market {
   constructor(base) {
     this.base = base;
@@ -226,6 +240,56 @@ class Market {
     console.log('sellOrders', sellOrders);
     this.markets[assetId].callback = callback;
     callback();
+  }
+
+  calcExchangeRate(assetId, weWantTo, amount) {
+    let totalPay = amount;
+    let totalReceive = 0;
+
+    const requiredType = (weWantTo === 'sell') ? 'buy' : 'sell';
+    // console.log('cakc exchange rate for ' + assetId + ': ', this.markets[assetId]);
+    const orders = [...this.markets[assetId].orders[requiredType]].sort((a, b) =>
+      calcOrderRate(b) - calcOrderRate(a));
+    for (let i = 0; i < orders.length; i += 1) {
+      const { for_sale: saleAmount, sell_price: price } = orders[i];
+      const orderPrice = price.base.amount / price.quote.amount;
+      const weCanPayHere = saleAmount / orderPrice;
+
+      if (totalPay > weCanPayHere) {
+        totalReceive += saleAmount;
+        totalPay -= weCanPayHere;
+      } else {
+        totalReceive += totalPay * orderPrice;
+        break;
+      }
+    }
+    return Math.floor(totalReceive);
+  }
+
+  async subscribeToExchangeRate(assetId, amount, callback) {
+    let canReceiveInBasePrev = 0;
+    const wrappedCallback = () => {
+      const canReceiveInBase = this.calcExchangeRate(assetId, 'sell', amount);
+      if (canReceiveInBase !== canReceiveInBasePrev && canReceiveInBase > 0) {
+        canReceiveInBasePrev = canReceiveInBase;
+        callback(assetId, canReceiveInBase);
+      }
+    };
+    await this.subscribeToMarket(assetId, wrappedCallback);
+  }
+
+  isSubscribed(assetId) {
+    return (this.markets[assetId] !== undefined);
+  }
+
+  unsubscribeFromExchangeRate(assetId) {
+    this.unsubscribeFromMarket(assetId);
+  }
+
+  unsubscribeFromMarket(assetId) {
+    if (this.isSubscribed(assetId)) {
+      delete this.markets[assetId];
+    }
   }
 }
 

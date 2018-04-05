@@ -35,6 +35,7 @@ const actions = {
 
     Promise.all(assetsIds.map(assetId => {
       const { balance } = balances[assetId];
+      console.log('assetId balance', assetId, balance);
       return BtsMarket.subscribeToExchangeRate(assetId, balance, (id, amount) => {
         if (!amount) return;
         const rate = amount / balance;
