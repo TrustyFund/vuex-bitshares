@@ -51,6 +51,10 @@ const actions = {
       userId
     });
     if (!parsedData) return;
+    if (parsedData.operations[0].type === 'transfer') {
+      // update current user balances
+      store.dispatch('account/fetchCurrentUser', null, { root: true });
+    }
     store.dispatch('assets/fetchAssets', { assets: parsedData.assetsIds }, { root: true });
     commit(types.ADD_USER_OPERATION, {
       operation: parsedData.operations[0]
