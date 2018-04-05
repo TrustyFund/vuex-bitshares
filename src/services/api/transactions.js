@@ -101,6 +101,10 @@ const placeOrders = async ({ orders, keys }) => {
 const cancelOrder = async ({ orderId, userId, keys }) => {
   const transaction = new TransactionBuilder();
   const cancelObject = {
+    fee: {
+      amount: 0,
+      asset_id: '1.3.0'
+    },
     fee_paying_account: userId,
     order: orderId
   };
