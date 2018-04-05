@@ -18,16 +18,28 @@ const signTransaction = async (transaction, { active, owner }) => {
   return transaction;
 };
 
-const buildAndBroadcast = async (type, payload, { active, owner }) => {
-  const transaction = new TransactionBuilder();
-  transaction.add_type_operation(type, payload);
-  await signTransaction(transaction, { active, owner });
-  await transaction.update_head_block();
-  await transaction.set_required_fees();
 
-  const res = await transaction.broadcast();
-  return res;
+const signAndBroadcastTransaction = async (transaction, keys) => {
+  return new Promise(async (resolve) => {
+    const broadcastTimeout = setTimeout(() => {
+      resolve({ success: false, error: 'expired' });
+    }, ChainConfig.expire_in_secs * 2000);
+
+    signTransaction(transaction, keys);
+
+    try {
+      await transaction.set_required_fees();
+      await transaction.broadcast();
+      console.log('finish await broadcast');
+      clearTimeout(broadcastTimeout);
+      resolve({ success: true });
+    } catch (error) {
+      clearTimeout(broadcastTimeout);
+      resolve({ success: false, error: 'broadcast error' });
+    }
+  });
 };
+
 
 const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) => {
   const toAccount = await getUser(to);
@@ -72,51 +84,38 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
     }
   }
 
-  return new Promise(async (resolve) => {
-    const broadcastTimeout = setTimeout(() => {
-      resolve({ success: false, error: 'expired' });
-    }, ChainConfig.expire_in_secs * 2000);
-
-    try {
-      await buildAndBroadcast('transfer', transferObject, keys);
-      clearTimeout(broadcastTimeout);
-      resolve({ success: true });
-    } catch (error) {
-      clearTimeout(broadcastTimeout);
-      resolve({ success: false, error: 'broadcast error' });
-    }
-  });
+  const transaction = new TransactionBuilder();
+  transaction.add_type_operation('transfer', transferObject);
+  return signAndBroadcastTransaction(transaction, keys);
 };
+
 
 const placeOrders = async ({ orders, keys }) => {
   const transaction = new TransactionBuilder();
   console.log('placing orders : ', orders);
   orders.forEach(o => transaction.add_type_operation('limit_order_create', o));
-
-
-  return new Promise(async (resolve) => {
-    const broadcastTimeout = setTimeout(() => {
-      resolve({ success: false, error: 'expired' });
-    }, ChainConfig.expire_in_secs * 2000);
-
-    const { active, owner } = keys;
-    signTransaction(transaction, { active, owner });
-
-    try {
-      await transaction.set_required_fees();
-      await transaction.broadcast();
-      console.log('finish await broadcast');
-      clearTimeout(broadcastTimeout);
-      resolve({ success: true });
-    } catch (error) {
-      clearTimeout(broadcastTimeout);
-      resolve({ success: false, error: 'broadcast error' });
-    }
-  });
+  return signAndBroadcastTransaction(transaction, keys);
 };
+
+
+const cancelOrder = async ({ orderId, userId, keys }) => {
+  const transaction = new TransactionBuilder();
+  const cancelObject = {
+    fee: {
+      amount: 0,
+      asset_id: '1.3.0'
+    },
+    fee_paying_account: userId,
+    order: orderId
+  };
+  transaction.add_type_operation('limit_order_cancel', cancelObject);
+  return signAndBroadcastTransaction(transaction, keys);
+};
+
 
 export default {
   transferAsset,
   signTransaction,
-  placeOrders
+  placeOrders,
+  cancelOrder
 };
