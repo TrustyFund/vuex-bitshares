@@ -134,10 +134,12 @@ const mutations = {
     Vue.set(state.history[baseId][assetId], 'last', price);
   },
   [SUB_TO_MARKET_REQUEST](state, { baseId, assetId }) {
+    state.pending = true;
     state.markets[baseId] = {};
     state.markets[baseId][assetId] = {};
   },
   [SUB_TO_MARKET_COMPLETE](state, { baseId, assetId, orders }) {
+    state.pending = false;
     state.markets[baseId][assetId] = orders;
     state.markets = { ...state.markets };
   },
