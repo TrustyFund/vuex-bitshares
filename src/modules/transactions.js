@@ -55,6 +55,7 @@ const mutations = {
   },
   [types.TRANSFER_ASSET_COMPLETE](state) {
     state.transactionsProcessing = false;
+    state.pendingTransfer = false;
   },
   [types.UPDATE_PENDING_ORDERS](state, { orders }) {
     if (state.sellOrdersProcessed) orders.sellOrders = [];
