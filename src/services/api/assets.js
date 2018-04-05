@@ -34,9 +34,6 @@ const fetchPriceHistory = async (base, quote, days) => {
     );
     // const prices = utils.formatPrices(utils.getPrices(history), base, quote);
     const prices = utils.getPrices(history);
-    console.log(quote.id);
-    console.log(history);
-    console.log(prices);
     return prices;
   } catch (error) {
     console.log(error);
