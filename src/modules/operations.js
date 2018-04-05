@@ -51,7 +51,9 @@ const actions = {
       userId
     });
     if (!parsedData) return;
-    if (parsedData.operations[0].type === 'transfer') {
+
+    const type = parsedData.operations[0].type;
+    if (type === 'transfer' || type === 'fill_order') {
       // update current user balances
       store.dispatch('account/fetchCurrentUser', null, { root: true });
     }
