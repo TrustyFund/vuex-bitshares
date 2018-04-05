@@ -89,7 +89,6 @@ const getters = {
     };
   },
   getMarketHistory: state => state.history,
-  isFetching: state => state.pending,
   isError: state => state.error,
   isSubscribed: state => state.subscribed
 };
@@ -97,7 +96,6 @@ const getters = {
 const initialState = {
   history: {},
   days: 7,
-  pending: false,
   error: false,
   baseAssetId: null,
   subscribed: false,

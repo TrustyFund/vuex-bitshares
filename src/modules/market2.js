@@ -36,7 +36,6 @@ const actions = {
 
     Promise.all(assetsIds.map(async (assetId) => {
       const prices = await actions.fetchMarketHistory(store, { baseId, assetId, days });
-      console.log('Prices', prices);
       if (!prices) throw new Error('error market history');
     })).then(() => {
       commit(FETCH_ASSETS_HISTORY_COMPLETE);
@@ -56,8 +55,8 @@ const mutations = {
   },
   [FETCH_MARKET_HISTORY_COMPLETE](state, { baseId, assetId, prices }) {
     state.pending = false;
+    state.history = { ...state.history };
     Vue.set(state.history[baseId], assetId, prices);
-    console.log('COMPLETE');
   },
   [FETCH_MARKET_HISTORY_ERROR](state) {
     state.pending = false;
@@ -75,9 +74,31 @@ const mutations = {
   }
 };
 
+const getters = {
+  getMarketHistory: state => baseId => state.history[baseId] || {},
+  getSystemBaseId: state => state.systemBaseId,
+  getAssetMultiplier: state => {
+    return (assetId) => {
+      const baseId = state.systemBaseId;
+      if (!state.history[baseId] || !state.history[baseId][assetId]) {
+        return {
+          first: 0,
+          last: 0
+        };
+      }
+      return {
+        first: 1 / state.history[baseId][assetId].first,
+        last: 1 / state.history[baseId][assetId].last
+      };
+    };
+  },
+  isError: state => state.error,
+};
+
 export default {
   state: initialState,
   actions,
   mutations,
+  getters,
   namespaced: true
 };
