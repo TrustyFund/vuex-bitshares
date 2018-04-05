@@ -266,20 +266,10 @@ export const calcPortfolioItem = ({
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-  if (isFiat) multiplier = { first: 1, last: 1 };
+  if (isFiat) multiplier = { first: 0, last: 0 };
   let change = calcPercentChange(prices, multiplier);
 
   if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
-
-  // console.log('========');
-  // console.log(asset.symbol);
-  // console.log('base precision: ', baseAsset.precision);
-  // console.log('balance: ', balance);
-  // console.log('base value: ', baseValue);
-  // console.log('fiat multiplier: ', fiatMultiplier);
-  // console.log('fiat value: ', fiatValue);
-  // console.log('base value precised : ', baseValuePrecised);
-  // console.log('change: ', change);
 
   return {
     name: asset.symbol,
