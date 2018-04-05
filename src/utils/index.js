@@ -19,8 +19,13 @@ export const getPrices = (history) => {
   if (!history.length) return { first: 0, last: 0 };
   const startElem = history[0];
   const endElem = history[history.length - 1];
-  const startPrice = startElem.open_base / startElem.open_quote;
-  const endPrice = endElem.close_base / endElem.close_quote;
+  // || 1 when node sends bad data ( 0 )
+  const startPrice = (startElem.open_base || 1) / (startElem.open_quote || 1);
+  const endPrice = (endElem.close_base || 1) / (endElem.close_quote || 1);
+  if (!startElem.open_base || !startElem.close_base ||
+      !startElem.open_quote || !endElem.close_quote) {
+    console.warn('[MARKET] : bad price history');
+  }
   return { first: startPrice, last: endPrice };
 };
 
