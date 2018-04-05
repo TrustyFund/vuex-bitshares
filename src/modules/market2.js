@@ -10,10 +10,18 @@ const FETCH_ASSETS_HISTORY_REQUEST = 'FETCH_ASSETS_HISTORY_REQUEST';
 const FETCH_ASSETS_HISTORY_COMPLETE = 'FETCH_ASSETS_HISTORY_COMPLETE';
 const FETCH_ASSETS_HISTORY_ERROR = 'FETCH_ASSETS_HISTORY_ERROR';
 
+const SUBSCRIBE_TO_EXCHANGE_RATE = 'SUBSCRIBE_TO_EXCHANGE_RATE';
+
+const UNSUB_FROM_MARKET_COMPLETE = 'UNSUB_FROM_MARKET_COMPLETE';
+
+const SUB_TO_BALANCE_MARKETS_COMPLETE = 'SUB_TO_MARKET_COMPLETE';
+
+const UPDATE_MARKET_PRICE = 'UPDATE_MARKET_PRICE';
 
 const initialState = {
   systemBaseId: config.defaultTradingBase,
   pending: false,
+  subscribed: false,
   error: false,
   markets: {},
   history: {}
@@ -30,7 +38,7 @@ const actions = {
     commit(FETCH_MARKET_HISTORY_COMPLETE, { baseId, assetId, prices });
     return true;
   },
-  fetchAssetsHistory: (store, { assetsIds, baseId, days }) => {
+  fetchAssetsHistory: (store, { baseId, assetsIds, days }) => {
     const { commit } = store;
     commit(FETCH_ASSETS_HISTORY_REQUEST);
 
@@ -42,8 +50,37 @@ const actions = {
     }).catch(() => {
       commit(FETCH_ASSETS_HISTORY_ERROR);
     });
-  }
+  },
+  subscribeToExchangeRate: async (store, { baseId, assetId, balance }) => {
+    const { commit } = store;
+    const market = API.Market[baseId];
+    await market.subscribeToExchangeRate(assetId, balance, (id, baseAmount) => {
+      if (!baseAmount) return;
+      const price = baseAmount / balance;
+      commit(UPDATE_MARKET_PRICE, { baseId, assetId: id, price });
 
+      // WTF THIS TYT DELAET? @roma219
+      store.dispatch('transactions/createOrdersFromDistribution', null, { root: true });
+      console.log(assetId + ' new bts amount: : ' + baseAmount);
+    });
+    console.log('SUBSCRIBED TO : ' + assetId + ' : ' + balance);
+  },
+  subscribeToExchangeRates(store, { baseId, balances }) {
+    const { commit } = store;
+    const assetsIds = Object.keys(balances);
+
+    Promise.all(assetsIds.map(assetId => {
+      const { balance } = balances[assetId];
+      return actions.subscribeToExchangeRate(store, { baseId, assetId, balance });
+    })).then(() => {
+      commit(SUB_TO_BALANCE_MARKETS_COMPLETE);
+      console.log('subscribed to markets successfully');
+    });
+  },
+  unsubscribeFromMarket: ({ commit }, { baseId }) => {
+    API.Market[baseId].unsubscribeFromMarkets();
+    commit(UNSUB_FROM_MARKET_COMPLETE);
+  }
 };
 
 const mutations = {
@@ -55,8 +92,8 @@ const mutations = {
   },
   [FETCH_MARKET_HISTORY_COMPLETE](state, { baseId, assetId, prices }) {
     state.pending = false;
+    state.history[baseId][assetId] = prices;
     state.history = { ...state.history };
-    Vue.set(state.history[baseId], assetId, prices);
   },
   [FETCH_MARKET_HISTORY_ERROR](state) {
     state.pending = false;
@@ -71,6 +108,19 @@ const mutations = {
   [FETCH_ASSETS_HISTORY_ERROR](state) {
     state.pending = false;
     state.error = true;
+  },
+  [SUB_TO_BALANCE_MARKETS_COMPLETE](state) {
+    state.subscribed = true;
+  },
+  [UPDATE_MARKET_PRICE](state, { baseId, assetId, price }) {
+    if (!state.history[baseId][assetId]) Vue.set(state.history[baseId], assetId, {});
+    Vue.set(state.history[baseId][assetId], 'last', price);
+  },
+  [UNSUB_FROM_MARKET_COMPLETE](state) {
+    state.pending = false;
+  },
+  [SUBSCRIBE_TO_EXCHANGE_RATE](state) {
+    console.log('exchange sub', state);
   }
 };
 
@@ -93,6 +143,8 @@ const getters = {
     };
   },
   isError: state => state.error,
+  isPending: state => state.pending,
+  isSubscribed: state => state.subscribed
 };
 
 export default {
