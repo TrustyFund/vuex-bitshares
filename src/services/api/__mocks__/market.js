@@ -1,9 +1,3 @@
-/* eslint-env jest */
-import * as utils from '../src/utils';
-import markets from '../src/services/api/market.js';
-
-jest.mock('../src/services/api/market.js');
-
 const orderBuy1 = {
   deferred_fee: 578,
   expiration: '2019-04-05T15:34:23',
@@ -94,7 +88,6 @@ const orderBuy5 = {
   seller: '1.2.429491'
 };
 
-const buyOrders = [orderBuy1, orderBuy2, orderBuy3, orderBuy4, orderBuy5];
 
 const orderSell1 = {
   deferred_fee: 578,
@@ -186,40 +179,57 @@ const orderSell5 = {
   seller: '1.2.770077'
 };
 
-const sellOrders = [orderSell5, orderSell4, orderSell3, orderSell2, orderSell1];
+const ordersArray = [orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1, orderBuy4, orderBuy5];
 
-describe('market service', () => {
-  test('samples distribution to specified accuracy', () => {
-    expect(utils.distributionSampling(
-      {
-        '1.3.0': 0.5700268982667804,
-        '1.3.113': 0.10582752186532557,
-        '1.3.121': 0.000043214634294735743,
-        '1.3.861': 0.00006169457659182669,
-        '1.3.973': 0.06378792759388024,
-        '1.3.1042': 0.00011144826739168692,
-        '1.3.1578': 0.26011570718332416,
-        '1.3.1999': 0.00002558761241135669
-      },
-      2
-    )).toEqual({
-      '1.3.113': 0.11,
-      '1.3.973': 0.06,
-      '1.3.1578': 0.26,
-      '1.3.1042': 0,
-      '1.3.861': 0,
-      '1.3.121': 0,
-      '1.3.0': 0.57,
-      '1.3.1999': 0
-    });
-  });
-  const market = markets['1.3.0'];
-  it('subscribe to market', async done => {
-    function callback() {
-      expect(market.markets['1.3.850'].orders.buy).toEqual(buyOrders);
-      expect(market.markets['1.3.850'].orders.sell).toEqual(sellOrders);
+const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
+  const orders = ordersArray;
+  const buyOrders = [];
+  const sellOrders = [];
+  orders.forEach((order) => {
+    if (order.sell_price.base.asset_id === baseId) {
+      buyOrders.push(order);
+    } else {
+      sellOrders.push(order);
     }
-    await market.subscribeToMarket('1.3.850', callback);
-    done();
   });
-});
+  return new Promise((resolve) => {
+    resolve({ buyOrders, sellOrders });
+  });
+};
+
+class Market {
+  constructor(base) {
+    this.base = base;
+    this.markets = {};
+    this.fee = 578;
+  }
+
+  setDefaultObjects(assetId) {
+    if (!this.markets[assetId]) {
+      this.markets[assetId] = {
+        orders: {
+          buy: [], sell: []
+        },
+        callback: () => {}
+      };
+    }
+  }
+
+  async subscribeToMarket(assetId, callback) {
+    if (assetId === this.base) return;
+    const { buyOrders, sellOrders } = await loadLimitOrders(this.base, assetId);
+    this.setDefaultObjects(assetId);
+    // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
+    this.markets[assetId].orders.buy = buyOrders;
+    console.log('buyOrders', buyOrders);
+    this.markets[assetId].orders.sell = sellOrders;
+    console.log('sellOrders', sellOrders);
+    this.markets[assetId].callback = callback;
+    callback();
+  }
+}
+
+const markets = {};
+markets['1.3.0'] = new Market('1.3.0');
+
+export default markets;
