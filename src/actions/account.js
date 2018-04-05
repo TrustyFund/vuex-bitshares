@@ -66,12 +66,13 @@ export const lockWallet = ({ commit }) => {
  * @param {string} password - user password
  * @param {string} dictionary - string to generate brainkey from
  */
-export const signup = async (state, { name, password, dictionary }) => {
+export const signup = async (state, { name, password, dictionary, email }) => {
   const { commit } = state;
   commit(types.ACCOUNT_SIGNUP_REQUEST);
   const brainkey = API.Account.suggestBrainkey(dictionary);
   const result = await API.Account.createAccount({
     name,
+    email,
     activeKey: key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX),
     ownerKey: key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX),
   });

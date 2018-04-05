@@ -40,11 +40,12 @@ const encodeBody = (params) => {
   }).join('&');
 };
 
-export const createAccount = async ({ name, activeKey, ownerKey }) => {
+export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
   const { faucetUrl } = config;
   try {
     const body = {
       name,
+      email,
       active_key: activeKey.toPublicKey().toPublicKeyString(),
       owner_key: ownerKey.toPublicKey().toPublicKeyString()
     };
