@@ -172,12 +172,10 @@ class Market {
     console.log(commisions);
     const { fetch } = assetsActions;
     const [baseAsset] = await fetch([this.base]);
-    console.log('baseAsset', this.base, baseAsset);
     const cer = baseAsset.options.core_exchange_rate;
     const multiplier = cer.quote.amount / cer.base.amount;
     commisions.fees.map(x => x * multiplier);
     this.commisions = commisions;
-    console.log(this.commisions);
   }
 
   async subscribeToMarket(assetId, callback) {
