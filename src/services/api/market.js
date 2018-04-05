@@ -1,8 +1,10 @@
 import { Apis } from 'bitsharesjs-ws';
+import { getComissions } from './parameters';
 import * as utils from '../../utils';
 import listener from './chain-listener';
 import Subscriptions from './subscriptions';
 import config from '../../../config';
+import assetsActions from './assets';
 
 
 const findOrder = (orderId) => {
@@ -166,14 +168,31 @@ class Market {
     }
   }
 
+  async setMarketFees(commisions) {
+    console.log(commisions);
+    const { fetch } = assetsActions;
+    const [baseAsset] = await fetch([this.base]);
+    console.log('baseAsset', this.base, baseAsset);
+    const cer = baseAsset.options.core_exchange_rate;
+    const multiplier = cer.quote.amount / cer.base.amount;
+    commisions.fees.map(x => x * multiplier);
+    this.commisions = commisions;
+    console.log(this.commisions);
+  }
+
   async subscribeToMarket(assetId, callback) {
-    if (assetId === this.base) return;
+    if (assetId === this.base) {
+      const commisions = await getComissions();
+      await this.setMarketFees(commisions);
+      return;
+    }
     const { buyOrders, sellOrders } = await loadLimitOrders(this.base, assetId);
     this.setDefaultObjects(assetId);
     // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
     this.markets[assetId].orders.buy = buyOrders;
     this.markets[assetId].orders.sell = sellOrders;
     this.markets[assetId].callback = callback;
+
     callback();
   }
 
