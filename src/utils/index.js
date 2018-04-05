@@ -256,9 +256,8 @@ export const calcPortfolioItem = ({
   prices,
   baseAsset,
   fiatMultiplier,
-  balance,
-  isFiat }) => {
-  let multiplier = fiatMultiplier;
+  balance }) => {
+  const multiplier = fiatMultiplier;
 
   const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
 
@@ -266,7 +265,6 @@ export const calcPortfolioItem = ({
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-  if (isFiat) multiplier = { first: 0, last: 0 };
   let change = calcPercentChange(prices, multiplier);
 
   if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
