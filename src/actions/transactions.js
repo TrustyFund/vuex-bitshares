@@ -35,7 +35,7 @@ export const createOrdersFromDistribution = async (store) => {
   if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
-  const history = rootGetters['market/getMarketHistory'];
+  const history = rootGetters['market/getMarketHistory24'];
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 

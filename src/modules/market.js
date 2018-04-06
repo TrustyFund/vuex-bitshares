@@ -10,7 +10,7 @@ const actions = {
     const assets = rootGetters['assets/getAssets'];
     const baseAsset = assets[baseId];
 
-    commit(types.FETCH_MARKET_HISTORY_REQUEST, { baseId, days });
+    commit(types.FETCH_MARKET_HISTORY_REQUEST, { baseId });
     Promise.all(assetsIds.map(async (assetId) => {
       const prices = await API.Assets.fetchPriceHistory(baseAsset, assets[assetId], days);
       if (!prices) throw new Error('error market history');
@@ -23,7 +23,7 @@ const actions = {
         result[obj.assetId] = obj.prices;
         return result;
       }, {});
-      commit(types.FETCH_MARKET_HISTORY_COMPLETE, { prices });
+      commit(types.FETCH_MARKET_HISTORY_COMPLETE, { days, prices });
     }).catch(() => {
       commit(types.FETCH_MARKET_HISTORY_ERROR);
     });
@@ -76,27 +76,30 @@ const getters = {
   getBaseAssetId: state => state.baseAssetId,
   getAssetMultiplier: state => {
     return (assetId) => {
-      if (!state.history[assetId]) {
+      if (!state.history[1][assetId]) {
         return {
           first: 0,
           last: 0
         };
       }
       return {
-        first: 1 / state.history[assetId].first,
-        last: 1 / state.history[assetId].last
+        first: 1 / state.history[1][assetId].first,
+        last: 1 / state.history[1][assetId].last
       };
     };
   },
-  getMarketHistory: state => state.history,
+  getMarketHistory24: state => state.history[1],
+  getMarketHistory7: state => state.history[7],
   isFetching: state => state.pending,
   isError: state => state.error,
   isSubscribed: state => state.subscribed
 };
 
 const initialState = {
-  history: {},
-  days: 7,
+  history: {
+    1: {},
+    7: {}
+  },
   pending: false,
   error: false,
   baseAssetId: null,
@@ -105,15 +108,14 @@ const initialState = {
 };
 
 const mutations = {
-  [types.FETCH_MARKET_HISTORY_REQUEST](state, { baseId, days }) {
+  [types.FETCH_MARKET_HISTORY_REQUEST](state, { baseId }) {
     state.fetching = true;
     state.baseAssetId = baseId;
-    state.days = days;
   },
-  [types.FETCH_MARKET_HISTORY_COMPLETE](state, { prices }) {
+  [types.FETCH_MARKET_HISTORY_COMPLETE](state, { prices, days }) {
     state.fetching = false;
     Object.keys(prices).forEach(assetId => {
-      Vue.set(state.history, assetId, prices[assetId]);
+      Vue.set(state.history[days], assetId, prices[assetId]);
     });
   },
   [types.FETCH_MARKET_HISTORY_ERROR](state) {
@@ -121,8 +123,8 @@ const mutations = {
     state.error = true;
   },
   [types.UPDATE_MARKET_PRICE](state, { assetId, price }) {
-    if (!state.history[assetId]) Vue.set(state.history, assetId, {});
-    Vue.set(state.history[assetId], 'last', price);
+    if (!state.history[1][assetId]) Vue.set(state.history[1], assetId, {});
+    Vue.set(state.history[1][assetId], 'last', price);
   },
   [types.SUB_TO_MARKET_COMPLETE](state) {
     state.subscribed = true;

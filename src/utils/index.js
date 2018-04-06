@@ -228,21 +228,24 @@ export const getValuesToUpdate = (balances, baseBalances, update) => {
 
 export const calcPortfolioItem = ({
   asset,
-  prices,
+  prices24,
+  prices7,
   baseAsset,
   fiatMultiplier,
   balance }) => {
   const multiplier = fiatMultiplier;
 
-  const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
+  const baseValue = parseInt((balance * prices7.last).toFixed(0), 10);
 
   const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-  let change = calcPercentChange(prices, multiplier);
+  const change24 = calcPercentChange(prices24, multiplier);
+  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change = 0;
 
-  if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
+  const change7 = calcPercentChange(prices7, multiplier);
+  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change = 0;
 
   return {
     name: asset.symbol,
@@ -251,7 +254,8 @@ export const calcPortfolioItem = ({
     baseValuePrecised,
     basePrecision: baseAsset.precision,
     fiatValue,
-    change,
-    price: prices.last
+    change24,
+    change7,
+    price: prices24.last
   };
 };
