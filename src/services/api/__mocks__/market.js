@@ -181,6 +181,8 @@ const orderSell5 = {
 
 const ordersArray = [orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1, orderBuy4, orderBuy5];
 
+
+
 const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
   const orders = ordersArray;
   const buyOrders = [];
@@ -211,11 +213,68 @@ const calcOrderRate = (order) => {
   return baseAmount / quoteAmount;
 };
 
+const distributionFromBalances = (balances) => {
+  const total = Object.keys(balances).reduce((res, key) => res + balances[key], 0);
+  return Object.keys(balances).reduce(
+    (res, key) => Object.assign(res, { [key]: balances[key] / total }),
+    {}
+  );
+};
+
+const getValuesToUpdate = (balances, baseBalances, update) => {
+  const totalBase = Object.keys(baseBalances).reduce((res, key) => res + baseBalances[key], 0);
+  const distribution = distributionFromBalances(baseBalances);
+
+  const result = {
+    sell: {},
+    buy: {}
+  };
+
+  Object.keys(update).forEach((assetId) => {
+    if (assetId === '1.3.0') return;
+    const futureShare = update[assetId];
+    const currentShare = distribution[assetId];
+
+    console.log('CALC VALUES:', assetId);
+    console.log(futureShare);
+    console.log(currentShare);
+
+
+    if (futureShare === 0) {
+      result.sell[assetId] = balances[assetId];
+    } else if (futureShare > currentShare) {
+      const futureBase = Math.floor(totalBase * futureShare);
+      const currentBase = Math.floor(totalBase * currentShare);
+      result.buy[assetId] = futureBase - currentBase;
+    } else {
+      const fullAmmountInCurrent = Math.floor(balances[assetId] / currentShare);
+      const amountInFuture = Math.floor(fullAmmountInCurrent * futureShare);
+      const otherPortfolioAmount = fullAmmountInCurrent - balances[assetId];
+      const amountToSell = fullAmmountInCurrent - otherPortfolioAmount - amountInFuture;
+      result.sell[assetId] = amountToSell;
+    }
+  });
+  return result;
+};
+
+const createOrder = ({ sell, receive, userId, fillOrKill = false }) => {
+  return {
+    seller: userId,
+    amount_to_sell: sell,
+    min_to_receive: receive,
+    fill_or_kill: fillOrKill
+  };
+};
+
 class Market {
   constructor(base) {
     this.base = base;
     this.markets = {};
     this.fee = 578;
+  }
+
+  getFee() {
+    return this.fee;
   }
 
   setDefaultObjects(assetId) {
@@ -290,6 +349,75 @@ class Market {
     if (this.isSubscribed(assetId)) {
       delete this.markets[assetId];
     }
+  }
+
+
+  generateOrders({ update, balances, baseBalances, userId }) {
+    console.log('GENERATE ORDERS');
+    console.log('update', update);
+    console.log('balances', balances);
+    console.log('baseBalances', baseBalances);
+    const calculated = getValuesToUpdate(balances, baseBalances, update);
+    const sellOrders = [];
+    const buyOrders = [];
+
+    Object.keys(calculated.sell).forEach((assetId) => {
+      const toSell = calculated.sell[assetId];
+      // if (!toSell) return;
+      let toReceive = this.calcExchangeRate(assetId, 'sell', toSell);
+      const fee = this.getFee(assetId);
+      if (toReceive > fee) {
+        toReceive -= fee;
+        const orderObject = {
+          sell: {
+            asset_id: assetId,
+            amount: toSell
+          },
+          receive: {
+            asset_id: this.base,
+            amount: toReceive
+          },
+          userId,
+          fillOrKill: true
+        };
+        const order = createOrder(orderObject);
+
+        sellOrders.push(order);
+      }
+    });
+
+    // console.log('sell orders: ', sellOrders);
+
+
+    Object.keys(calculated.buy).forEach((assetId) => {
+      let toSellBase = calculated.buy[assetId];
+      const fee = this.getFee(assetId);
+      if (toSellBase > fee) {
+        toSellBase -= fee;
+        const toReceive = this.calcExchangeRate(assetId, 'buy', toSellBase);
+        if (!toReceive) return;
+        const orderObject = {
+          sell: {
+            asset_id: this.base,
+            amount: toSellBase
+          },
+          receive: {
+            asset_id: assetId,
+            amount: toReceive
+          },
+          userId
+        };
+        const order = createOrder(orderObject);
+        buyOrders.push(order);
+      }
+    });
+
+    console.log('buy orders: ', buyOrders);
+    console.log('sell orders', sellOrders);
+    return {
+      sellOrders,
+      buyOrders
+    };
   }
 }
 

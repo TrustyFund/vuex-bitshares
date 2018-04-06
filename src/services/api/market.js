@@ -169,7 +169,6 @@ class Market {
   }
 
   async setMarketFees(commisions) {
-    console.log(commisions);
     const { fetch } = assetsActions;
     const [baseAsset] = await fetch([this.base]);
     const cer = baseAsset.options.core_exchange_rate;
@@ -245,6 +244,10 @@ class Market {
   }
 
   generateOrders({ update, balances, baseBalances, userId }) {
+    console.log('GENERATE ORDERS');
+    console.log('update', update);
+    console.log('balances', balances);
+    console.log('baseBalances', baseBalances);
     const calculated = utils.getValuesToUpdate(balances, baseBalances, update);
     const sellOrders = [];
     const buyOrders = [];
@@ -274,7 +277,7 @@ class Market {
       }
     });
 
-    console.log('sell orders: ', sellOrders);
+    // console.log('sell orders: ', sellOrders);
 
 
     Object.keys(calculated.buy).forEach((assetId) => {
@@ -301,6 +304,7 @@ class Market {
     });
 
     console.log('buy orders: ', buyOrders);
+    console.log('sell orders', sellOrders);
     return {
       sellOrders,
       buyOrders

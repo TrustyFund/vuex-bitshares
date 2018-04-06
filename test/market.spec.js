@@ -94,7 +94,7 @@ const orderBuy5 = {
   seller: '1.2.429491'
 };
 
-const buyOrders = [orderBuy1, orderBuy2, orderBuy3, orderBuy4, orderBuy5];
+const buyOrdersSubscribe = [orderBuy1, orderBuy2, orderBuy3, orderBuy4, orderBuy5];
 
 const orderSell1 = {
   deferred_fee: 578,
@@ -186,7 +186,126 @@ const orderSell5 = {
   seller: '1.2.770077'
 };
 
-const sellOrders = [orderSell5, orderSell4, orderSell3, orderSell2, orderSell1];
+const sellOrdersSubscribe = [orderSell5, orderSell4, orderSell3, orderSell2, orderSell1];
+
+// const update = {
+//   '1.3.0': 0.04,
+//   '1.3.121': 0,
+//   '1.3.850': 0.1,
+//   '1.3.858': 0.05,
+//   '1.3.859': 0.1,
+//   '1.3.861': 0.6,
+//   '1.3.973': 0.04,
+//   '1.3.1999': 0.04,
+//   '1.3.2418': 0.03,
+//   '1.3.3588': 0
+// };
+
+// const balances = {
+//   '1.3.0': 17247,
+//   '1.3.113': 0,
+//   '1.3.121': 14874,
+//   '1.3.850': 0,
+//   '1.3.858': 108536,
+//   '1.3.859': 0,
+//   '1.3.861': 0,
+//   '1.3.943': 0,
+//   '1.3.973': 124,
+//   '1.3.1042': 0,
+//   '1.3.1093': 0,
+//   '1.3.1362': 0,
+//   '1.3.1578': 0,
+//   '1.3.1893': 0,
+//   '1.3.1999': 98640,
+//   '1.3.2001': 0,
+//   '1.3.2379': 0,
+//   '1.3.2418': 340035311,
+//   '1.3.2786': 0,
+//   '1.3.2935': 0,
+//   '1.3.3128': 0,
+//   '1.3.3219': 0,
+//   '1.3.3365': 0,
+//   '1.3.3368': 0,
+//   '1.3.3376': 0,
+//   '1.3.3382': 1,
+//   '1.3.3547': 0,
+//   '1.3.3587': 1,
+//   '1.3.3588': 1,
+//   '1.3.3591': 0,
+//   '1.3.3602': 0,
+//   '1.3.3609': 0,
+//   '1.3.3612': 1,
+//   '1.3.3664': 0,
+//   '1.3.3666': 0,
+// };
+
+// const baseBalances = {
+//   '1.3.0': 17247,
+//   '1.3.113': 0,
+//   '1.3.121': 1170747,
+//   '1.3.850': 0,
+//   '1.3.858': 217179.99999999997,
+//   '1.3.859': 0,
+//   '1.3.861': 0,
+//   '1.3.943': 0,
+//   '1.3.973': 144833,
+//   '1.3.1042': 0,
+//   '1.3.1093': 0,
+//   '1.3.1362': 0,
+//   '1.3.1578': 0,
+//   '1.3.189': 0,
+//   '1.3.1999': 407857,
+//   '1.3.2001': 0,
+//   '1.3.2379': 0,
+//   '1.3.2418': 173336,
+//   '1.3.2786': 0,
+//   '1.3.2935': 0,
+//   '1.3.3128': 0,
+//   '1.3.3219': 0,
+//   '1.3.3365': 0,
+//   '1.3.3368': 0,
+//   '1.3.3376': 0,
+//   '1.3.3382': 301,
+//   '1.3.3547': 0,
+//   '1.3.3587': 411,
+//   '1.3.3588': 690,
+//   '1.3.3591': 0,
+//   '1.3.3602': 0,
+//   '1.3.3609': 0,
+//   '1.3.3612': 325,
+//   '1.3.3664': 0,
+//   '1.3.3666': 0
+// };
+
+const update = {
+  '1.3.0': 0.04,
+  '1.3.850': 0.1,
+};
+
+const balances = {
+  '1.3.0': 17247,
+  '1.3.850': 0,
+};
+
+const baseBalances = {
+  '1.3.0': 17247,
+  '1.3.850': 0,
+};
+
+const buyOrdersGenerated = [{
+  seller: '1.2.512210',
+  amount_to_sell: {
+    asset_id: '1.3.0',
+    amount: 1146
+  },
+  min_to_receive: {
+    asset_id: '1.3.850',
+    amount: 4
+  },
+  fill_or_kill: false
+}];
+
+const sellOrdersGenerated = [];
 
 describe('market service', () => {
   test('samples distribution to specified accuracy', () => {
@@ -214,18 +333,36 @@ describe('market service', () => {
     });
   });
   const market = markets['1.3.0'];
+
   it('subscribe to market', async done => {
     function callback() {
-      expect(market.markets['1.3.850'].orders.buy).toEqual(buyOrders);
-      expect(market.markets['1.3.850'].orders.sell).toEqual(sellOrders);
+      expect(market.markets['1.3.850'].orders.buy).toEqual(buyOrdersSubscribe);
+      expect(market.markets['1.3.850'].orders.sell).toEqual(sellOrdersSubscribe);
     }
     await market.subscribeToExchangeRate('1.3.850', 1758, callback);
     done();
   });
+
+  test('generate orders', () => {
+    market.subscribeToExchangeRate('1.3.0');
+    const userId = '1.2.512210';
+    const objForGenerateOrders = {
+      update,
+      balances,
+      baseBalances,
+      userId
+    };
+    const { buyOrders, sellOrders } = market.generateOrders(objForGenerateOrders);
+    expect(buyOrders).toEqual(buyOrdersGenerated);
+    expect(sellOrders).toEqual(sellOrdersGenerated);
+  });
+
   test('unsubscribe from exchangeRate', () => {
     market.unsubscribeFromExchangeRate('1.3.850');
     expect(market.markets['1.3.850']).toBe(undefined);
   });
+
+
 });
 
 
