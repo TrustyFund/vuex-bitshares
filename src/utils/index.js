@@ -68,36 +68,6 @@ export const calcPercentChange = (prices, multiplier) => {
     (prices.first * multiplier.first)) * 100) - 100);
 };
 
-
-/**
- * Returns object with balance in base currency, balance in fiat currency
-  and change by percent
- * @param {Object} object - object containing data for calculation
- * @param {number} object.balance - balance of asset
- * @param {Object} object.assetPrices - object with asset's history prices
- * @param {number} object.assetPrices.first - first price of asset history
- * @param {number} object.assetPrices.last - last price of asset history (current)
- * @param {Object} object.fiatMultiplier - object with base -> fiat exchange rates
- * @param {number} object.fiatMultiplier.first - multiplier for first history price
- * @param {number} object.fiatMultiplier.last - multiplier for last history price (current)
- * @param {Boolean} object.isBase - the asset for calculation is base asset
- * @param {Boolean} object.isFiat - the asset for calculation is fiat asset
- */
-export const calcPortfolioData = ({
-  balance, assetPrices, fiatMultiplier,
-  isBase, isFiat
-}) => {
-  let multiplier = fiatMultiplier;
-  let prices = assetPrices;
-  if (isFiat) multiplier = { first: 1, last: 1 };
-  if (isBase) prices = { first: 1, last: 1 };
-  const balanceBase = balance * prices.last;
-  const balanceFiat = balanceBase * multiplier.last;
-  let change = calcPercentChange(prices, multiplier);
-  if (prices.last === prices.first && !isBase) change = 0;
-  return { balanceBase, balanceFiat, change };
-};
-
 export const encryptMemo = (memo, fromKey, toPubkey) => {
   const nonce = TransactionHelper.unique_nonce_uint64();
   const activePubkey = fromKey.toPublicKey().toPublicKeyString();
@@ -281,6 +251,7 @@ export const calcPortfolioItem = ({
     baseValuePrecised,
     basePrecision: baseAsset.precision,
     fiatValue,
-    change
+    change,
+    price: prices.last
   };
 };
