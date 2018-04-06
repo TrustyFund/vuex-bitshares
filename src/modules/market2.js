@@ -10,24 +10,25 @@ const FETCH_ASSETS_HISTORY_REQUEST = 'FETCH_ASSETS_HISTORY_REQUEST';
 const FETCH_ASSETS_HISTORY_COMPLETE = 'FETCH_ASSETS_HISTORY_COMPLETE';
 const FETCH_ASSETS_HISTORY_ERROR = 'FETCH_ASSETS_HISTORY_ERROR';
 
-const SUBSCRIBE_TO_EXCHANGE_RATE = 'SUBSCRIBE_TO_EXCHANGE_RATE';
+const SUBSCRIBE_TO_EXCHANGE_RATE = 'SUBSCRIBE_TO_EXCHANGE_REQUEST';
+const UPDATE_EXCHANGE_PRICE = 'UPDATE_MARKET_PRICE';
 
-const SUB_TO_MARKET_REQUEST = 'SUB_TO_MARKET_REQUEST';
-const SUB_TO_MARKET_COMPLETE = 'SUB_TO_MARKET_COMPLETE';
-const UNSUB_FROM_MARKET_COMPLETE = 'UNSUB_FROM_MARKET_COMPLETE';
 
-const SUB_TO_BALANCE_MARKETS_COMPLETE = 'SUB_TO_BALANCE_MARKETS_COMPLETE';
-
-const UPDATE_MARKET_PRICE = 'UPDATE_MARKET_PRICE';
+const SUBSCRIBE_TO_ORDERS_REQUEST = 'SUBSCRIBE_TO_ORDERS_REQUEST';
+const SUBSCRIBE_TO_ORDERS_COMPLETE = 'SUBSCRIBE_TO_ORDERS_COMPLETE';
 const UPDATE_MARKET_ORDERS = 'UPDATE_MARKET_ORDERS';
+
+const SUBSCRIBED_TO_BALANCE_MARKETS = 'SUBSCRIBED_TO_BALANCE_MARKETS';
+const UNSUBSCRIBED_FROM_MARKET = 'UNSUBSCRIBED_FROM_MARKET';
+
 
 const initialState = {
   systemBaseId: config.defaultTradingBase,
   pending: false,
   subscribed: false,
   error: false,
-  markets: {},
-  history: {}
+  history: {},
+  ordersUpdateFlags: {}
 };
 
 const actions = {
@@ -56,24 +57,21 @@ const actions = {
   },
   subscribeToExchangeRate: async (store, { baseId, assetId, balance }) => {
     const { commit } = store;
-    commit(SUB_TO_MARKET_REQUEST, { baseId, assetId });
+    commit(SUBSCRIBE_TO_EXCHANGE_RATE, { baseId, assetId });
 
     const market = API.Market[baseId];
     await market.subscribeToExchangeRate(assetId, balance, (id, baseAmount) => {
       if (!baseAmount) return;
       const price = baseAmount / balance;
-      commit(UPDATE_MARKET_PRICE, { baseId, assetId, price });
+      commit(UPDATE_EXCHANGE_PRICE, { baseId, assetId, price });
 
       // WTF THIS TYT DELAET? @roma219
       store.dispatch('transactions/createOrdersFromDistribution', null, { root: true });
       console.log(assetId + ' new bts amount: : ' + baseAmount);
-
-      const orders = market.getOrderBook(id);
-      commit(UPDATE_MARKET_ORDERS, { baseId, assetId, orders });
     });
     console.log('SUBSCRIBED TO : ' + assetId + ' : ' + balance);
   },
-  subscribeToExchangeRates(store, { baseId, balances }) {
+  subscribeToExchangeRates: (store, { baseId, balances }) => {
     const { commit } = store;
     const assetsIds = Object.keys(balances);
 
@@ -81,22 +79,21 @@ const actions = {
       const { balance } = balances[assetId];
       return actions.subscribeToExchangeRate(store, { baseId, assetId, balance });
     })).then(() => {
-      commit(SUB_TO_BALANCE_MARKETS_COMPLETE);
+      commit(SUBSCRIBED_TO_BALANCE_MARKETS);
       console.log('subscribed to markets successfully');
     });
   },
-  subscribeToMarket: async ({ commit }, { baseId, assetId }) => {
-    commit(SUB_TO_MARKET_REQUEST, { baseId, assetId });
+  subscribeToMarketOrders: async ({ commit }, { baseId, assetId }) => {
+    commit(SUBSCRIBE_TO_ORDERS_REQUEST, { baseId, assetId });
     await API.Market[baseId].subscribeToMarket(assetId, () => {
-      const orders = API.Market[baseId].getOrderBook(assetId);
-      commit(UPDATE_MARKET_ORDERS, { baseId, assetId, orders });
+      console.log('UPDATE MARKET ORDERS', assetId);
+      commit(UPDATE_MARKET_ORDERS, { baseId, assetId });
     });
-    const orders = API.Market[baseId].getOrderBook(assetId);
-    commit(SUB_TO_MARKET_COMPLETE, { baseId, assetId, orders });
+    commit(SUBSCRIBE_TO_ORDERS_COMPLETE, { baseId, assetId });
   },
   unsubscribeFromMarket: ({ commit }, { baseId }) => {
     API.Market[baseId].unsubscribeFromMarkets();
-    commit(UNSUB_FROM_MARKET_COMPLETE, { baseId });
+    commit(UNSUBSCRIBED_FROM_MARKET);
   }
 };
 
@@ -126,33 +123,32 @@ const mutations = {
     state.pending = false;
     state.error = true;
   },
-  [SUB_TO_BALANCE_MARKETS_COMPLETE](state) {
+  [SUBSCRIBED_TO_BALANCE_MARKETS](state) {
     state.subscribed = true;
   },
-  [UPDATE_MARKET_PRICE](state, { baseId, assetId, price }) {
-    if (!state.history[baseId][assetId]) Vue.set(state.history[baseId], assetId, {});
+  [SUBSCRIBE_TO_EXCHANGE_RATE](state, { baseId, assetId }) {
+    if (!state.history[baseId]) Vue.set(state.history, baseId, {});
+    Vue.set(state.history[baseId], assetId, {});
+  },
+  [UPDATE_EXCHANGE_PRICE](state, { baseId, assetId, price }) {
     Vue.set(state.history[baseId][assetId], 'last', price);
   },
-  [SUB_TO_MARKET_REQUEST](state, { baseId, assetId }) {
+  [SUBSCRIBE_TO_ORDERS_REQUEST](state, { baseId, assetId }) {
     state.pending = true;
-    state.markets[baseId] = {};
-    state.markets[baseId][assetId] = {};
+    state.ordersUpdateFlags[baseId] = {};
+    state.ordersUpdateFlags[baseId][assetId] = null;
   },
-  [SUB_TO_MARKET_COMPLETE](state, { baseId, assetId, orders }) {
+  [SUBSCRIBE_TO_ORDERS_COMPLETE](state, { baseId, assetId, }) {
     state.pending = false;
-    state.markets[baseId][assetId] = orders;
-    state.markets = { ...state.markets };
+    state.ordersUpdateFlags[baseId][assetId] = new Date();
+    state.ordersUpdateFlags = { ...state.ordersUpdateFlags };
   },
-  [UPDATE_MARKET_ORDERS](state, { baseId, assetId, orders }) {
-    state.markets[baseId][assetId] = orders;
-    state.markets = { ...state.markets };
+  [UPDATE_MARKET_ORDERS](state, { baseId, assetId }) {
+    state.ordersUpdateFlags[baseId][assetId] = new Date();
+    state.ordersUpdateFlags = { ...state.ordersUpdateFlags };
   },
-  [UNSUB_FROM_MARKET_COMPLETE](state, { baseId }) {
+  [UNSUBSCRIBED_FROM_MARKET](state) {
     state.pending = false;
-    delete (state.markets[baseId]);
-  },
-  [SUBSCRIBE_TO_EXCHANGE_RATE](state) {
-    console.log('exchange sub', state);
   }
 };
 
@@ -177,7 +173,10 @@ const getters = {
   isError: state => state.error,
   isPending: state => state.pending,
   isSubscribed: state => state.subscribed,
-  getMarketOrders: state => baseId => state.markets[baseId]
+  getMarketOrders: (state) => (baseId, assetId) => {
+    return (state.ordersUpdateFlags[baseId][assetId]) ?
+      API.Market[baseId].getOrderBook(assetId) : {};
+  }
 };
 
 export default {
