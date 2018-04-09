@@ -1,8 +1,10 @@
 import { Apis } from 'bitsharesjs-ws';
+import { getComissions } from './parameters';
 import * as utils from '../../utils';
 import listener from './chain-listener';
 import Subscriptions from './subscriptions';
 import config from '../../../config';
+import assetsActions from './assets';
 
 
 const findOrder = (orderId) => {
@@ -166,14 +168,30 @@ class Market {
     }
   }
 
+  async setMarketFees(commisions) {
+    const { fetch } = assetsActions;
+    const [baseAsset] = await fetch([this.base]);
+    const cer = baseAsset.options.core_exchange_rate;
+    const multiplier = cer.quote.amount / cer.base.amount;
+    commisions.fees.map(x => x * multiplier);
+    this.commisions = commisions;
+  }
+
   async subscribeToMarket(assetId, callback) {
-    if (assetId === this.base) return;
+    if (assetId === this.base) {
+      const commisions = await getComissions();
+      await this.setMarketFees(commisions);
+      return;
+    }
     const { buyOrders, sellOrders } = await loadLimitOrders(this.base, assetId);
     this.setDefaultObjects(assetId);
     // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
     this.markets[assetId].orders.buy = buyOrders;
+    console.log('buy orders', buyOrders);
     this.markets[assetId].orders.sell = sellOrders;
+    console.log(sellOrders);
     this.markets[assetId].callback = callback;
+
     callback();
   }
 
@@ -192,6 +210,7 @@ class Market {
   }
 
   async subscribeToExchangeRate(assetId, amount, callback) {
+    console.log('asset_id amount', assetId, amount);
     let canReceiveInBasePrev = 0;
     const wrappedCallback = () => {
       const canReceiveInBase = this.calcExchangeRate(assetId, 'sell', amount);
@@ -228,6 +247,10 @@ class Market {
   }
 
   generateOrders({ update, balances, baseBalances, userId }) {
+    console.log('GENERATE ORDERS');
+    console.log('update', update);
+    console.log('balances', balances);
+    console.log('baseBalances', baseBalances);
     const calculated = utils.getValuesToUpdate(balances, baseBalances, update);
     const sellOrders = [];
     const buyOrders = [];
@@ -257,7 +280,7 @@ class Market {
       }
     });
 
-    console.log('sell orders: ', sellOrders);
+    // console.log('sell orders: ', sellOrders);
 
 
     Object.keys(calculated.buy).forEach((assetId) => {
@@ -284,6 +307,7 @@ class Market {
     });
 
     console.log('buy orders: ', buyOrders);
+    console.log('sell orders', sellOrders);
     return {
       sellOrders,
       buyOrders
