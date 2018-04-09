@@ -356,11 +356,14 @@ const sellCNYOrder5 = {
 };
 
 const ordersArray = {
-  '1.3.850': [orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1, orderBuy4, orderBuy5],
-  '1.3.113': [buyCNYOrder1, buyCNYOrder2, sellCNYOrder1, buyCNYOrder3, sellCNYOrder2, sellCNYOrder3, sellCNYOrder4, buyCNYOrder4, sellCNYOrder5, buyCNYOrder5]
+  '1.3.850': [
+    orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1,
+    orderBuy4, orderBuy5],
+  '1.3.113': [buyCNYOrder1, buyCNYOrder2, sellCNYOrder1, buyCNYOrder3, sellCNYOrder2,
+    sellCNYOrder3, sellCNYOrder4, buyCNYOrder4, sellCNYOrder5, buyCNYOrder5]
 };
 
-const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
+const loadLimitOrders = async (baseId, quoteId) => {
   const orders = ordersArray[quoteId];
   const buyOrders = [];
   const sellOrders = [];

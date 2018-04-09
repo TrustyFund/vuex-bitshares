@@ -465,9 +465,4 @@ describe('market service', () => {
     market.unsubscribeFromExchangeRate('1.3.850');
     expect(market.markets['1.3.850']).toBe(undefined);
   });
-
-
 });
-
-
-// assetId balance 1.3.850 1758
