@@ -187,7 +187,9 @@ class Market {
     this.setDefaultObjects(assetId);
     // console.log('setting default: ' + assetId + ' : ', this.markets[assetId]);
     this.markets[assetId].orders.buy = buyOrders;
+    console.log('buy orders', buyOrders);
     this.markets[assetId].orders.sell = sellOrders;
+    console.log(sellOrders);
     this.markets[assetId].callback = callback;
 
     callback();
@@ -208,6 +210,7 @@ class Market {
   }
 
   async subscribeToExchangeRate(assetId, amount, callback) {
+    console.log('asset_id amount', assetId, amount);
     let canReceiveInBasePrev = 0;
     const wrappedCallback = () => {
       const canReceiveInBase = this.calcExchangeRate(assetId, 'sell', amount);

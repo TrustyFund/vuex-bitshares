@@ -179,12 +179,189 @@ const orderSell5 = {
   seller: '1.2.770077'
 };
 
-const ordersArray = [orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1, orderBuy4, orderBuy5];
+const buyCNYOrder1 = {
+  deferred_fee: 578,
+  expiration: '2018-04-16T04:51:23',
+  for_sale: 9900243,
+  id: '1.7.62559913',
+  sell_price: {
+    base: {
+      amount: 9900243,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 835364,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.602724'
+};
+const buyCNYOrder2 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:15',
+  for_sale: 1385078692,
+  id: '1.7.62559882',
+  sell_price: {
+    base: {
+      amount: 1385078692,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 116873184,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.613598'
+};
+const buyCNYOrder3 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:34',
+  for_sale: 99997110,
+  id: '1.7.62559926',
+  sell_price: {
+    base: {
+      amount: 99997110,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 8437813,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.455122'
+};
+const buyCNYOrder4 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:52:00',
+  for_sale: 262908748,
+  id: '1.7.62559979',
+  sell_price: {
+    base: {
+      amount: 262908748,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 22184484,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.473486'
+};
+const buyCNYOrder5 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:29',
+  for_sale: 695497517,
+  id: '1.7.62559918',
+  sell_price: {
+    base: {
+      amount: 695497517,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 58691909,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.469235'
+};
 
+const sellCNYOrder1 = {
+  deferred_fee: 578,
+  expiration: '2023-04-09T04:54:51',
+  for_sale: 34274045,
+  id: '1.7.62560294',
+  sell_price: {
+    base: {
+      amount: 34274045,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 408998146,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.129515'
+};
 
+const sellCNYOrder2 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:52:25',
+  for_sale: 655700,
+  id: '1.7.62560027',
+  sell_price: {
+    base: {
+      amount: 655700,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 7850560,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.860552'
+};
+
+const sellCNYOrder3 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:47:03',
+  for_sale: 199999609,
+  id: '1.7.62559463',
+  sell_price: {
+    base: {
+      amount: 199999609,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 2394660000,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.613598'
+};
+
+const sellCNYOrder4 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:41:36',
+  for_sale: 50000,
+  id: '1.7.62558919',
+  sell_price: {
+    base: {
+      amount: 50000,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 598717,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.851645'
+};
+
+const sellCNYOrder5 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:41:36',
+  for_sale: 500000,
+  id: '1.7.62558924',
+  sell_price: {
+    base: {
+      amount: 500000,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 5987179,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.824732'
+};
+
+const ordersArray = {
+  '1.3.850': [orderBuy1, orderSell5, orderSell4, orderBuy2, orderSell3, orderBuy3, orderSell2, orderSell1, orderBuy4, orderBuy5],
+  '1.3.113': [buyCNYOrder1, buyCNYOrder2, sellCNYOrder1, buyCNYOrder3, sellCNYOrder2, sellCNYOrder3, sellCNYOrder4, buyCNYOrder4, sellCNYOrder5, buyCNYOrder5]
+};
 
 const loadLimitOrders = async (baseId, quoteId, limit = 500) => {
-  const orders = ordersArray;
+  const orders = ordersArray[quoteId];
   const buyOrders = [];
   const sellOrders = [];
   orders.forEach((order) => {

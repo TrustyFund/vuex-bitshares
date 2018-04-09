@@ -21,7 +21,6 @@ const orderBuy1 = {
   },
   seller: '1.2.132834'
 };
-
 const orderBuy2 = {
   deferred_fee: 578,
   expiration: '2023-04-05T15:32:43',
@@ -39,7 +38,6 @@ const orderBuy2 = {
   },
   seller: '1.2.493448'
 };
-
 const orderBuy3 = {
   deferred_fee: 578,
   expiration: '2023-04-04T15:34:31',
@@ -57,7 +55,6 @@ const orderBuy3 = {
   },
   seller: '1.2.126225'
 };
-
 const orderBuy4 = {
   deferred_fee: 578,
   expiration: '2019-04-05T14:16:21',
@@ -75,7 +72,6 @@ const orderBuy4 = {
   },
   seller: '1.2.376918'
 };
-
 const orderBuy5 = {
   deferred_fee: 578,
   expiration: '2023-04-05T14:07:21',
@@ -93,7 +89,6 @@ const orderBuy5 = {
   },
   seller: '1.2.429491'
 };
-
 const buyOrdersSubscribe = [orderBuy1, orderBuy2, orderBuy3, orderBuy4, orderBuy5];
 
 const orderSell1 = {
@@ -113,7 +108,6 @@ const orderSell1 = {
   },
   seller: '1.2.354664'
 };
-
 const orderSell2 = {
   deferred_fee: 0,
   expiration: '2023-04-05T14:48:21',
@@ -131,7 +125,6 @@ const orderSell2 = {
   },
   seller: '1.2.502341'
 };
-
 const orderSell3 = {
   deferred_fee: 0,
   expiration: '2018-04-20T18:46:31',
@@ -149,7 +142,6 @@ const orderSell3 = {
   },
   seller: '1.2.1310'
 };
-
 const orderSell4 = {
   deferred_fee: 578,
   expiration: '2019-04-05T12:46:40',
@@ -167,7 +159,6 @@ const orderSell4 = {
   },
   seller: '1.2.549541'
 };
-
 const orderSell5 = {
   deferred_fee: 578,
   expiration: '2018-04-12T06:56:56',
@@ -185,127 +176,231 @@ const orderSell5 = {
   },
   seller: '1.2.770077'
 };
-
 const sellOrdersSubscribe = [orderSell5, orderSell4, orderSell3, orderSell2, orderSell1];
-
-// const update = {
-//   '1.3.0': 0.04,
-//   '1.3.121': 0,
-//   '1.3.850': 0.1,
-//   '1.3.858': 0.05,
-//   '1.3.859': 0.1,
-//   '1.3.861': 0.6,
-//   '1.3.973': 0.04,
-//   '1.3.1999': 0.04,
-//   '1.3.2418': 0.03,
-//   '1.3.3588': 0
-// };
-
-// const balances = {
-//   '1.3.0': 17247,
-//   '1.3.113': 0,
-//   '1.3.121': 14874,
-//   '1.3.850': 0,
-//   '1.3.858': 108536,
-//   '1.3.859': 0,
-//   '1.3.861': 0,
-//   '1.3.943': 0,
-//   '1.3.973': 124,
-//   '1.3.1042': 0,
-//   '1.3.1093': 0,
-//   '1.3.1362': 0,
-//   '1.3.1578': 0,
-//   '1.3.1893': 0,
-//   '1.3.1999': 98640,
-//   '1.3.2001': 0,
-//   '1.3.2379': 0,
-//   '1.3.2418': 340035311,
-//   '1.3.2786': 0,
-//   '1.3.2935': 0,
-//   '1.3.3128': 0,
-//   '1.3.3219': 0,
-//   '1.3.3365': 0,
-//   '1.3.3368': 0,
-//   '1.3.3376': 0,
-//   '1.3.3382': 1,
-//   '1.3.3547': 0,
-//   '1.3.3587': 1,
-//   '1.3.3588': 1,
-//   '1.3.3591': 0,
-//   '1.3.3602': 0,
-//   '1.3.3609': 0,
-//   '1.3.3612': 1,
-//   '1.3.3664': 0,
-//   '1.3.3666': 0,
-// };
-
-// const baseBalances = {
-//   '1.3.0': 17247,
-//   '1.3.113': 0,
-//   '1.3.121': 1170747,
-//   '1.3.850': 0,
-//   '1.3.858': 217179.99999999997,
-//   '1.3.859': 0,
-//   '1.3.861': 0,
-//   '1.3.943': 0,
-//   '1.3.973': 144833,
-//   '1.3.1042': 0,
-//   '1.3.1093': 0,
-//   '1.3.1362': 0,
-//   '1.3.1578': 0,
-//   '1.3.189': 0,
-//   '1.3.1999': 407857,
-//   '1.3.2001': 0,
-//   '1.3.2379': 0,
-//   '1.3.2418': 173336,
-//   '1.3.2786': 0,
-//   '1.3.2935': 0,
-//   '1.3.3128': 0,
-//   '1.3.3219': 0,
-//   '1.3.3365': 0,
-//   '1.3.3368': 0,
-//   '1.3.3376': 0,
-//   '1.3.3382': 301,
-//   '1.3.3547': 0,
-//   '1.3.3587': 411,
-//   '1.3.3588': 690,
-//   '1.3.3591': 0,
-//   '1.3.3602': 0,
-//   '1.3.3609': 0,
-//   '1.3.3612': 325,
-//   '1.3.3664': 0,
-//   '1.3.3666': 0
-// };
 
 const update = {
   '1.3.0': 0.04,
   '1.3.850': 0.1,
+  '1.3.113': 0.414
 };
-
 const balances = {
   '1.3.0': 17247,
   '1.3.850': 0,
+  '1.3.113': 100
 };
-
 const baseBalances = {
   '1.3.0': 17247,
   '1.3.850': 0,
+  '1.3.113': 420
 };
-
-const buyOrdersGenerated = [{
-  seller: '1.2.512210',
-  amount_to_sell: {
-    asset_id: '1.3.0',
-    amount: 1146
+const buyOrdersGenerated = [
+  {
+    seller: '1.2.512210',
+    amount_to_sell: {
+      asset_id: '1.3.0',
+      amount: 1188
+    },
+    min_to_receive: {
+      asset_id: '1.3.850',
+      amount: 4
+    },
+    fill_or_kill: false
   },
-  min_to_receive: {
-    asset_id: '1.3.850',
-    amount: 4
-  },
-  fill_or_kill: false
-}];
+  {
+    seller: '1.2.512210',
+    amount_to_sell: {
+      asset_id: '1.3.0',
+      amount: 6316
+    },
+    min_to_receive: {
+      asset_id: '1.3.113',
+      amount: 529
+    },
+    fill_or_kill: false
+  }
+];
 
 const sellOrdersGenerated = [];
+
+const buyCNYOrder1 = {
+  deferred_fee: 578,
+  expiration: '2018-04-16T04:51:23',
+  for_sale: 9900243,
+  id: '1.7.62559913',
+  sell_price: {
+    base: {
+      amount: 9900243,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 835364,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.602724'
+};
+const buyCNYOrder2 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:15',
+  for_sale: 1385078692,
+  id: '1.7.62559882',
+  sell_price: {
+    base: {
+      amount: 1385078692,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 116873184,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.613598'
+};
+const buyCNYOrder3 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:34',
+  for_sale: 99997110,
+  id: '1.7.62559926',
+  sell_price: {
+    base: {
+      amount: 99997110,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 8437813,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.455122'
+};
+const buyCNYOrder4 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:52:00',
+  for_sale: 262908748,
+  id: '1.7.62559979',
+  sell_price: {
+    base: {
+      amount: 262908748,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 22184484,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.473486'
+};
+const buyCNYOrder5 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:51:29',
+  for_sale: 695497517,
+  id: '1.7.62559918',
+  sell_price: {
+    base: {
+      amount: 695497517,
+      asset_id: '1.3.0'
+    },
+    quote: {
+      amount: 58691909,
+      asset_id: '1.3.113'
+    }
+  },
+  seller: '1.2.469235'
+};
+
+const buyCNYOrders = [buyCNYOrder1, buyCNYOrder2, buyCNYOrder3, buyCNYOrder4, buyCNYOrder5];
+
+const sellCNYOrder1 = {
+  deferred_fee: 578,
+  expiration: '2023-04-09T04:54:51',
+  for_sale: 34274045,
+  id: '1.7.62560294',
+  sell_price: {
+    base: {
+      amount: 34274045,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 408998146,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.129515'
+};
+
+const sellCNYOrder2 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:52:25',
+  for_sale: 655700,
+  id: '1.7.62560027',
+  sell_price: {
+    base: {
+      amount: 655700,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 7850560,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.860552'
+};
+
+const sellCNYOrder3 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:47:03',
+  for_sale: 199999609,
+  id: '1.7.62559463',
+  sell_price: {
+    base: {
+      amount: 199999609,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 2394660000,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.613598'
+};
+
+const sellCNYOrder4 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:41:36',
+  for_sale: 50000,
+  id: '1.7.62558919',
+  sell_price: {
+    base: {
+      amount: 50000,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 598717,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.851645'
+};
+
+const sellCNYOrder5 = {
+  deferred_fee: 578,
+  expiration: '2019-04-09T04:41:36',
+  for_sale: 500000,
+  id: '1.7.62558924',
+  sell_price: {
+    base: {
+      amount: 500000,
+      asset_id: '1.3.113'
+    },
+    quote: {
+      amount: 5987179,
+      asset_id: '1.3.0'
+    }
+  },
+  seller: '1.2.824732'
+};
+
+const sellCNYOrders = [sellCNYOrder1, sellCNYOrder2, sellCNYOrder3, sellCNYOrder4, sellCNYOrder5];
 
 describe('market service', () => {
   test('samples distribution to specified accuracy', () => {
@@ -340,6 +435,15 @@ describe('market service', () => {
       expect(market.markets['1.3.850'].orders.sell).toEqual(sellOrdersSubscribe);
     }
     await market.subscribeToExchangeRate('1.3.850', 1758, callback);
+    done();
+  });
+
+  it('subscribe to CNY market', async done => {
+    function callback() {
+      expect(market.markets['1.3.113'].orders.buy).toEqual(buyCNYOrders);
+      expect(market.markets['1.3.113'].orders.sell).toEqual(sellCNYOrders);
+    }
+    await market.subscribeToExchangeRate('1.3.113', 1758, callback);
     done();
   });
 
