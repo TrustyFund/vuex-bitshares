@@ -15,11 +15,13 @@ export const arrayToObject = (array) => {
  * Returns array containing first and last history prices of asset.
  * @param {Array} history - array with asset's history data
  */
-export const getPrices = (history) => {
-  if (!history.length) return { first: 0, last: 0 };
+export const getPrices = (history, id, days) => {
+  if (!history.length) return { first: 1, last: 1 };
   const startElem = history[0];
   const endElem = history[history.length - 1];
   // || 1 when node sends bad data ( 0 )
+  console.log(days);
+  if (id === '1.3.2418') console.log(days + ' : ', id, startElem, endElem);
   const startPrice = (startElem.open_base || 1) / (startElem.open_quote || 1);
   const endPrice = (endElem.close_base || 1) / (endElem.close_quote || 1);
   if (!startElem.open_base || !startElem.close_base ||
@@ -30,7 +32,7 @@ export const getPrices = (history) => {
 };
 
 /**
- * Returns formatted prices for array calculated taking precision щf assets into account
+ * Returns formatted prices for array calculated taking precision of assets into account
  * @param {Object} prices - object with asset's history prices
  * @param {number} prices.first - first price of asset history
  * @param {number} prices.last - last price of asset history (current)
@@ -39,6 +41,7 @@ export const getPrices = (history) => {
  */
 export const formatPrices = (prices, base, quote) => {
   const precisionDiff = base.precision - quote.precision;
+  console.log(quote.id + ' : ' + prices);
 
   if (precisionDiff > 0) {
     prices.first /= (precisionDiff * 10);
@@ -235,17 +238,17 @@ export const calcPortfolioItem = ({
   balance }) => {
   const multiplier = fiatMultiplier;
 
-  const baseValue = parseInt((balance * prices7.last).toFixed(0), 10);
+  const baseValue = parseInt((balance * prices24.last).toFixed(0), 10);
 
   const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-  const change24 = calcPercentChange(prices24, multiplier);
-  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change = 0;
+  let change24 = calcPercentChange(prices24, multiplier);
+  if (prices24.fist === prices24.last && asset.id !== baseAsset.id) change24 = 0;
 
-  const change7 = calcPercentChange(prices7, multiplier);
-  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change = 0;
+  let change7 = calcPercentChange(prices7, multiplier);
+  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change7 = 0;
 
   return {
     name: asset.symbol,

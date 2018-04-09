@@ -11,8 +11,10 @@ const actions = {
     const baseAsset = assets[baseId];
 
     commit(types.FETCH_MARKET_HISTORY_REQUEST, { baseId });
+    // console.log('fetching history : ', days, assetsIds);
     Promise.all(assetsIds.map(async (assetId) => {
       const prices = await API.Assets.fetchPriceHistory(baseAsset, assets[assetId], days);
+      if (assetId === '1.3.2418') console.log(prices);
       if (!prices) throw new Error('error market history');
       return {
         assetId,
@@ -24,7 +26,8 @@ const actions = {
         return result;
       }, {});
       commit(types.FETCH_MARKET_HISTORY_COMPLETE, { days, prices });
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err);
       commit(types.FETCH_MARKET_HISTORY_ERROR);
     });
   },
@@ -126,6 +129,10 @@ const mutations = {
     if (!state.history[1][assetId]) Vue.set(state.history[1], assetId, {});
     Vue.set(state.history[1][assetId], 'last', price);
   },
+  // [types.UPDATE_MARKET_PRICE](state, { assetId, price }) {
+  //   if (!state.prices[assetId]) Vue.set(state.prices, assetId, {});
+  //   Vue.set(state.prices, assetId, price);
+  // },
   [types.SUB_TO_MARKET_COMPLETE](state) {
     state.subscribed = true;
   },
