@@ -16,7 +16,7 @@ export const arrayToObject = (array) => {
  * @param {Array} history - array with asset's history data
  */
 export const getPrices = (history, id, days) => {
-  if (!history.length) return { first: 1, last: 1 };
+  if (!history.length) return { first: 0, last: 0 };
   const startElem = history[0];
   const endElem = history[history.length - 1];
   // || 1 when node sends bad data ( 0 )
@@ -229,24 +229,27 @@ export const getValuesToUpdate = (balances, baseBalances, update) => {
 
 export const calcPortfolioItem = ({
   asset,
-  prices24,
-  prices7,
+  history24,
+  history7,
   baseAsset,
   fiatMultiplier,
+  marketPrice,
   balance }) => {
   const multiplier = fiatMultiplier;
 
-  const baseValue = parseInt((balance * prices24.last).toFixed(0), 10);
+  const price = marketPrice || history24.last || history7.last;
+
+  const baseValue = parseInt((balance * price).toFixed(0), 10);
 
   const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
 
   const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
 
-  let change24 = calcPercentChange(prices24, multiplier);
-  if (prices24.fist === prices24.last && asset.id !== baseAsset.id) change24 = 0;
+  let change24 = calcPercentChange(history24, multiplier);
+  if (history24.fist === history24.last && asset.id !== baseAsset.id) change24 = 0;
 
-  let change7 = calcPercentChange(prices7, multiplier);
-  if (prices7.fist === prices7.last && asset.id !== baseAsset.id) change7 = 0;
+  let change7 = calcPercentChange(history7, multiplier);
+  if (history7.fist === history7.last && asset.id !== baseAsset.id) change7 = 0;
 
   return {
     name: asset.symbol,
@@ -257,6 +260,6 @@ export const calcPortfolioItem = ({
     fiatValue,
     change24,
     change7,
-    price: prices24.last
+    price
   };
 };

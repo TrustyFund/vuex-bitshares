@@ -30,9 +30,29 @@ const actions = {
 };
 
 const getters = {
-  getMarketHistory: state => {
+  getByDay: state => {
     return (days) => {
-      return state.days[days];
+      return state.days[days] || {};
+    };
+  },
+  getAssetHistoryByDay: state => {
+    return (id, day) => {
+      if (!state.days[day]) return { first: 0, last: 0 };
+      return state.days[day][id] || { first: 0, last: 0 };
+    };
+  },
+  getHistoryAssetMultiplier: state => {
+    return (days, assetId) => {
+      if (!state.days[days][assetId]) {
+        return {
+          first: 0,
+          last: 0
+        };
+      }
+      return {
+        first: 1 / state.days[days][assetId].first,
+        last: 1 / state.days[days][assetId].last
+      };
     };
   }
 };
@@ -52,9 +72,6 @@ const mutations = {
   [types.FETCH_PRICES_HISTORY_COMPLETE](state, { prices, days }) {
     state.fetching = false;
     Vue.set(state.days, days, prices);
-    // Object.keys(prices).forEach(assetId => {
-    // Vue.set(state.days[days], assetId, prices[assetId]);
-    // });
   },
   [types.FETCH_PRICES_HISTORY_ERROR](state) {
     state.fetching = false;
