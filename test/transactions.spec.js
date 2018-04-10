@@ -32,15 +32,15 @@ describe('Transactions module: mutations', () => {
 
   test('TRANSFER_ASSET_REQUEST', () => {
     transactions.mutations.TRANSFER_ASSET_REQUEST(state);
-    expect(state.pending).toBeTruthy();
+    expect(state.transactionsProcessing).toBeTruthy();
   });
   test('TRANSFER_ASSET_ERROR', () => {
     transactions.mutations.TRANSFER_ASSET_ERROR(state);
-    expect(state.pending).toBeFalsy();
+    expect(state.transactionsProcessing).toBeFalsy();
   });
   test('TRANSFER_ASSET_COMPLETE', () => {
     transactions.mutations.TRANSFER_ASSET_COMPLETE(state);
-    expect(state.pending).toBeFalsy();
+    expect(state.transactionsProcessing).toBeFalsy();
   });
 });
 
