@@ -19,6 +19,7 @@ const password = 'qwer1234';
 const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
   ' wasting isopod raper barbas maco kirn tegua mitome';
 const ownerPubkey = 'BTS5AmuQyyhyzNyR5N3L6MoJUKiqZFgw7xTRnQr5XP5sLKbptCABX';
+const email = 'test@gmail.com';
 
 const localVue = createLocalVue();
 const brainkeyBackupDate = '2018-03-13T16:20:00.396Z';
@@ -158,9 +159,10 @@ describe('Account module: actions', () => {
     const result = await store.dispatch('account/signup', {
       name,
       password,
-      dictionary: dictionary.en
+      dictionary: dictionary.en,
+      email
     });
-
+    console.log('result in tests', result);
     expect(result.success).toBeTruthy();
     expect(store.getters['account/getBrainkey']).toBe(brainkey);
     expect(store.getters['account/getAccountUserId']).toBe('1.2.512210');
@@ -179,7 +181,8 @@ describe('Account module: actions', () => {
     const result = await store.dispatch('account/signup', {
       name: badName,
       password,
-      dictionary: dictionary.en
+      dictionary: dictionary.en,
+      email
     });
 
     expect(result.success).toBeFalsy();
