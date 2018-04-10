@@ -2,7 +2,7 @@ import { ChainTypes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
 // eslint-disable-next-line
-import { calcPortfolioDistributionChange } from 'lib/src/utils';
+import { calcPortfolioDistributionChange } from '../utils';
 
 const btsMarket = API.Market['1.3.0'];
 
