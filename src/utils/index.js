@@ -20,8 +20,6 @@ export const getPrices = (history, id, days) => {
   const startElem = history[0];
   const endElem = history[history.length - 1];
   // || 1 when node sends bad data ( 0 )
-  console.log(days);
-  if (id === '1.3.2418') console.log(days + ' : ', id, startElem, endElem);
   const startPrice = (startElem.open_base || 1) / (startElem.open_quote || 1);
   const endPrice = (endElem.close_base || 1) / (endElem.close_quote || 1);
   if (!startElem.open_base || !startElem.close_base ||
