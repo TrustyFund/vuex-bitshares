@@ -6,6 +6,7 @@ import transactions from './modules/transactions';
 import operations from './modules/operations';
 import market from './modules/market';
 import openledger from './modules/openledger';
+import market2 from './modules/market2';
 
 export default function install(store) {
   store.registerModule('connection', connection);
@@ -16,4 +17,5 @@ export default function install(store) {
   store.registerModule('operations', operations);
   store.registerModule('market', market);
   store.registerModule('openledger', openledger);
+  store.registerModule('market2', market2);
 }

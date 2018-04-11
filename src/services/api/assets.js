@@ -17,11 +17,11 @@ const fetch = async (assets) => {
 
 /**
  * Returns prices bistory between base and quote assets from the last specified number of days
- * @param {Object} base - base asset object
- * @param {Object} quote - quote asset object
+ * @param {String} base - base id
+ * @param {String} quote - quote id
  * @param {number} days - number of days
  */
-const fetchPriceHistory = async (base, quote, days) => {
+const fetchPriceHistory = async (baseId, quoteId, days) => {
   try {
     const bucketSize = 3600;
     const endDate = new Date();
@@ -30,7 +30,7 @@ const fetchPriceHistory = async (base, quote, days) => {
     const startDateISO = startDate.toISOString().slice(0, -5);
     const history = await Apis.instance().history_api().exec(
       'get_market_history',
-      [base.id, quote.id, bucketSize, startDateISO, endDateISO]
+      [baseId, quoteId, bucketSize, startDateISO, endDateISO]
     );
     // const prices = utils.formatPrices(utils.getPrices(history), base, quote);
     const prices = utils.getPrices(history);

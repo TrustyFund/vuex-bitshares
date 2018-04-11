@@ -83,6 +83,13 @@ class Market {
     return false;
   }
 
+  getOrderBook(assetId) {
+    if (this.isSubscribed(assetId)) {
+      return this.markets[assetId].orders;
+    }
+    return false;
+  }
+
   onMarketUpdate(type, object) {
     switch (type) {
       case 'newOrder': {
