@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 // Persistent Storage for data cache management
 const PersistentStorage = {
   set(key, data) {
-    Cookies.set(key, data, 7);
+    Cookies.set(key, data, { expires: 7 });
   },
   get(key) {
     return Cookies.get(key);
@@ -12,10 +12,10 @@ const PersistentStorage = {
     return Cookies.remove(key);
   },
   saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey }) => {
-    Cookies.set('BITSHARES_USER_ID', id, 7);
-    Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, 7);
-    Cookies.set('BITSHARES_ENCRYPTION_KEY', encryptionKey, 7);
-    Cookies.set('BITSHARES_PASSWORD_PUBKEY', passwordPubkey, 7);
+    Cookies.set('BITSHARES_USER_ID', id, { expires: 365 });
+    Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, { expires: 365 });
+    Cookies.set('BITSHARES_ENCRYPTION_KEY', encryptionKey, { expires: 365 });
+    Cookies.set('BITSHARES_PASSWORD_PUBKEY', passwordPubkey, { expires: 365 });
   },
   getSavedUserData: () => {
     const userId = Cookies.get('BITSHARES_USER_ID');
@@ -56,7 +56,7 @@ const PersistentStorage = {
   },
   setOpenledgerAddresses: (data) => {
     console.log('SET COOKIES', data);
-    Cookies.set('BITSHARES_OPENLEDGER_ADDRESSES', data);
+    Cookies.set('BITSHARES_OPENLEDGER_ADDRESSES', data, { expires: 60 });
   },
   saveBackupDate: ({ date, userId }) => {
     let backupDateArray = Cookies.get('BACKUP_DATE');
