@@ -64,6 +64,9 @@ export const formatPrices = (prices, base, quote) => {
  * @param {number} object.multiplier.last - multiplier for last history price (current)
  */
 export const calcPercentChange = (prices, multiplier) => {
+  // temporary fix, remove after new portfolio with separate market and history modules implemented
+  if (prices.first === 0) return 0;
+
   return ((((prices.last * multiplier.last) /
     (prices.first * multiplier.first)) * 100) - 100);
 };
