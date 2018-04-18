@@ -74,7 +74,7 @@ const PersistentStorage = {
         backupDateArray = [{ userId, date }];
       }
     }
-    Cookies.set('BACKUP_DATE', backupDateArray);
+    Cookies.set('BACKUP_DATE', backupDateArray, { expires: 365 });
   },
 
 };
