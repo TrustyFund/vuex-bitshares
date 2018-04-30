@@ -53,6 +53,7 @@ const getters = {
   getPrices: state => state.prices,
   getPriceById: state => {
     return (assetId) => {
+      if (assetId === state.baseId) return 1;
       return state.prices[assetId] || 0;
     };
   },

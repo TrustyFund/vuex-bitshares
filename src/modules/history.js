@@ -43,7 +43,7 @@ const getters = {
   },
   getHistoryAssetMultiplier: state => {
     return (days, assetId) => {
-      if (!state.days[days][assetId]) {
+      if (!state.days[days] || !state.days[days][assetId]) {
         return {
           first: 0,
           last: 0

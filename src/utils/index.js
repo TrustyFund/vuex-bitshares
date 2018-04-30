@@ -15,7 +15,7 @@ export const arrayToObject = (array) => {
  * Returns array containing first and last history prices of asset.
  * @param {Array} history - array with asset's history data
  */
-export const getPrices = (history, id) => {
+export const getPrices = (history) => {
   if (!history.length) return { first: 0, last: 0 };
   const startElem = history[0];
   const endElem = history[history.length - 1];

@@ -51,11 +51,7 @@ export const createOrdersFromDistribution = async (store) => {
   const baseBalances = {};
 
   assetsIds.forEach(id => {
-    if (id === '1.3.0') {
-      baseBalances[id] = combinedBalances[id];
-    } else {
-      baseBalances[id] = combinedBalances[id] * getMarketPriceById(id);
-    }
+    baseBalances[id] = combinedBalances[id] * getMarketPriceById(id);
   });
 
 
