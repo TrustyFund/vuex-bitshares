@@ -1,8 +1,6 @@
 import { ChainTypes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
-// eslint-disable-next-line
-import { calcPortfolioDistributionChange } from 'lib/src/utils';
 
 const btsMarket = API.Market['1.3.0'];
 
@@ -176,4 +174,8 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
 
 export const setPendingTransfer = ({ commit }, { transaction }) => {
   commit(types.SET_PENDING_TRANSFER, { transaction });
+};
+
+export const clearPendingTransfer = ({ commit }) => {
+  commit(types.CLEAR_PENDING_TRANSFER);
 };

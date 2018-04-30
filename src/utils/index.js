@@ -55,6 +55,7 @@ export const formatPrices = (prices, base, quote) => {
   return prices;
 };
 
+
 export const encryptMemo = (memo, fromKey, toPubkey) => {
   const nonce = TransactionHelper.unique_nonce_uint64();
   const activePubkey = fromKey.toPublicKey().toPublicKeyString();
