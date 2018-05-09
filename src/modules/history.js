@@ -35,6 +35,7 @@ const getters = {
       return state.days[days] || {};
     };
   },
+  isFetching: state => state.fetching,
   getAssetHistoryByDay: state => {
     return (id, day) => {
       if (!state.days[day]) return { first: 0, last: 0 };
