@@ -8,6 +8,7 @@ const initialState = {
   encryptedBrainkey: null,
   brainkeyBackupDate: null,
   encryptionKey: null,
+  keys: null,
   created: null,
   aesPrivate: null,
   userId: null,
@@ -31,6 +32,11 @@ const mutations = {
     state.brainkeyBackupDate = null;
     state.created = new Date();
     state.userId = userId;
+  },
+  [types.ACCOUNT_PASSWORD_LOGIN_COMPLETE]: (state, { keys, userId }) => {
+    state.pending = false;
+    state.userId = userId;
+    state.keys = keys;
   },
   [types.ACCOUNT_SIGNUP_ERROR]: (state, { error }) => {
     state.pending = false;

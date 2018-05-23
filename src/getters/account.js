@@ -9,6 +9,9 @@ export const getBrainkey = state => {
 };
 
 export const getKeys = state => {
+  if (state.keys) {
+    return state.keys;
+  }
   const brainkey = getBrainkey(state);
   if (!brainkey) return null;
   return {
@@ -26,7 +29,7 @@ export const isValidPassword = state => {
 };
 
 export const isLocked = state => {
-  return !state.aesPrivate;
+  return !state.aesPrivate && !state.keys;
 };
 
 export const getAccountError = state => {

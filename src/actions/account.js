@@ -62,7 +62,40 @@ export const lockWallet = ({ commit }) => {
 
 export const suggestPassword = API.Account.suggestPassword;
 
-export const signupWithPassword = async (state, { name, password }) => {
+export const loginWithPassword = async ({ commit }, { name, password }) => {
+  let {privKey: activeKey} = API.Account.generateKeyFromPassword(
+      name,
+      "owner",
+      password
+  );
+  let {privKey: ownerKey} = API.Account.generateKeyFromPassword(
+      name,
+      "active",
+      password
+  );
+
+  const ownerPubkey = ownerKey.toPublicKey().toString();
+  const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
+  const id = userId && userId[0];
+  if (id) {
+    const keys = {
+      active: activeKey,
+      owner: ownerKey
+    }
+    commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId: id });
+    return {
+      success: true
+    };
+  }
+  commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+  return {
+    success: false,
+    error: 'Login error'
+  };
+
+}
+
+export const signupWithPassword = async ({ commit }, { name, password }) => {
   let {privKey: activeKey} = API.Account.generateKeyFromPassword(
       name,
       "owner",
@@ -80,7 +113,21 @@ export const signupWithPassword = async (state, { name, password }) => {
     ownerKey,
   });
 
+  if (result.success) {
+    const userId = result.id;
+    const keys = {
+      active: activeKey,
+      owner: ownerKey
+    }
+    commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId });
+    return { success: true };
+  }
 
+  commit(types.ACCOUNT_SIGNUP_ERROR, { error: result.error });
+  return {
+    success: false,
+    error: result.error
+  };
 }
 
 /**

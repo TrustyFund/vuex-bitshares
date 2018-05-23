@@ -92,6 +92,7 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 export default {
   suggestBrainkey,
   suggestPassword,
+  generateKeyFromPassword,
   getUser,
   getAccountIdByOwnerPubkey,
   createAccount
