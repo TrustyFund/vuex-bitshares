@@ -60,6 +60,29 @@ export const lockWallet = ({ commit }) => {
   commit(types.ACCOUNT_LOCK_WALLET);
 };
 
+export const suggestPassword = API.Account.suggestPassword;
+
+export const signupWithPassword = async (state, { name, password }) => {
+  let {privKey: activeKey} = API.Account.generateKeyFromPassword(
+      name,
+      "owner",
+      password
+  );
+  let {privKey: ownerKey} = API.Account.generateKeyFromPassword(
+      name,
+      "active",
+      password
+  );
+
+  const result = await API.Account.createAccount({
+    name,
+    activeKey,
+    ownerKey,
+  });
+
+
+}
+
 /**
  * Creates account & wallet for user
  * @param {string} name - user name

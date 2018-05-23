@@ -1,10 +1,23 @@
-import { key } from 'bitsharesjs';
+import { key, PrivateKey } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
 export const suggestBrainkey = (dictionary) => {
   return key.suggest_brain_key(dictionary);
 };
+
+export const suggestPassword = () => {
+  console.log('inside')
+  return "P" + key.get_random_key().toWif().substr(0, 45);
+};
+
+export const generateKeyFromPassword = (accountName, role, password) => {
+    let seed = accountName + role + password;
+    let privKey = PrivateKey.fromSeed(seed);
+    let pubKey = privKey.toPublicKey().toString();
+
+    return {privKey, pubKey};
+}
 
 export const getUser = async (nameOrId) => {
   try {
@@ -78,6 +91,7 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 
 export default {
   suggestBrainkey,
+  suggestPassword,
   getUser,
   getAccountIdByOwnerPubkey,
   createAccount
