@@ -92,7 +92,11 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
     success: false,
     error: 'Login error'
   };
+}
 
+export const restoreBackup = async ({ commit }, { backup, password }) => {
+  const result = await API.Backup.restoreBackup({ backup, password })
+  console.log(result);
 }
 
 export const signupWithPassword = async ({ commit }, { name, password }) => {

@@ -7,6 +7,7 @@ import Market from './api/market';
 import Operations from './api/operations';
 import Openledger from './api/openledger';
 import Parameters from './api/parameters';
+import Backup from './api/backup';
 
 const API = {
   Connection,
@@ -17,7 +18,8 @@ const API = {
   Market,
   Operations,
   Openledger,
-  Parameters
+  Parameters,
+  Backup
 };
 
 export default API;
