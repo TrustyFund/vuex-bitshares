@@ -1,11 +1,10 @@
 import { key, PrivateKey, PublicKey, Aes } from 'bitsharesjs';
-import { decompress } from '../../../node_modules/lzma/src/lzma.js';
+import lib from '../../utils/lzma/lzma_worker-min.js';
+
 
 const restoreBackup = async ({ password, backup }) => {
-  console.log('restoreBackup')
   const privateKey = PrivateKey.fromSeed(password || "");
-  const walletName = 'test';
-  const result = await restore(privateKey.toWif(), backup, walletName);
+  const result = await restore(privateKey.toWif(), backup, 'test');
   return result;
 }
 
@@ -13,7 +12,8 @@ const restore = (backup_wif, backup, wallet_name) => {
   return new Promise(resolve => {
     resolve(
       decryptWalletBackup(backup_wif, backup).then(wallet_object => {
-          return WalletActions.restore(wallet_name, wallet_object);
+        console.log('DONE', wallet_object);
+        return wallet_object;
       })
     );
   });
@@ -33,6 +33,9 @@ const decryptWalletBackup = (backup_wif, backup_buffer) => {
             throw new Error("Invalid backup file");
         }
 
+
+        console.log('restoreBackup', backup_buffer, backup_wif)
+
         backup_buffer = backup_buffer.slice(33);
         try {
             backup_buffer = Aes.decrypt_with_checksum(
@@ -47,8 +50,11 @@ const decryptWalletBackup = (backup_wif, backup_buffer) => {
             return;
         }
 
+        console.log('Decrypted', backup_buffer);
+
         try {
-            decompress(backup_buffer, wallet_string => {
+            lib.LZMA_WORKER.decompress(backup_buffer, wallet_string => {
+                console.log('Done', wallet_string)
                 try {
                     let wallet_object = JSON.parse(wallet_string);
                     resolve(wallet_object);
