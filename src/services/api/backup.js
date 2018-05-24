@@ -54,7 +54,6 @@ const decryptWalletBackup = (backup_wif, backup_buffer) => {
 
         try {
             lib.LZMA_WORKER.decompress(backup_buffer, wallet_string => {
-                console.log('Done', wallet_string)
                 try {
                     let wallet_object = JSON.parse(wallet_string);
                     resolve(wallet_object);

@@ -1,6 +1,5 @@
 import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
-// import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
 import PersistentStorage from '../services/persistent-storage';
 
@@ -95,8 +94,34 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
 }
 
 export const restoreBackup = async ({ commit }, { backup, password }) => {
-  const result = await API.Backup.restoreBackup({ backup, password })
-  console.log(result);
+  const { 
+    wallet: [wallet],
+    linked_accounts: [ { name }]
+  } = await API.Backup.restoreBackup({ backup, password })
+  console.log('wal', wallet)
+  const passwordAes = Aes.fromSeed(password);
+  const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(wallet.encryption_key);
+  const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+
+  const brainkey = aesPrivate.decryptHexToText(wallet.encrypted_brainkey);
+
+  const newWallet = createWallet({ password, brainkey });
+
+  const user = await API.Account.getUser(name)
+  console.log('User', user)
+  if (user.success) {
+    PersistentStorage.saveUserData({
+      id: user.data.account.id,
+      encryptedBrainkey: newWallet.encryptedBrainkey,
+      encryptionKey: newWallet.encryptionKey,
+      passwordPubkey: newWallet.passwordPubkey
+    });
+    commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet: newWallet, userId: user.data.account.id });
+  } else {
+    commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+  }
+
+  console.log('Wallet for user', user);
 }
 
 export const signupWithPassword = async ({ commit }, { name, password }) => {
