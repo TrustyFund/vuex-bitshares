@@ -81,6 +81,9 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
       active: activeKey,
       owner: ownerKey
     }
+
+    PersistentStorage.saveUserData({ id });
+
     commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId: id });
     return {
       success: true
@@ -124,6 +127,7 @@ export const restoreBackup = async ({ commit }, { backup, password }) => {
       encryptionKey: newWallet.encryptionKey,
       passwordPubkey: newWallet.passwordPubkey
     });
+
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet: newWallet, userId: user.data.account.id });
     return { success: true };
   } else {
@@ -156,6 +160,12 @@ export const signupWithPassword = async ({ commit }, { name, password }) => {
       active: activeKey,
       owner: ownerKey
     }
+
+
+    PersistentStorage.saveUserData({
+      id: userId
+    });
+
     commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId });
     return { success: true };
   }
