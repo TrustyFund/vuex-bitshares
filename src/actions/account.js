@@ -94,11 +94,20 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
 }
 
 export const restoreBackup = async ({ commit }, { backup, password }) => {
+  const restored = await API.Backup.restoreBackup({ backup, password });
+  console.log('restored', restored);
+  if (!restored.success) {
+    commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+    return { success: false, error: restored.error};
+  }
+
+  console.log('Restored action', restored);
+
   const { 
     wallet: [wallet],
     linked_accounts: [ { name }]
-  } = await API.Backup.restoreBackup({ backup, password })
-  console.log('wal', wallet)
+  } = restored.wallet;
+
   const passwordAes = Aes.fromSeed(password);
   const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(wallet.encryption_key);
   const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
@@ -108,7 +117,6 @@ export const restoreBackup = async ({ commit }, { backup, password }) => {
   const newWallet = createWallet({ password, brainkey });
 
   const user = await API.Account.getUser(name)
-  console.log('User', user)
   if (user.success) {
     PersistentStorage.saveUserData({
       id: user.data.account.id,
@@ -117,11 +125,11 @@ export const restoreBackup = async ({ commit }, { backup, password }) => {
       passwordPubkey: newWallet.passwordPubkey
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet: newWallet, userId: user.data.account.id });
+    return { success: true };
   } else {
     commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+    return { success: false, error: 'No such user' };
   }
-
-  console.log('Wallet for user', user);
 }
 
 export const signupWithPassword = async ({ commit }, { name, password }) => {

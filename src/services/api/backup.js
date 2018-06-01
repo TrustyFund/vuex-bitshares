@@ -1,4 +1,5 @@
 import { key, PrivateKey, PublicKey, Aes } from 'bitsharesjs';
+import { getAccountIdByOwnerPubkey } from './account';
 import lib from '../../utils/lzma/lzma_worker-min.js';
 
 
@@ -8,15 +9,19 @@ const restoreBackup = async ({ password, backup }) => {
   return result;
 }
 
-const restore = (backup_wif, backup, wallet_name) => {
-  return new Promise(resolve => {
-    resolve(
-      decryptWalletBackup(backup_wif, backup).then(wallet_object => {
-        console.log('DONE', wallet_object);
-        return wallet_object;
-      })
-    );
-  });
+const restore = async (backup_wif, backup, wallet_name) => {
+    try {
+        const wallet = await decryptWalletBackup(backup_wif, backup);
+        console.log('Wallet restore', wallet);
+        if (!wallet.linked_accounts.length) {
+            const pubkey = wallet.private_keys[0].pubkey;
+            const id = await getAccountIdByOwnerPubkey(pubkey);
+            wallet.linked_accounts[0] = { name: id[0] };
+        }
+        return { success: true, wallet };
+    } catch (e) {
+        return { success: false, error: e }
+    }
 }
 
 const decryptWalletBackup = (backup_wif, backup_buffer) => {
@@ -45,7 +50,6 @@ const decryptWalletBackup = (backup_wif, backup_buffer) => {
                 backup_buffer
             );
         } catch (error) {
-            console.error("Error decrypting wallet", error, error.stack);
             reject("invalid_decryption_key");
             return;
         }
@@ -56,6 +60,7 @@ const decryptWalletBackup = (backup_wif, backup_buffer) => {
             lib.LZMA_WORKER.decompress(backup_buffer, wallet_string => {
                 try {
                     let wallet_object = JSON.parse(wallet_string);
+                    console.log('Wallet obj', wallet_object)
                     resolve(wallet_object);
                 } catch (error) {
                     if (!wallet_string) wallet_string = "";
