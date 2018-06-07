@@ -32,8 +32,9 @@ const fetchPriceHistory = async (base, quote, days) => {
       'get_market_history',
       [base.id, quote.id, bucketSize, startDateISO, endDateISO]
     );
+    if (quote.id === '1.3.2418') console.log(history);
     // const prices = utils.formatPrices(utils.getPrices(history), base, quote);
-    const prices = utils.getPrices(history);
+    const prices = utils.getPrices(history, quote.id, days);
     return prices;
   } catch (error) {
     console.log(error);
