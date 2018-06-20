@@ -98,7 +98,7 @@ describe('Assets module: actions', () => {
     // todo: remove
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
-    store.dispatch('assets/fetchAssets', { assets: ['1.3.0', '1.3.113'] }).then(() => {
+    store.dispatch('assets/fetchAssets', { assets: ['1.3.0', '1.3.121'] }).then(() => {
       const recievedAssets = store.state.assets.assets;
       expect(recievedAssets).toBeDefined();
       expect(Object.keys(recievedAssets).length).toBe(2);
@@ -132,24 +132,24 @@ describe('Assets module: actions', () => {
         },
         dynamic_asset_data_id: '2.3.0'
       });
-      expect(recievedAssets['1.3.113']).toEqual({
-        id: '1.3.113',
-        symbol: 'CNY',
+      expect(recievedAssets['1.3.121']).toEqual({
+        id: '1.3.121',
+        symbol: 'USD',
         precision: 4,
         issuer: '1.2.0',
         options: {
           max_supply: '1000000000000000',
-          market_fee_percent: 0,
+          market_fee_percent: 10,
           max_market_fee: '1000000000000000',
           issuer_permissions: 511,
-          flags: 128,
+          flags: 129,
           core_exchange_rate: {
             base: {
-              amount: 835,
-              asset_id: '1.3.113'
+              amount: 1069,
+              asset_id: '1.3.121'
             },
             quote: {
-              amount: 4543,
+              amount: 61434,
               asset_id: '1.3.0'
             }
           },
@@ -157,11 +157,14 @@ describe('Assets module: actions', () => {
           blacklist_authorities: [],
           whitelist_markets: [],
           blacklist_markets: [],
-          description: '1 Chinese yuan',
+          description: {
+            main: '1 United States dollar',
+            market: ''
+          },
           extensions: []
         },
-        dynamic_asset_data_id: '2.3.113',
-        bitasset_data_id: '2.4.13'
+        dynamic_asset_data_id: '2.3.121',
+        bitasset_data_id: '2.4.21'
       });
       done();
     });
@@ -182,8 +185,8 @@ describe('Assets module: actions', () => {
     store.state.assets.assets = {};
     expect(store.state.assets.assets).toEqual({});
     store.dispatch('assets/fetchDefaultAssets').then(() => {
-      const testDefaultAssetsIds = ['1.3.0', '1.3.113', '1.3.1999', '1.3.121', '1.3.2001',
-        '1.3.859', '1.3.1893', '1.3.861', '1.3.2220', '1.3.2379'];
+      const testDefaultAssetsIds = ['1.3.121', '1.3.861', '1.3.850', '1.3.858',
+        '1.3.859', '1.3.1999', '1.3.973', '1.3.0', '1.3.2418'];
       const { defaultAssetsIds } = store.state.assets;
       expect(defaultAssetsIds.length).toBe(9);
 

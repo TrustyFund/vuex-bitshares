@@ -1,8 +1,6 @@
 import { ChainTypes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
-// eslint-disable-next-line
-import { calcPortfolioDistributionChange } from 'lib/src/utils';
 
 const btsMarket = API.Market['1.3.0'];
 
@@ -35,8 +33,12 @@ export const createOrdersFromDistribution = async (store) => {
   if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
+<<<<<<< HEAD
   const history = rootGetters['market2/getMarketHistory'];
   const tradingBaseId = rootGetters['market2/getSystemBaseId'];
+=======
+  const getMarketPriceById = rootGetters['market/getPriceById'];
+>>>>>>> master
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 
@@ -54,11 +56,15 @@ export const createOrdersFromDistribution = async (store) => {
   const baseBalances = {};
 
   assetsIds.forEach(id => {
+<<<<<<< HEAD
     if (id === tradingBaseId) {
       baseBalances[id] = combinedBalances[id];
     } else {
       baseBalances[id] = combinedBalances[id] * history(tradingBaseId)[id].last;
     }
+=======
+    baseBalances[id] = combinedBalances[id] * getMarketPriceById(id);
+>>>>>>> master
   });
 
 
@@ -177,4 +183,8 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
 
 export const setPendingTransfer = ({ commit }, { transaction }) => {
   commit(types.SET_PENDING_TRANSFER, { transaction });
+};
+
+export const clearPendingTransfer = ({ commit }) => {
+  commit(types.CLEAR_PENDING_TRANSFER);
 };

@@ -221,10 +221,10 @@ class Market {
     for (let i = 0; i < orders.length; i += 1) {
       const { for_sale: saleAmount, sell_price: price } = orders[i];
       const orderPrice = price.base.amount / price.quote.amount;
-      const weCanPayHere = saleAmount / orderPrice;
+      const weCanPayHere = Math.floor(saleAmount / orderPrice);
 
       if (totalPay > weCanPayHere) {
-        totalReceive += saleAmount;
+        totalReceive += parseInt(saleAmount, 10);
         totalPay -= weCanPayHere;
       } else {
         totalReceive += totalPay * orderPrice;

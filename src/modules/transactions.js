@@ -82,6 +82,9 @@ const mutations = {
   [types.SET_PENDING_TRANSFER](state, { transaction }) {
     state.pendingTransfer = transaction;
   },
+  [types.CLEAR_PENDING_TRANSFER](state) {
+    state.pendingTransfer = false;
+  },
   [types.FETCH_FEES](state, { fees }) {
     state.fees = fees;
   },

@@ -30,7 +30,7 @@ export const getPrices = (history) => {
 };
 
 /**
- * Returns formatted prices for array calculated taking precision щf assets into account
+ * Returns formatted prices for array calculated taking precision of assets into account
  * @param {Object} prices - object with asset's history prices
  * @param {number} prices.first - first price of asset history
  * @param {number} prices.last - last price of asset history (current)
@@ -39,6 +39,7 @@ export const getPrices = (history) => {
  */
 export const formatPrices = (prices, base, quote) => {
   const precisionDiff = base.precision - quote.precision;
+  console.log(quote.id + ' : ' + prices);
 
   if (precisionDiff > 0) {
     prices.first /= (precisionDiff * 10);
@@ -54,49 +55,6 @@ export const formatPrices = (prices, base, quote) => {
   return prices;
 };
 
-/**
- * Returns amount of change by percent, calculated by prices history and exchange multiplier
- * @param {Object} object.prices - object with asset's history prices
- * @param {number} object.prices.first - first price of asset history
- * @param {number} object.prices.last - last price of asset history (current)
- * @param {Object} object.multiplier - object with base -> fiat exchange rates
- * @param {number} object.multiplier.first - multiplier for first history price
- * @param {number} object.multiplier.last - multiplier for last history price (current)
- */
-export const calcPercentChange = (prices, multiplier) => {
-  return ((((prices.last * multiplier.last) /
-    (prices.first * multiplier.first)) * 100) - 100);
-};
-
-
-/**
- * Returns object with balance in base currency, balance in fiat currency
-  and change by percent
- * @param {Object} object - object containing data for calculation
- * @param {number} object.balance - balance of asset
- * @param {Object} object.assetPrices - object with asset's history prices
- * @param {number} object.assetPrices.first - first price of asset history
- * @param {number} object.assetPrices.last - last price of asset history (current)
- * @param {Object} object.fiatMultiplier - object with base -> fiat exchange rates
- * @param {number} object.fiatMultiplier.first - multiplier for first history price
- * @param {number} object.fiatMultiplier.last - multiplier for last history price (current)
- * @param {Boolean} object.isBase - the asset for calculation is base asset
- * @param {Boolean} object.isFiat - the asset for calculation is fiat asset
- */
-export const calcPortfolioData = ({
-  balance, assetPrices, fiatMultiplier,
-  isBase, isFiat
-}) => {
-  let multiplier = fiatMultiplier;
-  let prices = assetPrices;
-  if (isFiat) multiplier = { first: 1, last: 1 };
-  if (isBase) prices = { first: 1, last: 1 };
-  const balanceBase = balance * prices.last;
-  const balanceFiat = balanceBase * multiplier.last;
-  let change = calcPercentChange(prices, multiplier);
-  if (prices.last === prices.first && !isBase) change = 0;
-  return { balanceBase, balanceFiat, change };
-};
 
 export const encryptMemo = (memo, fromKey, toPubkey) => {
   const nonce = TransactionHelper.unique_nonce_uint64();
@@ -254,33 +212,4 @@ export const getValuesToUpdate = (balances, baseBalances, update) => {
     }
   });
   return result;
-};
-
-export const calcPortfolioItem = ({
-  asset,
-  prices,
-  baseAsset,
-  fiatMultiplier,
-  balance }) => {
-  const multiplier = fiatMultiplier;
-
-  const baseValue = parseInt((balance * prices.last).toFixed(0), 10);
-
-  const baseValuePrecised = baseValue / (10 ** baseAsset.precision);
-
-  const fiatValue = parseInt((baseValue * fiatMultiplier.last).toFixed(0), 10);
-
-  let change = calcPercentChange(prices, multiplier);
-
-  if (prices.fist === prices.last && asset.id !== baseAsset.id) change = 0;
-
-  return {
-    name: asset.symbol,
-    balance,
-    baseValue,
-    baseValuePrecised,
-    basePrecision: baseAsset.precision,
-    fiatValue,
-    change
-  };
 };

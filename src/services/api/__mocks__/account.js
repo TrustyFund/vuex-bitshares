@@ -34,7 +34,8 @@ export const createAccount = ({ name }) => {
     process.nextTick(() => {
       if (name === 'hobb1t') {
         resolve({
-          success: true
+          success: true,
+          id: '1.2.512210'
         });
       } else {
         resolve({
