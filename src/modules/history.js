@@ -3,14 +3,10 @@ import * as types from '../mutations';
 import API from '../services/api';
 
 const actions = {
-  fetch: (store, { assetsIds, baseId, days }) => {
-    const { commit, rootGetters } = store;
-    const assets = rootGetters['assets/getAssets'];
-    const baseAsset = assets[baseId];
-
+  fetch: ({ commit }, { assetsIds, baseId, days }) => {
     commit(types.FETCH_PRICES_HISTORY_REQUEST, { baseId });
     Promise.all(assetsIds.map(async (assetId) => {
-      const prices = await API.Assets.fetchPriceHistory(baseAsset, assets[assetId], days);
+      const prices = await API.Assets.fetchPriceHistory(baseId, assetId, days);
       if (!prices) throw new Error('error market history');
       return {
         assetId,

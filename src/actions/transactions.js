@@ -33,12 +33,8 @@ export const createOrdersFromDistribution = async (store) => {
   if (!distribution) return;
   const userId = rootGetters['account/getAccountUserId'];
   const balances = rootGetters['account/getCurrentUserBalances'];
-<<<<<<< HEAD
-  const history = rootGetters['market2/getMarketHistory'];
-  const tradingBaseId = rootGetters['market2/getSystemBaseId'];
-=======
+
   const getMarketPriceById = rootGetters['market/getPriceById'];
->>>>>>> master
 
   const defaultAssetsIds = rootGetters['assets/getDefaultAssetsIds'];
 
@@ -56,15 +52,7 @@ export const createOrdersFromDistribution = async (store) => {
   const baseBalances = {};
 
   assetsIds.forEach(id => {
-<<<<<<< HEAD
-    if (id === tradingBaseId) {
-      baseBalances[id] = combinedBalances[id];
-    } else {
-      baseBalances[id] = combinedBalances[id] * history(tradingBaseId)[id].last;
-    }
-=======
     baseBalances[id] = combinedBalances[id] * getMarketPriceById(id);
->>>>>>> master
   });
 
 
