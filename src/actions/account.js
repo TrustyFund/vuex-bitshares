@@ -75,6 +75,7 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
 
   const ownerPubkey = ownerKey.toPublicKey().toString();
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
+  
   const id = userId && userId[0];
   if (id) {
     const keys = {
@@ -92,7 +93,7 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
   commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
   return {
     success: false,
-    error: 'Login error'
+    error: 'Invalid username or password'
   };
 }
 
