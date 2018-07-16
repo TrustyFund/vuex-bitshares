@@ -16,7 +16,8 @@ const initialState = {
   pending: false,
   userData: null,
   userFetching: false,
-  userError: false
+  userError: false,
+  userType: 'wallet',
 };
 
 const mutations = {
@@ -37,6 +38,7 @@ const mutations = {
     state.pending = false;
     state.userId = userId;
     state.keys = keys;
+    state.userType = 'password';
   },
   [types.ACCOUNT_SIGNUP_ERROR]: (state, { error }) => {
     state.pending = false;
@@ -52,6 +54,7 @@ const mutations = {
     state.encryptedBrainkey = wallet.encryptedBrainkey;
     state.encryptionKey = wallet.encryptionKey;
     state.aesPrivate = wallet.aesPrivate;
+    state.userType = 'wallet';
   },
   [types.ACCOUNT_LOGIN_ERROR]: (state, { error }) => {
     state.pending = false;
@@ -59,17 +62,20 @@ const mutations = {
   },
   [types.ACCOUNT_LOCK_WALLET]: (state) => {
     state.aesPrivate = null;
+    state.keys = null;
   },
   [types.ACCOUNT_UNLOCK_WALLET]: (state, aesPrivate) => {
     state.aesPrivate = aesPrivate;
   },
   [types.SET_ACCOUNT_USER_DATA]: (state, { userId, encryptedBrainkey,
-    encryptionKey, backupDate, passwordPubkey }) => {
+    encryptionKey, backupDate, passwordPubkey, userType }) => {
     state.userId = userId;
     state.encryptedBrainkey = encryptedBrainkey;
     state.encryptionKey = encryptionKey;
     state.brainkeyBackupDate = backupDate;
     state.passwordPubkey = passwordPubkey;
+    state.userType = userType;
+
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
     state.userId = null;

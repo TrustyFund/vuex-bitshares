@@ -63,3 +63,5 @@ export const getCurrentUserBalances = state => {
 export const getCurrentUserData = state => {
   return state.userData;
 };
+
+export const isPasswordLogin = state => state.userType === 'password';

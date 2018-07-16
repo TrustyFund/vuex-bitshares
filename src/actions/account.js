@@ -83,7 +83,8 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
       owner: ownerKey
     }
 
-    PersistentStorage.saveUserData({ id });
+    const userType = 'password';
+    PersistentStorage.saveUserData({ id, userType });
 
     commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId: id });
     return {
@@ -122,11 +123,13 @@ export const restoreBackup = async ({ commit }, { backup, password }) => {
 
   const user = await API.Account.getUser(name)
   if (user.success) {
+    const userType = 'wallet';
     PersistentStorage.saveUserData({
       id: user.data.account.id,
       encryptedBrainkey: newWallet.encryptedBrainkey,
       encryptionKey: newWallet.encryptionKey,
-      passwordPubkey: newWallet.passwordPubkey
+      passwordPubkey: newWallet.passwordPubkey,
+      userType
     });
 
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet: newWallet, userId: user.data.account.id });
@@ -162,9 +165,10 @@ export const signupWithPassword = async ({ commit }, { name, password }) => {
       owner: ownerKey
     }
 
-
+    const userType = 'password';
     PersistentStorage.saveUserData({
-      id: userId
+      id: userId,
+      userType
     });
 
     commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId });
@@ -199,11 +203,14 @@ export const signup = async (state, { name, password, dictionary, email }) => {
     const userId = result.id;
     const wallet = createWallet({ password, brainkey });
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
+
+    const userType = 'wallet';
     PersistentStorage.saveUserData({
       id: userId,
       encryptedBrainkey: wallet.encryptedBrainkey,
       encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      passwordPubkey: wallet.passwordPubkey,
+      userType
     });
     return { success: true };
   }
@@ -240,11 +247,13 @@ export const login = async (state, { password, brainkey }) => {
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
+    const userType = 'wallet';
     PersistentStorage.saveUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey,
       encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      passwordPubkey: wallet.passwordPubkey,
+      userType
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {
@@ -278,6 +287,7 @@ export const clearCurrentUserData = ({ commit }) => {
  */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
+  console.log('Cached', data);
   let backupDate;
   if (data) {
     try {
@@ -297,7 +307,8 @@ export const checkCachedUserData = ({ commit }) => {
       encryptedBrainkey: data.encryptedBrainkey,
       encryptionKey: data.encryptionKey,
       backupDate,
-      passwordPubkey: data.passwordPubkey
+      passwordPubkey: data.passwordPubkey,
+      userType: data.userType
     });
   }
 };
