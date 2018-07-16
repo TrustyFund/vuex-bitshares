@@ -287,7 +287,6 @@ export const clearCurrentUserData = ({ commit }) => {
  */
 export const checkCachedUserData = ({ commit }) => {
   const data = PersistentStorage.getSavedUserData();
-  console.log('Cached', data);
   let backupDate;
   if (data) {
     try {

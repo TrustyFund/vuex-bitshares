@@ -23,7 +23,6 @@ export const getComissions = async () => {
   }
 
   const { current_fees: { parameters: fees, scale } } = await getParameters();
-  console.log('Service:', fees);
   return { fees, scale };
 };
 
