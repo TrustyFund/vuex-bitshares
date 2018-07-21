@@ -21,3 +21,7 @@ export function getAssetById({ assets }) {
     precision: 1
   });
 }
+
+export function getHideList({ hiddenAssetsIds }) {
+  return hiddenAssetsIds;
+}

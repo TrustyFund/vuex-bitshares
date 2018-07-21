@@ -3,10 +3,13 @@ import Cookies from 'js-cookie';
 // Persistent Storage for data cache management
 const PersistentStorage = {
   set(key, data) {
-    Cookies.set(key, data, { expires: 7 });
+    Cookies.set(key, data, { expires: 365 });
   },
   get(key) {
     return Cookies.get(key);
+  },
+  getJSON(key) {
+    return Cookies.getJSON(key);
   },
   remove(key) {
     return Cookies.remove(key);
