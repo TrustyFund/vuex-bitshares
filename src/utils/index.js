@@ -110,6 +110,22 @@ export const getMemoSize = (memo) => {
   return byteLength;
 };
 
+export const getMemoSizeFast = (memo) => {
+  const minimalLength = 92;
+  const step = 16;
+
+
+  if (memo.length < 12) {
+    return minimalLength;
+  } else {
+    let countSteps = 0;
+    for (let i = memo.length; i >= 12; i -= step) {
+      countSteps++;
+    }
+    return minimalLength + countSteps * step;
+  }
+}
+
 
 /** Calculates distribution 0..1 of total amount of assets expressed
  * in base asset

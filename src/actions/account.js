@@ -1,6 +1,5 @@
 import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
-// import { getAccountIdByOwnerPubkey, getAccount } from '../services/wallet.js';
 import API from '../services/api';
 import PersistentStorage from '../services/persistent-storage';
 
@@ -60,6 +59,129 @@ export const lockWallet = ({ commit }) => {
   commit(types.ACCOUNT_LOCK_WALLET);
 };
 
+export const suggestPassword = API.Account.suggestPassword;
+
+export const loginWithPassword = async ({ commit }, { name, password }) => {
+  let {privKey: activeKey} = API.Account.generateKeyFromPassword(
+      name,
+      "owner",
+      password
+  );
+  let {privKey: ownerKey} = API.Account.generateKeyFromPassword(
+      name,
+      "active",
+      password
+  );
+
+  const ownerPubkey = ownerKey.toPublicKey().toString();
+  const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
+  
+  const id = userId && userId[0];
+  if (id) {
+    const keys = {
+      active: activeKey,
+      owner: ownerKey
+    }
+
+    const userType = 'password';
+    PersistentStorage.saveUserData({ id, userType });
+
+    commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId: id });
+    return {
+      success: true
+    };
+  }
+  commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+  return {
+    success: false,
+    error: 'Invalid username or password'
+  };
+}
+
+export const restoreBackup = async ({ commit }, { backup, password }) => {
+  const restored = await API.Backup.restoreBackup({ backup, password });
+  console.log('restored', restored);
+  if (!restored.success) {
+    commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+    return { success: false, error: restored.error};
+  }
+
+  console.log('Restored action', restored);
+
+  const { 
+    wallet: [wallet],
+    linked_accounts: [ { name }]
+  } = restored.wallet;
+
+  const passwordAes = Aes.fromSeed(password);
+  const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(wallet.encryption_key);
+  const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+
+  const brainkey = aesPrivate.decryptHexToText(wallet.encrypted_brainkey);
+
+  const newWallet = createWallet({ password, brainkey });
+
+  const user = await API.Account.getUser(name)
+  if (user.success) {
+    const userType = 'wallet';
+    PersistentStorage.saveUserData({
+      id: user.data.account.id,
+      encryptedBrainkey: newWallet.encryptedBrainkey,
+      encryptionKey: newWallet.encryptionKey,
+      passwordPubkey: newWallet.passwordPubkey,
+      userType
+    });
+
+    commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet: newWallet, userId: user.data.account.id });
+    return { success: true };
+  } else {
+    commit(types.ACCOUNT_LOGIN_ERROR, { error: 'Login error' });
+    return { success: false, error: 'No such user' };
+  }
+}
+
+export const signupWithPassword = async ({ commit }, { name, password }) => {
+  let {privKey: activeKey} = API.Account.generateKeyFromPassword(
+      name,
+      "owner",
+      password
+  );
+  let {privKey: ownerKey} = API.Account.generateKeyFromPassword(
+      name,
+      "active",
+      password
+  );
+
+  const result = await API.Account.createAccount({
+    name,
+    activeKey,
+    ownerKey,
+  });
+
+  if (result.success) {
+    const userId = result.id;
+    const keys = {
+      active: activeKey,
+      owner: ownerKey
+    }
+
+    const userType = 'password';
+    PersistentStorage.saveUserData({
+      id: userId,
+      userType
+    });
+
+    commit(types.ACCOUNT_PASSWORD_LOGIN_COMPLETE, { keys, userId });
+    return { success: true };
+  }
+
+  commit(types.ACCOUNT_SIGNUP_ERROR, { error: result.error });
+  return {
+    success: false,
+    error: result.error
+  };
+}
+
 /**
  * Creates account & wallet for user
  * @param {string} name - user name
@@ -81,11 +203,14 @@ export const signup = async (state, { name, password, dictionary, email }) => {
     const userId = result.id;
     const wallet = createWallet({ password, brainkey });
     commit(types.ACCOUNT_SIGNUP_COMPLETE, { wallet, userId });
+
+    const userType = 'wallet';
     PersistentStorage.saveUserData({
       id: userId,
       encryptedBrainkey: wallet.encryptedBrainkey,
       encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      passwordPubkey: wallet.passwordPubkey,
+      userType
     });
     return { success: true };
   }
@@ -122,11 +247,13 @@ export const login = async (state, { password, brainkey }) => {
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
+    const userType = 'wallet';
     PersistentStorage.saveUserData({
       id,
       encryptedBrainkey: wallet.encryptedBrainkey,
       encryptionKey: wallet.encryptionKey,
-      passwordPubkey: wallet.passwordPubkey
+      passwordPubkey: wallet.passwordPubkey,
+      userType
     });
     commit(types.ACCOUNT_LOGIN_COMPLETE, { wallet, userId: id });
     return {
@@ -179,7 +306,8 @@ export const checkCachedUserData = ({ commit }) => {
       encryptedBrainkey: data.encryptedBrainkey,
       encryptionKey: data.encryptionKey,
       backupDate,
-      passwordPubkey: data.passwordPubkey
+      passwordPubkey: data.passwordPubkey,
+      userType: data.userType
     });
   }
 };

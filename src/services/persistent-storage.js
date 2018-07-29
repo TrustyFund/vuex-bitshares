@@ -3,19 +3,23 @@ import Cookies from 'js-cookie';
 // Persistent Storage for data cache management
 const PersistentStorage = {
   set(key, data) {
-    Cookies.set(key, data, { expires: 7 });
+    Cookies.set(key, data, { expires: 365 });
   },
   get(key) {
     return Cookies.get(key);
   },
+  getJSON(key) {
+    return Cookies.getJSON(key);
+  },
   remove(key) {
     return Cookies.remove(key);
   },
-  saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey }) => {
+  saveUserData: ({ id, encryptedBrainkey, encryptionKey, passwordPubkey, userType }) => {
     Cookies.set('BITSHARES_USER_ID', id, { expires: 365 });
     Cookies.set('BITSHARES_USER_BRAINKEY', encryptedBrainkey, { expires: 365 });
     Cookies.set('BITSHARES_ENCRYPTION_KEY', encryptionKey, { expires: 365 });
     Cookies.set('BITSHARES_PASSWORD_PUBKEY', passwordPubkey, { expires: 365 });
+    Cookies.set('BITSHARES_LOGIN_TYPE', userType, { expires: 365 });
   },
   getSavedUserData: () => {
     const userId = Cookies.get('BITSHARES_USER_ID');
@@ -23,6 +27,8 @@ const PersistentStorage = {
     const encryptionKey = Cookies.get('BITSHARES_ENCRYPTION_KEY');
     const backupDate = Cookies.get('BACKUP_DATE');
     const passwordPubkey = Cookies.get('BITSHARES_PASSWORD_PUBKEY');
+    const userType = Cookies.get('BITSHARES_LOGIN_TYPE');
+
     if (!userId || !encryptedBrainkey || !encryptionKey || !passwordPubkey) return null;
     if (typeof (userId) !== 'string') return null;
     return {
@@ -30,7 +36,8 @@ const PersistentStorage = {
       encryptedBrainkey,
       encryptionKey,
       backupDate,
-      passwordPubkey
+      passwordPubkey,
+      userType
     };
   },
   clearSavedUserData: () => {

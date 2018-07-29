@@ -7,7 +7,7 @@ import config from '../../config';
  * Fetches assets objects from bitsharesjs-ws
  * @param {Array} assets - list of assets ids/symbold to fetch
  */
-export const fetchAssets = async (store, { assets }) => {
+export const fetchAssets = async (store, { assets, hidden = false }) => {
   const { commit, getters } = store;
   const currentAssetsIds = Object.keys(getters.getAssets);
 
@@ -50,3 +50,11 @@ export const fetchDefaultAssets = async (store) => {
     commit(types.SAVE_DEFAULT_ASSETS_IDS, { ids });
   }
 };
+
+export const hideAsset = async ({ commit }, asset_id) => {
+  commit(types.HIDE_ASSET, asset_id );
+}
+
+export const showAsset = async ({ commit }, asset_id) => {
+  commit(types.SHOW_ASSET, asset_id);
+}
