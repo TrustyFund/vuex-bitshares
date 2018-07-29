@@ -7,17 +7,17 @@ export const suggestBrainkey = (dictionary) => {
 };
 
 export const suggestPassword = () => {
-  console.log('inside')
-  return "P" + key.get_random_key().toWif().substr(0, 45);
+  console.log('inside');
+  return 'P' + key.get_random_key().toWif().substr(0, 45);
 };
 
 export const generateKeyFromPassword = (accountName, role, password) => {
-    let seed = accountName + role + password;
-    let privKey = PrivateKey.fromSeed(seed);
-    let pubKey = privKey.toPublicKey().toString();
+  const seed = accountName + role + password;
+  const privKey = PrivateKey.fromSeed(seed);
+  const pubKey = privKey.toPublicKey().toString();
 
-    return {privKey, pubKey};
-}
+  return { privKey, pubKey };
+};
 
 export const getUser = async (nameOrId) => {
   try {

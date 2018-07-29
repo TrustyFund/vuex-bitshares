@@ -42,10 +42,8 @@ const getters = {
         const byteLength = utils.getMemoSizeFast(memo);
         const memoPrice = Math.floor((byteLength * state.fees.transfer.kbytePrice) / 1024);
         return transferPrice + memoPrice;
-      } else {
-        return transferPrice;
       }
-      
+      return transferPrice;
     };
   }
 };

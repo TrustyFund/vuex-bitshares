@@ -75,7 +75,6 @@ const mutations = {
     state.brainkeyBackupDate = backupDate;
     state.passwordPubkey = passwordPubkey;
     state.userType = userType;
-
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
     state.userId = null;

@@ -117,14 +117,13 @@ export const getMemoSizeFast = (memo) => {
 
   if (memo.length < 12) {
     return minimalLength;
-  } else {
-    let countSteps = 0;
-    for (let i = memo.length; i >= 12; i -= step) {
-      countSteps++;
-    }
-    return minimalLength + countSteps * step;
   }
-}
+  let countSteps = 0;
+  for (let i = memo.length; i >= 12; i -= step) {
+    countSteps += 1;
+  }
+  return minimalLength + (countSteps * step);
+};
 
 
 /** Calculates distribution 0..1 of total amount of assets expressed
