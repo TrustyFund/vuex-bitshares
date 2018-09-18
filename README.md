@@ -11,7 +11,7 @@ npm install --save vuex-bitshares
 Dev: 
 ```sh
 cd your-project
-git submodule add git@github.com:TrustyFund/vuex-bitshares.git
+git submodule add git@github.com:bitshares/vuex-bitshares.git
 npm install --save file:vuex-bitshares
 ```
 
