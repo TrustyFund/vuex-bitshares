@@ -7,7 +7,6 @@ export const suggestBrainkey = (dictionary) => {
 };
 
 export const suggestPassword = () => {
-  console.log('inside');
   return 'P' + key.get_random_key().toWif().substr(0, 45);
 };
 
@@ -43,7 +42,10 @@ export const getUser = async (nameOrId) => {
 };
 
 export const getAccountIdByOwnerPubkey = async ownerPubkey => {
+  console.log('owner pub key: ', ownerPubkey)
+  console.log(Apis.instance().db_api())
   const res = await Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]]);
+  console.log(res)
   return res ? res[0] : null;
 };
 
