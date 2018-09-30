@@ -2,10 +2,11 @@ import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
 import PersistentStorage from '../services/persistent-storage';
+window.crypto.randomBytes = require('randombytes')
+
 
 const OWNER_KEY_INDEX = 1;
 const ACTIVE_KEY_INDEX = 0;
-
 
 /**
  * Function to convert array of balances to object with keys as assets ids
@@ -73,7 +74,7 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
     password
   );
 
-  const ownerPubkey = ownerKey.toPublicKey().toString();
+  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS')
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
 
   const id = userId && userId[0];
@@ -235,14 +236,17 @@ export const storeBackupDate = (state, { date, userId }) => {
  * @param {string} brainkey - user brainkey
  */
 export const login = async (state, { password, brainkey }) => {
+  console.log(password, brainkey)
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
   // to be able to update pending state instantly
-  await new Promise(resolve => { setTimeout(resolve, 1); });
+  // await new Promise(resolve => { setTimeout(resolve, 1); });
   const wallet = createWallet({ password, brainkey });
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString();
+  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS');
+  console.log(ownerPubkey)
+
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];
   if (id) {
