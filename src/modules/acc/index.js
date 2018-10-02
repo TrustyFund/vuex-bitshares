@@ -4,7 +4,8 @@ import getters from './getters'
 
 const initialState = {
   keys: null,
-  userId: null
+  userId: null,
+  userType: null
 };
 
 
