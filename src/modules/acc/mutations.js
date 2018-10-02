@@ -1,3 +1,5 @@
+import { getDefaultState } from './index'
+
 export const types = {
   ACCOUNT_CLOUD_LOGIN: 'ACCOUNT_CLOUD_LOGIN',
   ACCOUNT_BRAINKEY_LOGIN: 'ACCOUNT_BRAINKEY_LOGIN',
@@ -14,11 +16,14 @@ export const mutations = {
   },
   [types.ACCOUNT_BRAINKEY_LOGIN]: (state, { wallet, userId }) => {
     state.userId = userId;
-    state.passwordPubkey = wallet.passwordPubkey;
-    state.encryptedBrainkey = wallet.encryptedBrainkey;
-    state.encryptionKey = wallet.encryptionKey;
-    state.aesPrivate = wallet.aesPrivate;
+    state.wallet.passwordPubkey = wallet.passwordPubkey;
+    state.wallet.encryptedBrainkey = wallet.encryptedBrainkey;
+    state.wallet.encryptionKey = wallet.encryptionKey;
+    state.wallet.aesPrivate = wallet.aesPrivate;
     state.userType = 'wallet';
+  },
+  [types.ACCOUNT_LOGOUT]: (state) => {
+    Object.assign(state, getDefaultState())
   }
 };
 

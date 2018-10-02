@@ -1,22 +1,68 @@
-import { key, PrivateKey } from 'bitsharesjs';
+import { key, PrivateKey, Aes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
-export const suggestBrainkey = (dictionary) => {
-  return key.suggest_brain_key(dictionary);
-};
+export const utils = {
+  suggestPassword: () => {
+    return 'P' + key.get_random_key().toWif().substr(0, 45);
+  },
+  suggestBrainkey: (dictionary) => {
+    return key.suggest_brain_key(dictionary);
+  },
+  generateKeyFromPassword: (accountName, role, password) => {
+    const seed = accountName + role + password;
+    const privKey = PrivateKey.fromSeed(seed);
+    const pubKey = privKey.toPublicKey().toString()
 
-export const suggestPassword = () => {
-  return 'P' + key.get_random_key().toWif().substr(0, 45);
-};
+    return { privKey, pubKey };
+  },
+  generateKeysFromPassword: function (accountName, password) {
+    const { privKey: activeKey } = this.generateKeyFromPassword(
+      name,
+      'owner',
+      password
+    );
+    const { privKey: ownerKey } = this.generateKeyFromPassword(
+      name,
+      'active',
+      password
+    );
 
-export const generateKeyFromPassword = (accountName, role, password) => {
-  const seed = accountName + role + password;
-  const privKey = PrivateKey.fromSeed(seed);
-  const pubKey = privKey.toPublicKey().toString()
+    console.log(activeKey, ownerKey)
 
-  return { privKey, pubKey };
-};
+    return {
+      active: activeKey,
+      owner: ownerKey
+    }
+
+  },
+  
+  encodeBody: (params) => {
+    return Object.keys(params).map((bodyKey) => {
+      return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
+    }).join('&');
+  },
+
+  createWallet: ({ brainkey, password }) => {
+    const passwordAes = Aes.fromSeed(password);
+    const encryptionBuffer = key.get_random_key().toBuffer();
+    const encryptionKey = passwordAes.encryptToHex(encryptionBuffer);
+    const aesPrivate = Aes.fromSeed(encryptionBuffer);
+
+    const normalizedBrainkey = key.normalize_brainKey(brainkey);
+    const encryptedBrainkey = aesPrivate.encryptToHex(normalizedBrainkey);
+    const passwordPrivate = PrivateKey.fromSeed(password);
+    const passwordPubkey = passwordPrivate.toPublicKey().toPublicKeyString();
+
+    return {
+      passwordPubkey,
+      encryptionKey,
+      encryptedBrainkey,
+      aesPrivate,
+    };
+  }
+}
+
 
 export const getUser = async (nameOrId) => {
   try {
@@ -44,12 +90,6 @@ export const getUser = async (nameOrId) => {
 export const getAccountIdByOwnerPubkey = async ownerPubkey => {
   const res = await Apis.instance().db_api().exec('get_key_references', [[ownerPubkey]]);
   return res ? res[0] : null;
-};
-
-const encodeBody = (params) => {
-  return Object.keys(params).map((bodyKey) => {
-    return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
-  }).join('&');
 };
 
 export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
@@ -89,9 +129,10 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 };
 
 export default {
-  suggestBrainkey,
-  suggestPassword,
-  generateKeyFromPassword,
+  // suggestBrainkey,
+  // suggestPassword,
+  // generateKeyFromPassword,
+  utils,
   getUser,
   getAccountIdByOwnerPubkey,
   createAccount
