@@ -2,6 +2,9 @@ import { key, PrivateKey, Aes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
+const OWNER_KEY_INDEX = 1;
+const ACTIVE_KEY_INDEX = 0;
+
 export const utils = {
   suggestPassword: () => {
     return 'P' + key.get_random_key().toWif().substr(0, 45);
@@ -16,7 +19,8 @@ export const utils = {
 
     return { privKey, pubKey };
   },
-  generateKeysFromPassword: function (accountName, password) {
+
+  generateKeysFromPassword: function ({ name, password }) {
     const { privKey: activeKey } = this.generateKeyFromPassword(
       name,
       'owner',
@@ -27,14 +31,16 @@ export const utils = {
       'active',
       password
     );
-
-    console.log(activeKey, ownerKey)
-
     return {
       active: activeKey,
       owner: ownerKey
     }
+  },
 
+  getOwnerPubkeyFromBrainkey: (brainkey) => {
+    const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
+    const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS');
+    return ownerPubkey
   },
   
   encodeBody: (params) => {
@@ -92,6 +98,11 @@ export const getAccountIdByOwnerPubkey = async ownerPubkey => {
   return res ? res[0] : null;
 };
 
+export const getAccountIdByBrainkey = async brainkey => {
+  const ownerPubkey = utils.getOwnerPubkeyFromBrainkey(brainkey)
+  return getAccountIdByOwnerPubkey(ownerPubkey)
+};
+
 export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
   const { faucetUrl } = config;
   try {
@@ -129,11 +140,9 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 };
 
 export default {
-  // suggestBrainkey,
-  // suggestPassword,
-  // generateKeyFromPassword,
   utils,
   getUser,
   getAccountIdByOwnerPubkey,
+  getAccountIdByBrainkey,
   createAccount
 };
