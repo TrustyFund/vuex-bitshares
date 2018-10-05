@@ -35,4 +35,3 @@ export default {
   deleteSubscription,
   processSubscription
 };
-

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest ./test/account.spec.js -t 'has correct initial state'",
-    "lint": "eslint ./**/*.{vue,js}"
+    "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",

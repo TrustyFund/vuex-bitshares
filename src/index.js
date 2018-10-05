@@ -20,4 +20,4 @@ export default {
   openledger,
   history,
   acc
-}
+};

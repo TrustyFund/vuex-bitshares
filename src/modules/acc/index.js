@@ -1,23 +1,7 @@
-import { mutations } from './mutations'
-import actions from './actions'
-import getters from './getters'
-
-export const getDefaultState = () => {
-  return {
-    userId: null,
-    keys: {
-      active: null,
-      owner: null
-    },
-    userType: null,
-    wallet: {
-      passwordPubkey: null,
-      encryptedBrainkey: null,
-      encryptionKey: null,
-      aesPrivate: null
-    }
-  }
-}
+import { mutations } from './mutations';
+import { getDefaultState } from './defaultState';
+import actions from './actions';
+import getters from './getters';
 
 
 export default {

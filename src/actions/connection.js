@@ -27,4 +27,3 @@ export const initConnection = ({ commit, getters }, changeNode) => {
 
   API.Connection.connect(updateConnectionStatus, changeNode);
 };
-

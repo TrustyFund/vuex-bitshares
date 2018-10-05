@@ -4,6 +4,7 @@ import API from '../services/api';
 import PersistentStorage from '../services/persistent-storage';
 
 if (window && window.crypto) {
+  // eslint-disable-next-line
   window.crypto.randomBytes = require('randombytes');
 }
 
@@ -76,7 +77,7 @@ export const loginWithPassword = async ({ commit }, { name, password }) => {
     password
   );
 
-  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS')
+  const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS');
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
 
   const id = userId && userId[0];
@@ -238,7 +239,7 @@ export const storeBackupDate = (state, { date, userId }) => {
  * @param {string} brainkey - user brainkey
  */
 export const login = async (state, { password, brainkey }) => {
-  console.log(password, brainkey)
+  console.log(password, brainkey);
   const { commit } = state;
   commit(types.ACCOUNT_LOGIN_REQUEST);
   // to be able to update pending state instantly
@@ -247,7 +248,7 @@ export const login = async (state, { password, brainkey }) => {
 
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS');
-  console.log(ownerPubkey)
+  console.log(ownerPubkey);
 
   const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
   const id = userId && userId[0];

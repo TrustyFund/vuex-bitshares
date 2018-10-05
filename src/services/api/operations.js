@@ -1,7 +1,8 @@
 /* eslint no-underscore-dangle: 0 */
 import { ChainTypes } from 'bitsharesjs';
 import { Apis } from 'bitsharesjs-ws';
-import API from '../api';
+import { getUser } from './account.js';
+import { getParameters } from './parameters.js';
 
 // Service for dealing with operations (transactions)
 const Operations = {
@@ -43,7 +44,7 @@ const Operations = {
   // User for transfer operations. Determines if user received or sent
   _getOperationOtherUserName: async (userId, payload) => {
     const otherUserId = payload.to === userId ? payload.from : payload.to;
-    const userRequest = await API.Account.getUser(otherUserId);
+    const userRequest = await getUser(otherUserId);
     return userRequest.success ? userRequest.data.account.name : '';
   },
 
@@ -78,7 +79,7 @@ const Operations = {
   // that were user in it
   parseOperations: async ({ operations, userId }) => {
     const ApiInstance = Apis.instance();
-    const Parameters = await API.Parameters.getParameters();
+    const Parameters = await getParameters();
     const ApiObjectDyn = await ApiInstance.db_api().exec('get_objects', [['2.1.0']]);
 
     const operationTypes = [0, 1, 2, 4];

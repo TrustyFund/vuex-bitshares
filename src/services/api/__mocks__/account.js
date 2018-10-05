@@ -1,5 +1,5 @@
-const suggestedBrainkey = 'glink omental webless pschent knopper brumous ' +
-  'scarry were wasting isopod raper barbas maco kirn tegua mitome';
+const suggestedBrainkey = 'glink omental webless pschent knopper brumous '
+  + 'scarry were wasting isopod raper barbas maco kirn tegua mitome';
 
 export const suggestBrainkey = () => {
   return suggestedBrainkey;

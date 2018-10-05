@@ -2,7 +2,7 @@ import { Apis } from 'bitsharesjs-ws';
 
 let cacheParameters = false;
 
-const getParameters = async () => {
+export const getParameters = async () => {
   if (cacheParameters) {
     return cacheParameters;
   }

@@ -1,4 +1,5 @@
 **/node_modules/*
 test/brainkey_dictionary.js
+src/utils
 coverage/
 main.js
