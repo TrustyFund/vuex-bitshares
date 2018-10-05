@@ -191,7 +191,7 @@ export const signupWithPassword = async ({ commit }, { name, password }) => {
 export const signup = async (state, { name, password, dictionary, email }) => {
   const { commit } = state;
   commit(types.ACCOUNT_SIGNUP_REQUEST);
-  const brainkey = API.Account.suggestBrainkey(dictionary);
+  const brainkey = API.Account.utils.suggestBrainkey(dictionary);
   const result = await API.Account.createAccount({
     name,
     email,
