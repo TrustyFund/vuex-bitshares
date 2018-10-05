@@ -4,7 +4,7 @@
   "description": "Vue way to build DAP's on bitshares net",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest ./test/account.spec.js -t 'has correct initial state'",
     "lint": "eslint ./**/*.{vue,js}"
   },
   "repository": {
@@ -54,12 +54,5 @@
     "vue-template-compiler": "^2.5.13",
     "vue-test-utils": "^1.0.0-beta.11",
     "vuex": "^3.0.1"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    },
-    "verbose": true,
-    "transformIgnorePatterns": []
   }
 }

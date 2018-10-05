@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
-import account from '../src/modules/account.js';
+import account from '../src/modules/acc';
 import dictionary from './brainkey_dictionary.js';
 
 jest.mock('../src/services/api/account.js');
@@ -32,6 +32,7 @@ const store = new Vuex.Store({
 });
 
 const initialState = JSON.parse(JSON.stringify(store.state));
+console.log('INITIAL:', account);
 
 describe('Account module: getters', () => {
   beforeEach(() => {
@@ -40,18 +41,18 @@ describe('Account module: getters', () => {
 
   test('has correct initial state', () => {
     expect(store.state.account).toEqual({
-      passwordPubkey: null,
-      encryptedBrainkey: null,
-      brainkeyBackupDate: null,
-      encryptionKey: null,
-      created: null,
-      aesPrivate: null,
       userId: null,
-      error: null,
-      pending: false,
-      userData: null,
-      userError: false,
-      userFetching: false
+      keys: {
+        active: null,
+        owner: null
+      },
+      userType: null,
+      wallet: {
+        passwordPubkey: null,
+        encryptedBrainkey: null,
+        encryptionKey: null,
+        aesPrivate: null
+      }
     });
   });
 
@@ -258,6 +259,7 @@ describe('Account module: actions', () => {
     store.state.encryptedBrainkey = '3333';
     store.state.aesPrivate = '4444';
     store.dispatch('account/logout');
+    console.log(store.state.account);
     expect(store.state.account).toEqual(account.state);
   });
 });

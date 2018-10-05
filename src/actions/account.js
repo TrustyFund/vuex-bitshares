@@ -2,8 +2,10 @@ import { PrivateKey, key, Aes } from 'bitsharesjs';
 import * as types from '../mutations';
 import API from '../services/api';
 import PersistentStorage from '../services/persistent-storage';
-window.crypto.randomBytes = require('randombytes')
 
+if (window && window.crypto) {
+  window.crypto.randomBytes = require('randombytes');
+}
 
 const OWNER_KEY_INDEX = 1;
 const ACTIVE_KEY_INDEX = 0;
