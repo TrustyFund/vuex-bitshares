@@ -2,7 +2,7 @@
   "name": "vuex-bitshares",
   "version": "0.2.4",
   "description": "Vue way to build DAP's on bitshares net",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
     "help": "babel --help",
     "build": "babel src --delete-dir-on-start --compact true --minified --out-dir lib",
