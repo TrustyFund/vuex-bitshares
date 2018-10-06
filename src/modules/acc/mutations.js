@@ -1,4 +1,4 @@
-import { getDefaultState } from './index'
+import { getDefaultState } from './defaultState';
 
 export const types = {
   ACCOUNT_CLOUD_LOGIN: 'ACCOUNT_CLOUD_LOGIN',
@@ -23,7 +23,6 @@ export const mutations = {
     state.userType = 'wallet';
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
-    Object.assign(state, getDefaultState())
+    Object.assign(state, getDefaultState());
   }
 };
-

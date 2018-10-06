@@ -2,7 +2,7 @@
 import { ChainTypes } from 'bitsharesjs';
 import ApiSamples from './api_samples.js';
 
-const Apis = jest.genMockFromModule('bitsharesjs-ws');
+const Apis = {};
 
 const orders = [];
 const marketSubscribers = [];

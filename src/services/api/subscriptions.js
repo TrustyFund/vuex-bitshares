@@ -15,6 +15,7 @@ class Subscription {
     this.type = type;
     this._callback = () => {};
   }
+
   setCallback(callback) {
     this._callback = callback;
   }

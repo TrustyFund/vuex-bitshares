@@ -9,13 +9,12 @@ const actions = {
    */
   cloudLogin: async ({ commit }, { name, password }) => {
     // keys: { active, owner }
-    const keys = API.Account.utils.generateKeysFromPassword({ name, password })
-    const ownerPubkey = keys.owner.toPublicKey().toPublicKeyString('BTS')
+    const keys = API.Account.utils.generateKeysFromPassword({ name, password });
+    const ownerPubkey = keys.owner.toPublicKey().toPublicKeyString('BTS');
     const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
-    console.log(userId)
+    console.log(userId);
     const id = userId && userId[0];
     if (id) {
-      const userType = 'password';
       commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId: id });
       return { error: false };
     }
@@ -31,12 +30,11 @@ const actions = {
    * @param {string} brainkey - user brainkey
    */
   brainkeyLogin: async ({ commit }, { password, brainkey }) => {
-    console.log(password, brainkey)
-    const userId = await API.Account.getAccountIdByBrainkey(brainkey)
+    console.log(password, brainkey);
+    const userId = await API.Account.getAccountIdByBrainkey(brainkey);
     const id = userId && userId[0];
-    
+
     if (id) {
-      const userType = 'wallet';
       const wallet = API.Account.utils.createWallet({ password, brainkey });
       commit(types.ACCOUNT_BRAINKEY_LOGIN, {
         userId: id,
@@ -50,7 +48,7 @@ const actions = {
   logout: ({ commit }) => {
     commit(types.ACCOUNT_LOGOUT);
   }
-}
+};
 
 
-export default actions
+export default actions;

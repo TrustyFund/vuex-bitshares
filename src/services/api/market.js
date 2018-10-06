@@ -209,8 +209,9 @@ class Market {
 
     const requiredType = (weWantTo === 'sell') ? 'buy' : 'sell';
     // console.log('cakc exchange rate for ' + assetId + ': ', this.markets[assetId]);
-    const orders = [...this.markets[assetId].orders[requiredType]].sort((a, b) =>
-      calcOrderRate(b) - calcOrderRate(a));
+    const orders = [...this.markets[assetId].orders[requiredType]].sort(
+      (a, b) => calcOrderRate(b) - calcOrderRate(a)
+    );
     for (let i = 0; i < orders.length; i += 1) {
       const { for_sale: saleAmount, sell_price: price } = orders[i];
       const orderPrice = price.base.amount / price.quote.amount;

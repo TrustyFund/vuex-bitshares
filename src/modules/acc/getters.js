@@ -3,6 +3,6 @@ const getters = {
     return state.userId;
   },
   isLoggedIn: state => !!state.userId
-}
+};
 
-export default getters
+export default getters;

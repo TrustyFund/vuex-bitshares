@@ -3,7 +3,6 @@ import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
 const OWNER_KEY_INDEX = 1;
-const ACTIVE_KEY_INDEX = 0;
 
 export const utils = {
   suggestPassword: () => {
@@ -15,12 +14,12 @@ export const utils = {
   generateKeyFromPassword: (accountName, role, password) => {
     const seed = accountName + role + password;
     const privKey = PrivateKey.fromSeed(seed);
-    const pubKey = privKey.toPublicKey().toString()
+    const pubKey = privKey.toPublicKey().toString();
 
     return { privKey, pubKey };
   },
 
-  generateKeysFromPassword: function ({ name, password }) {
+  generateKeysFromPassword({ name, password }) {
     const { privKey: activeKey } = this.generateKeyFromPassword(
       name,
       'owner',
@@ -34,15 +33,15 @@ export const utils = {
     return {
       active: activeKey,
       owner: ownerKey
-    }
+    };
   },
 
   getOwnerPubkeyFromBrainkey: (brainkey) => {
     const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
     const ownerPubkey = ownerKey.toPublicKey().toPublicKeyString('BTS');
-    return ownerPubkey
+    return ownerPubkey;
   },
-  
+
   encodeBody: (params) => {
     return Object.keys(params).map((bodyKey) => {
       return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
@@ -67,7 +66,7 @@ export const utils = {
       aesPrivate,
     };
   }
-}
+};
 
 
 export const getUser = async (nameOrId) => {
@@ -99,8 +98,8 @@ export const getAccountIdByOwnerPubkey = async ownerPubkey => {
 };
 
 export const getAccountIdByBrainkey = async brainkey => {
-  const ownerPubkey = utils.getOwnerPubkeyFromBrainkey(brainkey)
-  return getAccountIdByOwnerPubkey(ownerPubkey)
+  const ownerPubkey = utils.getOwnerPubkeyFromBrainkey(brainkey);
+  return getAccountIdByOwnerPubkey(ownerPubkey);
 };
 
 export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
@@ -118,7 +117,7 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
       headers: {
         'Content-type': 'application/x-www-form-urlencoded'
       },
-      body: encodeBody(body)
+      body: utils.encodeBody(body)
     });
     const result = await response.json();
     if (result.result === 'OK') {

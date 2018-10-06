@@ -1,16 +1,12 @@
 language: node_js
 node_js:
-- '7'
+- '10'
 install:
 - npm install
 script:
 - npm run test
 - npm run lint
 skip_cleanup: true
-deploy:
-  provider: npm
-  email: root@trusty.fund
-  api_key:
-    secure: DPAXmrWMNoqBdvGJR/kMjEiT4KyoyC9Bfc36ZNRNnnkySRgeVvAfi+g87xvq5oFlMXSUEOEb17Wl4u9RBh3FegnUGq9vauYztsZjp88s9eo7A+60JRyOS4glG9BjrW85P4JsH6ML7700c4TmdfHU6Os0ZK1vcjjeSDTG2CUMGFjUKtzJztEF7YAJjOmpwoH/Ze3z2QyGknOh83Y/34k6SnXp8o5iFBmZBn8Sg0VE7evpEez4YYBHlzGtbrabXy87xL5+dkjTi5zK5fLf0+bzjiXlPhT7Jz5jo9bAk162KCPWGn8X72wXBA6zS5j8Q8Z2e7egFpXULTG29elJ2Mo9KgCaoBuAhCDYdbvUe1Bx5Q8aX8vMwPXaxUXyOWGvp7YvcdNBRWw7z/0fQQRdOLwGdbM50LApP8zCS3UsNd/NqpBMD1JjCWWeqiT/9wT1fU0j4/MiU5jFuFRzp3IUc5ZRuY/GyGivGH0nno8gi6BIo+HZ7JXGOHCFGYDNSllsVEEZMLKGn/nZo+LtN9JHk9WgX+KlzBlkQcFkMr+cvKXO5qtrYYSQ9pWGAfeioCX7mNmTAdDqAYoFU9zlxMxVyR09pAYz7+Rc5rmtgBG0uTvZYXej9sQxsU/Xi+/zcu0reg5mtLulIBi1GLU2ky3bVX9LcCP+SZFrvINiokNRtUOY6LI=
-  on:
-    branch: npm
+cache:
+  directories:
+    - node_modules
