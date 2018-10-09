@@ -3,6 +3,7 @@ import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
 const OWNER_KEY_INDEX = 1;
+const ACTIVE_KEY_INDEX = 0;
 
 export const utils = {
   suggestPassword: () => {
@@ -102,7 +103,9 @@ export const getAccountIdByBrainkey = async brainkey => {
   return getAccountIdByOwnerPubkey(ownerPubkey);
 };
 
-export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
+export const createAccount = async ({ name, brainkey, email }) => {
+  const activeKey = key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX);
+  const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const { faucetUrl } = config;
   try {
     const body = {

@@ -4,8 +4,7 @@ export const types = {
   ACCOUNT_CLOUD_LOGIN: 'ACCOUNT_CLOUD_LOGIN',
   ACCOUNT_BRAINKEY_LOGIN: 'ACCOUNT_BRAINKEY_LOGIN',
   ACCOUNT_LOGOUT: 'ACCOUNT_LOGOUT',
-  ACCOUNT_SIGNUP_PASSWORD: 'ACCOUNT_SIGNUP_PASSWORD',
-  ACCOUNT_SIGNUP_PRIVATE_KEY: 'ACCOUNT_SIGNUP_PRIVATE_KEY',
+  ACCOUNT_SIGNUP: 'ACCOUNT_SIGNUP'
 };
 
 export const mutations = {
@@ -15,6 +14,14 @@ export const mutations = {
     state.userType = 'password';
   },
   [types.ACCOUNT_BRAINKEY_LOGIN]: (state, { wallet, userId }) => {
+    state.userId = userId;
+    state.wallet.passwordPubkey = wallet.passwordPubkey;
+    state.wallet.encryptedBrainkey = wallet.encryptedBrainkey;
+    state.wallet.encryptionKey = wallet.encryptionKey;
+    state.wallet.aesPrivate = wallet.aesPrivate;
+    state.userType = 'wallet';
+  },
+  [types.ACCOUNT_SIGNUP]: (state, { wallet, userId }) => {
     state.userId = userId;
     state.wallet.passwordPubkey = wallet.passwordPubkey;
     state.wallet.encryptedBrainkey = wallet.encryptedBrainkey;
