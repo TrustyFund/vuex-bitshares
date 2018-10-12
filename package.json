@@ -6,7 +6,7 @@
   "scripts": {
     "help": "babel --help",
     "build": "babel src --delete-dir-on-start --compact true --minified --out-dir lib",
-    "test": "jest ./test/api.spec.js -t 'has correct mock api'",
+    "test": "jest ./test/api.spec.js -t 'api mock works'",
     "lint": "eslint ./src"
   },
   "repository": {
