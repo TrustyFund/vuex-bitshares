@@ -73,7 +73,6 @@ export const utils = {
 export const getUser = async (nameOrId) => {
   try {
     const response = await Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false]);
-    console.log(response)
     if (response && response[0]) {
       const user = response[0][1];
       return {
@@ -86,7 +85,6 @@ export const getUser = async (nameOrId) => {
       error: 'User not found'
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error
@@ -111,9 +109,7 @@ const encodeBody = (params) => {
 };
 
 export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
-  // console.log(name, activeKey, ownerKey)
   const { faucetUrl } = config;
-  console.log(faucetUrl)
   try {
     const body = {
       name,
@@ -121,7 +117,6 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
       active_key: activeKey.toPublicKey().toPublicKeyString('BTS'),
       owner_key: ownerKey.toPublicKey().toPublicKeyString('BTS')
     };
-    console.log(body)
     const response = await fetch(faucetUrl, {
       method: 'post',
       mode: 'cors',
@@ -130,7 +125,6 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
       },
       body: encodeBody(body)
     });
-    console.log(response)
     const result = await response.json();
     if (result.result === 'OK') {
       return {
@@ -152,42 +146,9 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 
 
 export const createAccountBrainkey = async ({ name, brainkey, email }) => {
-  console.log(name, brainkey, email)
   const activeKey = key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX);
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-  const { faucetUrl } = config;
-  try {
-    const body = {
-      name,
-      email,
-      active_key: activeKey.toPublicKey().toPublicKeyString('BTS'),
-      owner_key: ownerKey.toPublicKey().toPublicKeyString('BTS')
-    };
-    const response = await fetch(faucetUrl, {
-      method: 'post',
-      mode: 'cors',
-      headers: {
-        'Content-type': 'application/x-www-form-urlencoded'
-      },
-      body: utils.encodeBody(body)
-    });
-    const result = await response.json();
-    if (result.result === 'OK') {
-      return {
-        success: true,
-        id: result.id
-      };
-    }
-    return {
-      success: false,
-      error: result.result
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: 'Account creation error'
-    };
-  }
+  return createAccount({ name, activeKey, ownerKey, email})
 };
 
 export default {

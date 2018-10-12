@@ -12,7 +12,6 @@ const actions = {
     const keys = API.Account.utils.generateKeysFromPassword({ name, password });
     const ownerPubkey = keys.owner.toPublicKey().toPublicKeyString('BTS');
     const userId = await API.Account.getAccountIdByOwnerPubkey(ownerPubkey);
-    console.log(userId);
     const id = userId && userId[0];
     if (id) {
       commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId: id });
@@ -30,7 +29,6 @@ const actions = {
    * @param {string} brainkey - user brainkey
    */
   brainkeyLogin: async ({ commit }, { password, brainkey }) => {
-    console.log(password, brainkey);
     const userId = await API.Account.getAccountIdByBrainkey(brainkey);
     const id = userId && userId[0];
 
@@ -51,30 +49,18 @@ const actions = {
    * @param {string} password - user password
    */
   signupWithPassword: async ({ commit }, { name, password }) => {
-    // const keys = API.Account.utils.generateKeysFromPassword({ name, password });
-    const { privKey: activeKey } = API.Account.utils.generateKeyFromPassword(
-      name,
-      'owner',
-      password
-    );
-    const { privKey: ownerKey } = API.Account.utils.generateKeyFromPassword(
-      name,
-      'active',
-      password
-    );
+    const keys = API.Account.utils.generateKeysFromPassword({ name, password });
     const result = await API.Account.createAccount({
       name,
-      activeKey,
-      ownerKey
+      activeKey: keys.active,
+      ownerKey: keys.owner
     });
 
     if (result.success) {
       const userId = result.id;
       const userType = 'password';
       
-      // const keys = { }
-
-      commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId });
+      commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId, userType });
       return { error: false };
     }
 
@@ -97,11 +83,10 @@ const actions = {
       email,
       brainkey
     })
-    console.log('Account created : ', result);
     if (result.success) {
       const userId = result.id
       const wallet = API.Account.utils.createWallet({ password, brainkey })
-      commit(types.ACCOUNT_SIGNUP, { wallet, userId, userType })
+      commit(types.ACCOUNT_SIGNUP, { wallet, userId })
  
       return { error: false }
     }
