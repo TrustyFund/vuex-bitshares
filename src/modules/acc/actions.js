@@ -59,7 +59,7 @@ const actions = {
     if (result.success) {
       const userId = result.id;
       const userType = 'password';
-      
+
       commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId, userType });
       return { error: false };
     }
@@ -77,23 +77,23 @@ const actions = {
  * @param {string} dictionary - string to generate brainkey from
  */
   signupBrainkey: async ({ commit }, { name, password, dictionary, email }) => {
-    const brainkey = API.Account.utils.suggestBrainkey(dictionary)
+    const brainkey = API.Account.utils.suggestBrainkey(dictionary);
     const result = await API.Account.createAccountBrainkey({
       name,
       email,
       brainkey
-    })
+    });
     if (result.success) {
-      const userId = result.id
-      const wallet = API.Account.utils.createWallet({ password, brainkey })
-      commit(types.ACCOUNT_SIGNUP, { wallet, userId })
- 
-      return { error: false }
+      const userId = result.id;
+      const wallet = API.Account.utils.createWallet({ password, brainkey });
+      commit(types.ACCOUNT_SIGNUP, { wallet, userId });
+
+      return { error: false };
     }
     return {
       error: true,
       message: result.error
-    }
+    };
   },
 
   logout: ({ commit }) => {

@@ -142,7 +142,7 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
 export const createAccountBrainkey = async ({ name, brainkey, email }) => {
   const activeKey = key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX);
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
-  return createAccount({ name, activeKey, ownerKey, email})
+  return createAccount({ name, activeKey, ownerKey, email });
 };
 
 export default {
