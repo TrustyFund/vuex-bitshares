@@ -73,6 +73,7 @@ export const utils = {
 export const getUser = async (nameOrId) => {
   try {
     const response = await Apis.instance().db_api().exec('get_full_accounts', [[nameOrId], false]);
+    console.log(response)
     if (response && response[0]) {
       const user = response[0][1];
       return {
@@ -103,7 +104,55 @@ export const getAccountIdByBrainkey = async brainkey => {
   return getAccountIdByOwnerPubkey(ownerPubkey);
 };
 
-export const createAccount = async ({ name, brainkey, email }) => {
+const encodeBody = (params) => {
+  return Object.keys(params).map((bodyKey) => {
+    return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
+  }).join('&');
+};
+
+export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
+  // console.log(name, activeKey, ownerKey)
+  const { faucetUrl } = config;
+  console.log(faucetUrl)
+  try {
+    const body = {
+      name,
+      email,
+      active_key: activeKey.toPublicKey().toPublicKeyString('BTS'),
+      owner_key: ownerKey.toPublicKey().toPublicKeyString('BTS')
+    };
+    console.log(body)
+    const response = await fetch(faucetUrl, {
+      method: 'post',
+      mode: 'cors',
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded'
+      },
+      body: encodeBody(body)
+    });
+    console.log(response)
+    const result = await response.json();
+    if (result.result === 'OK') {
+      return {
+        success: true,
+        id: result.id
+      };
+    }
+    return {
+      success: false,
+      error: result.result
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error
+    };
+  }
+};
+
+
+export const createAccountBrainkey = async ({ name, brainkey, email }) => {
+  console.log(name, brainkey, email)
   const activeKey = key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX);
   const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
   const { faucetUrl } = config;
@@ -111,8 +160,8 @@ export const createAccount = async ({ name, brainkey, email }) => {
     const body = {
       name,
       email,
-      active_key: activeKey.toPublicKey().toPublicKeyString(),
-      owner_key: ownerKey.toPublicKey().toPublicKeyString()
+      active_key: activeKey.toPublicKey().toPublicKeyString('BTS'),
+      owner_key: ownerKey.toPublicKey().toPublicKeyString('BTS')
     };
     const response = await fetch(faucetUrl, {
       method: 'post',
@@ -146,5 +195,6 @@ export default {
   getUser,
   getAccountIdByOwnerPubkey,
   getAccountIdByBrainkey,
-  createAccount
+  createAccount,
+  createAccountBrainkey
 };

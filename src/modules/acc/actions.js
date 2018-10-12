@@ -51,17 +51,28 @@ const actions = {
    * @param {string} password - user password
    */
   signupWithPassword: async ({ commit }, { name, password }) => {
-    const keys = API.Account.utils.generateKeysFromPassword({ name, password });
-
+    // const keys = API.Account.utils.generateKeysFromPassword({ name, password });
+    const { privKey: activeKey } = API.Account.utils.generateKeyFromPassword(
+      name,
+      'owner',
+      password
+    );
+    const { privKey: ownerKey } = API.Account.utils.generateKeyFromPassword(
+      name,
+      'active',
+      password
+    );
     const result = await API.Account.createAccount({
       name,
-      activeKey: keys.active,
-      ownerKey: keys.owner,
+      activeKey,
+      ownerKey
     });
 
     if (result.success) {
       const userId = result.id;
       const userType = 'password';
+      
+      // const keys = { }
 
       commit(types.ACCOUNT_CLOUD_LOGIN, { keys, userId });
       return { error: false };
@@ -81,7 +92,7 @@ const actions = {
  */
   signupBrainkey: async ({ commit }, { name, password, dictionary, email }) => {
     const brainkey = API.Account.utils.suggestBrainkey(dictionary)
-    const result = await API.Account.createAccount({
+    const result = await API.Account.createAccountBrainkey({
       name,
       email,
       brainkey
