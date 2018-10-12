@@ -102,12 +102,6 @@ export const getAccountIdByBrainkey = async brainkey => {
   return getAccountIdByOwnerPubkey(ownerPubkey);
 };
 
-const encodeBody = (params) => {
-  return Object.keys(params).map((bodyKey) => {
-    return encodeURIComponent(bodyKey) + '=' + encodeURIComponent(params[bodyKey]);
-  }).join('&');
-};
-
 export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
   const { faucetUrl } = config;
   try {
@@ -123,7 +117,7 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
       headers: {
         'Content-type': 'application/x-www-form-urlencoded'
       },
-      body: encodeBody(body)
+      body: utils.encodeBody(body)
     });
     const result = await response.json();
     if (result.result === 'OK') {
