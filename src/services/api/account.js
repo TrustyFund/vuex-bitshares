@@ -3,6 +3,7 @@ import { Apis } from 'bitsharesjs-ws';
 import config from '../../../config';
 
 const OWNER_KEY_INDEX = 1;
+const ACTIVE_KEY_INDEX = 0;
 
 export const utils = {
   suggestPassword: () => {
@@ -84,7 +85,6 @@ export const getUser = async (nameOrId) => {
       error: 'User not found'
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error
@@ -108,8 +108,8 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
     const body = {
       name,
       email,
-      active_key: activeKey.toPublicKey().toPublicKeyString(),
-      owner_key: ownerKey.toPublicKey().toPublicKeyString()
+      active_key: activeKey.toPublicKey().toPublicKeyString('BTS'),
+      owner_key: ownerKey.toPublicKey().toPublicKeyString('BTS')
     };
     const response = await fetch(faucetUrl, {
       method: 'post',
@@ -133,9 +133,16 @@ export const createAccount = async ({ name, activeKey, ownerKey, email }) => {
   } catch (error) {
     return {
       success: false,
-      error: 'Account creation error'
+      error
     };
   }
+};
+
+
+export const createAccountBrainkey = async ({ name, brainkey, email }) => {
+  const activeKey = key.get_brainPrivateKey(brainkey, ACTIVE_KEY_INDEX);
+  const ownerKey = key.get_brainPrivateKey(brainkey, OWNER_KEY_INDEX);
+  return createAccount({ name, activeKey, ownerKey, email });
 };
 
 export default {
@@ -143,5 +150,6 @@ export default {
   getUser,
   getAccountIdByOwnerPubkey,
   getAccountIdByBrainkey,
-  createAccount
+  createAccount,
+  createAccountBrainkey
 };
