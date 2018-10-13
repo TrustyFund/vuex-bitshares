@@ -1,8 +1,9 @@
+// temp
+import { Aes } from 'bitsharesjs';
+
 import API from '../../services/api';
 import { types } from './mutations';
 
-// temp
-import { key, PrivateKey, Aes } from 'bitsharesjs';
 
 const actions = {
   /**
@@ -46,7 +47,7 @@ const actions = {
     return { error: true };
   },
 
-    /**
+ /**
   * Logs in with brainkey & creates wallet
   * @param {string} backup - parsed backup file
   * @param {string} password - password
@@ -71,7 +72,7 @@ const actions = {
     if (user.success) {
       commit(types.ACCOUNT_BRAINKEY_LOGIN, {
         userId: user.data.account.id,
-        wallet
+        wallet: newWallet
       });
       return { success: true };
     }

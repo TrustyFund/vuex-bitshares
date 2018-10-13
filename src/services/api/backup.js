@@ -15,7 +15,6 @@ const decryptWalletBackup = (wif, input) => {
     let publicKey;
     try {
       publicKey = PublicKey.fromBuffer(backupBuffer.slice(0, 33));
-      
     } catch (e) {
       console.error(e, e.stack);
       throw new Error('Invalid backup file');
