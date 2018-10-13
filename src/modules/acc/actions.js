@@ -47,7 +47,7 @@ const actions = {
     return { error: true };
   },
 
- /**
+  /**
   * Logs in with brainkey & creates wallet
   * @param {string} backup - parsed backup file
   * @param {string} password - password
