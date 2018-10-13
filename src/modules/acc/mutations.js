@@ -1,10 +1,12 @@
 import { getDefaultState } from './defaultState';
+import Vue from 'vue'
 
 export const types = {
   ACCOUNT_CLOUD_LOGIN: 'ACCOUNT_CLOUD_LOGIN',
   ACCOUNT_BRAINKEY_LOGIN: 'ACCOUNT_BRAINKEY_LOGIN',
   ACCOUNT_LOGOUT: 'ACCOUNT_LOGOUT',
-  ACCOUNT_SIGNUP: 'ACCOUNT_SIGNUP'
+  ACCOUNT_SIGNUP: 'ACCOUNT_SIGNUP',
+  FETCH_CURRENT_USER: 'FETCH_CURRENT_USER'
 };
 
 export const mutations = {
@@ -31,5 +33,8 @@ export const mutations = {
   },
   [types.ACCOUNT_LOGOUT]: (state) => {
     Object.assign(state, getDefaultState());
+  },
+  [types.FETCH_CURRENT_USER]: (state, { data }) => {
+    Vue.set(state, 'userData', data)
   }
 };
