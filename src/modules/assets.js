@@ -20,7 +20,6 @@ const mutations = {
       Vue.set(state.assets, id, assets[id]);
     });
     state.hiddenAssetsIds = PersistentStorage.getJSON('hidden_assets') || [];
-    console.log(state.hiddenAssetsIds);
     state.pending = false;
   },
   [types.FETCH_ASSETS_ERROR](state) {
