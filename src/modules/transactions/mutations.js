@@ -1,54 +1,23 @@
 import Vue from 'vue';
-import * as utils from '../utils';
-import * as types from '../mutations';
-import * as actions from '../actions/transactions';
 
-const initialState = {
-  pendingDistributionUpdate: null,
-  pendingOrders: {
-    sellOrders: [],
-    buyOrders: []
-  },
-  pendingTransfer: false,
-  pending: false,
-  error: null,
-  transactionsProcessing: false,
-  sellOrdersProcessed: false,
-  fees: {
-    order: {
-      fee: 0
-    },
-    transfer: {
-      fee: 0,
-      kbytePrice: 0
-    }
-  }
+export const types = {
+  TRANSFER_ASSET_REQUEST: 'TRANSFER_ASSET_REQUEST',
+  TRANSFER_ASSET_ERROR: 'TRANSFER_ASSET_ERROR',
+  TRANSFER_ASSET_COMPLETE: 'TRANSFER_ASSET_COMPLETE',
+  UPDATE_PENDING_ORDERS: 'UPDATE_PENDING_ORDERS',
+  SET_PENDING_DISTRIBUTION: 'SET_PENDING_DISTRIBUTION',
+  REMOVE_PENDING_DISTRIBUTION: 'REMOVE_PENDING_DISTRIBUTION',
+  RESET_PENDING_ORDERS: 'RESET_PENDING_ORDERS',
+  PROCESS_PENDING_ORDERS_REQUEST: 'PROCESS_PENDING_ORDERS_REQUEST',
+  PROCESS_PENDING_ORDERS_COMPLETE: 'PROCESS_PENDING_ORDERS_COMPLETE',
+  PROCESS_PENDING_ORDERS_ERROR: 'PROCESS_PENDING_ORDERS_ERROR',
+  PROCESS_PENDING_ORDERS_SELL_COMPLETE: 'PROCESS_PENDING_ORDERS_SELL_COMPLETE',
+  FETCH_FEES: 'FETCH_FEES',
+  SET_PENDING_TRANSFER: 'SET_PENDING_TRANSFER',
+  CLEAR_PENDING_TRANSFER: 'CLEAR_PENDING_TRANSFER',
 };
 
-const getters = {
-  getPendingOrders: state => state.pendingOrders,
-  hasPendingOrders: state => state.pendingOrders.sellOrders.length
-    || state.pendingOrders.buyOrders.length,
-  getPendingDistribution: state => state.pendingDistributionUpdate,
-  hasPendingTransfer: state => state.pendingTransfer !== false,
-  areTransactionsProcessing: state => state.transactionsProcessing,
-  getPendingTransfer: state => state.pendingTransfer,
-  getOrderFee: state => state.fees.order.fee,
-  getTransferFee: state => state.fees.transfer.fee,
-  getMemoPrice: (state) => {
-    return (memo) => {
-      const transferPrice = state.fees.transfer.fee;
-      if (memo) {
-        const byteLength = utils.getMemoSizeFast(memo);
-        const memoPrice = Math.floor((byteLength * state.fees.transfer.kbytePrice) / 1024);
-        return transferPrice + memoPrice;
-      }
-      return transferPrice;
-    };
-  }
-};
-
-const mutations = {
+export const mutations = {
   [types.TRANSFER_ASSET_REQUEST](state) {
     state.transactionsProcessing = true;
   },
@@ -94,12 +63,4 @@ const mutations = {
     state.pendingOrders.sellOrders = [];
     state.sellOrdersProcessed = true;
   }
-};
-
-export default {
-  state: initialState,
-  actions,
-  mutations,
-  getters,
-  namespaced: true
 };
