@@ -1,5 +1,5 @@
 import { PrivateKey, PublicKey, Aes } from 'bitsharesjs';
-import { getAccountIdByOwnerPubkey } from './account';
+import { utils } from './account';
 import lib from '../../utils/lzma/lzma_worker-min.js';
 
 const decryptWalletBackup = (wif, input) => {
@@ -15,6 +15,7 @@ const decryptWalletBackup = (wif, input) => {
     let publicKey;
     try {
       publicKey = PublicKey.fromBuffer(backupBuffer.slice(0, 33));
+      
     } catch (e) {
       console.error(e, e.stack);
       throw new Error('Invalid backup file');
@@ -59,7 +60,7 @@ const restore = async (wif, backup) => {
     const wallet = await decryptWalletBackup(wif, backup);
     if (!wallet.linked_accounts.length) {
       const { pubkey } = wallet.private_keys[0];
-      const id = await getAccountIdByOwnerPubkey(pubkey);
+      const id = await utils.getAccountIdByOwnerPubkey(pubkey);
       wallet.linked_accounts[0] = { name: id[0] };
     }
     return { success: true, wallet };

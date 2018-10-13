@@ -1,6 +1,9 @@
 import API from '../../services/api';
 import { types } from './mutations';
 
+// temp
+import { key, PrivateKey, Aes } from 'bitsharesjs';
+
 const actions = {
   /**
    * Logs in with password
@@ -42,6 +45,34 @@ const actions = {
     }
     return { error: true };
   },
+
+  fileLogin: async ({ commit }, { backup, password }) => {
+    const restored = await API.Backup.restoreBackup({ backup, password });
+    if (!restored.success) return { success: false, error: restored.error };
+    const {
+      wallet: [wallet],
+      linked_accounts: [{ name }]
+    } = restored.wallet;
+
+    const passwordAes = Aes.fromSeed(password);
+    const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(wallet.encryption_key);
+    const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+
+    const brainkey = aesPrivate.decryptHexToText(wallet.encrypted_brainkey);
+
+    const newWallet = API.Account.utils.createWallet({ password, brainkey });
+
+    const user = await API.Account.getUser(name);
+    if (user.success) {
+      commit(types.ACCOUNT_BRAINKEY_LOGIN, {
+        userId: user.data.account.id,
+        wallet
+      });
+      return { success: true };
+    }
+    return { success: false, error: 'No such user' };
+  },
+
 
   /**
    * Signs up and logs in with username and password
