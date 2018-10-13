@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
-import transactions from '../src/modules/transactions.js';
+import transactions from '../src/modules/transactions';
 import account from '../src/modules/acc';
 
 jest.mock('../src/services/api/transactions.js');
