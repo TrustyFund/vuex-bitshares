@@ -20,6 +20,7 @@ const transferAsset = async (fromId, to, assetId, amount, keys, memo = false) =>
 
       const { active, owner } = keys;
 
+
       if (active.toPublicKey().toString() !== activePublicString
           || owner.toPublicKey().toString() !== ownerPublicString) {
         resolve({

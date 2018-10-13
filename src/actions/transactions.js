@@ -141,7 +141,6 @@ export const resetPendingOrders = (store) => {
 
 export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amount, memo }) => {
   commit(types.TRANSFER_ASSET_REQUEST);
-  console.log('transferAsset to1', to);
   const fromId = rootGetters['account/getAccountUserId'];
 
   const keys = rootGetters['account/getKeys'];
@@ -153,7 +152,6 @@ export const transferAsset = async ({ commit, rootGetters }, { to, assetId, amou
       error: 'Wallet is locked'
     };
   }
-  console.log('transferAsset to2', to);
   const res = await API.Transactions.transferAsset(fromId, to, assetId, amount, keys, memo);
   if (res.success) {
     commit(types.TRANSFER_ASSET_COMPLETE);
