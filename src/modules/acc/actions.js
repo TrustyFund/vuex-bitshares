@@ -154,8 +154,7 @@ const actions = {
       const user = result.data;
       result.data.balances = balancesToObject(user.balances);
       commit(types.FETCH_CURRENT_USER, { data: user });
-    } 
-    return result
+    }
   }
 };
 
