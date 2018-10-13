@@ -46,6 +46,11 @@ const actions = {
     return { error: true };
   },
 
+    /**
+  * Logs in with brainkey & creates wallet
+  * @param {string} backup - parsed backup file
+  * @param {string} password - password
+  */
   fileLogin: async ({ commit }, { backup, password }) => {
     const restored = await API.Backup.restoreBackup({ backup, password });
     if (!restored.success) return { success: false, error: restored.error };
@@ -72,7 +77,6 @@ const actions = {
     }
     return { success: false, error: 'No such user' };
   },
-
 
   /**
    * Signs up and logs in with username and password
