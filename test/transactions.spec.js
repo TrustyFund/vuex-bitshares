@@ -1,8 +1,8 @@
 /* eslint-env jest */
 import { createLocalVue } from 'vue-test-utils';
 import Vuex from 'vuex';
-import transactions from '../src/modules/transactions.js';
-import account from '../src/modules/account.js';
+import transactions from '../src/modules/transactions';
+import account from '../src/modules/acc';
 
 jest.mock('../src/services/api/transactions.js');
 
@@ -18,8 +18,8 @@ const store = new Vuex.Store({
 
 
 const password = 'qwer1234';
-const brainkey = 'glink omental webless pschent knopper brumous scarry were' +
-  ' wasting isopod raper barbas maco kirn tegua mitome';
+const brainkey = 'glink omental webless pschent knopper brumous scarry were'
+                  + ' wasting isopod raper barbas maco kirn tegua mitome';
 
 const initialState = JSON.parse(JSON.stringify(store.state));
 
@@ -50,7 +50,7 @@ describe('Transactions module: actions', () => {
   });
 
   it('Creates transfer transaction', async done => {
-    await store.dispatch('account/login', {
+    await store.dispatch('account/brainkeyLogin', {
       password,
       brainkey
     });
