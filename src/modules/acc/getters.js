@@ -4,6 +4,12 @@ const getters = {
   getAccountUserId: state => {
     return state.userId;
   },
+  getCurrentUserName: state => {
+    return state.userData && state.userData.account.name;
+  },
+  getCurrentUserBalances: state => {
+    return (state.userData && state.userData.balances) || {};
+  },
   isLoggedIn: state => !!state.userId,
   getKeys: state => {
     if (state.keys && state.keys.active && state.keys.owner) {

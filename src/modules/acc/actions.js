@@ -4,6 +4,15 @@ import { Aes } from 'bitsharesjs';
 import API from '../../services/api';
 import { types } from './mutations';
 
+// utils func -> move to utils
+const balancesToObject = (balancesArr) => {
+  const obj = {};
+  balancesArr.forEach(item => {
+    obj[item.asset_type] = item;
+  });
+  return obj;
+};
+
 
 const actions = {
   /**
@@ -134,6 +143,18 @@ const actions = {
 
   logout: ({ commit }) => {
     commit(types.ACCOUNT_LOGOUT);
+  },
+
+  fetchCurrentUser: async (store) => {
+    const { commit, getters } = store;
+    const userId = getters.getAccountUserId;
+    if (!userId) return;
+    const result = await API.Account.getUser(userId);
+    if (result.success) {
+      const user = result.data;
+      result.data.balances = balancesToObject(user.balances);
+      commit(types.FETCH_CURRENT_USER, { data: user });
+    }
   }
 };
 
