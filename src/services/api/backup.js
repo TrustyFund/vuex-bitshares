@@ -1,5 +1,5 @@
 import { PrivateKey, PublicKey, Aes } from 'bitsharesjs';
-import { utils } from './account';
+import { getAccountIdByOwnerPubkey } from './account';
 import lib from '../../utils/lzma/lzma_worker-min.js';
 
 const decryptWalletBackup = (wif, input) => {
@@ -59,7 +59,7 @@ const restore = async (wif, backup) => {
     const wallet = await decryptWalletBackup(wif, backup);
     if (!wallet.linked_accounts.length) {
       const { pubkey } = wallet.private_keys[0];
-      const id = await utils.getAccountIdByOwnerPubkey(pubkey);
+      const id = await getAccountIdByOwnerPubkey(pubkey);
       wallet.linked_accounts[0] = { name: id[0] };
     }
     return { success: true, wallet };
