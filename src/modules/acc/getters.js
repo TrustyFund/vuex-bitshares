@@ -7,8 +7,15 @@ const getters = {
   getCurrentUserName: state => {
     return state.userData && state.userData.account.name;
   },
-  getCurrentUserBalances: state => {
-    return (state.userData && state.userData.balances) || {};
+  getUserBalances: state => {
+    if (!state.userData || !state.userData.balances) return {}
+    const balances = state.userData.balances
+    const nonZeroBalances = Object.keys(balances).reduce((result, assetId) => {
+      if (balances[assetId].balance) result[assetId] = balances[assetId]
+      return result
+    }, {})
+    return nonZeroBalances
+    // return (state.userData && state.userData.balances) || {};
   },
   isLoggedIn: state => !!state.userId,
   getKeys: state => {
