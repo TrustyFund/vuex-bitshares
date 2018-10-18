@@ -8,14 +8,13 @@ const getters = {
     return state.userData && state.userData.account.name;
   },
   getUserBalances: state => {
-    if (!state.userData || !state.userData.balances) return {}
-    const balances = state.userData.balances
+    if (!state.userData || !state.userData.balances) return {};
+    const { balances } = state.userData;
     const nonZeroBalances = Object.keys(balances).reduce((result, assetId) => {
-      if (balances[assetId].balance) result[assetId] = balances[assetId]
-      return result
-    }, {})
-    return nonZeroBalances
-    // return (state.userData && state.userData.balances) || {};
+      if (balances[assetId].balance) result[assetId] = balances[assetId];
+      return result;
+    }, {});
+    return nonZeroBalances;
   },
   isLoggedIn: state => !!state.userId,
   getKeys: state => {
