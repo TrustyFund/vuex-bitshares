@@ -1,11 +1,20 @@
 /* eslint-env jest */
 import * as utils from '../src/utils';
 import API from '../src/services/api';
+import config from '../config';
+import ApiSamples from '../__mocks__/api_samples';
 
 describe('market service', () => {
-  test.only('valid markets returned ', () => {
-    const market = API.Market['bts'];
-    console.log(market);
+  test('valid markets returned', async () => {
+    const market = API.Market['BTS'];
+    const quotes = ['USD', 'EOS'];
+    const stats = await market.fetchStats(quotes);
+
+    const usdStats = ApiSamples.get_ticker['BTS']['USD'];
+    const eosStats = ApiSamples.get_ticker['BTS']['EOS'];
+    
+    expect(stats[0]).toEqual(usdStats);
+    expect(stats[1]).toEqual(eosStats);
   })
   test('samples distribution to specified accuracy', () => {
     expect(utils.distributionSampling(

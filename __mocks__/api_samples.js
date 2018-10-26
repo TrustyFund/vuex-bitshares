@@ -685,6 +685,32 @@ export default {
   get_required_fees: {
     amount: 1744,
     asset_id: '1.3.0'
+  },
+  get_ticker: {
+    'BTS': {
+      'USD': { 
+        time: '2018-10-26T10:52:42',
+        base: 'BTS',
+        quote: 'CNY',
+        latest: '1.48875987480826691019',
+        lowest_ask: '1.48875987480826691019',
+        highest_bid: '1.48532849886616384528',
+        percent_change: '0.49',
+        base_volume: '4384993.19055',
+        quote_volume: '2951879.9388' 
+      },
+      'EOS': {
+        time: '2018-10-26T10:52:42',
+        base: 'BTS',
+        quote: 'EOS',
+        latest: '4.2',
+        lowest_ask: '1.48875987480826691019',
+        highest_bid: '1.48532849886616384528',
+        percent_change: '0.70',
+        base_volume: '100',
+        quote_volume: '999' 
+      }
+    }
   }
 
 };

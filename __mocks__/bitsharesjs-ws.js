@@ -158,6 +158,10 @@ Apis.instance = () => {
                 resolve();
                 break;
               }
+              case 'get_ticker': {
+                const [base, quote] = data;
+                resolve(ApiSamples.get_ticker[base][quote]);
+              }
               default: resolve();
             }
           });

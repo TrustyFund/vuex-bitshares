@@ -52,7 +52,7 @@ class Market {
   }
 
   fetchStats(quotes) {
-    const quotePromise = quote => Apis.instance().db_api().exec('get_ticker', this.base, quote);
+    const quotePromise = quote => Apis.instance().db_api().exec('get_ticker', [this.base, quote]);
     return Promise.all(quotes.map(quotePromise));
   }
 
