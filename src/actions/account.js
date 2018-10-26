@@ -63,7 +63,7 @@ export const lockWallet = ({ commit }) => {
   commit(types.ACCOUNT_LOCK_WALLET);
 };
 
-export const { suggestPassword } = API.Account;
+export const { suggestPassword } = API.Account.utils;
 
 export const loginWithPassword = async ({ commit }, { name, password }) => {
   const { privKey: activeKey } = API.Account.generateKeyFromPassword(

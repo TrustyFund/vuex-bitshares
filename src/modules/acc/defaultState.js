@@ -11,6 +11,7 @@ export const getDefaultState = () => {
       encryptedBrainkey: null,
       encryptionKey: null,
       aesPrivate: null
-    }
+    },
+    userData: null
   };
 };

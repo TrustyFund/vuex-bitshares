@@ -1,5 +1,18 @@
+// temp
+import { Aes } from 'bitsharesjs';
+
 import API from '../../services/api';
 import { types } from './mutations';
+
+// utils func -> move to utils
+const balancesToObject = (balancesArr) => {
+  const obj = {};
+  balancesArr.forEach(item => {
+    obj[item.asset_type] = item;
+  });
+  return obj;
+};
+
 
 const actions = {
   /**
@@ -41,6 +54,38 @@ const actions = {
       return { error: false };
     }
     return { error: true };
+  },
+
+  /**
+  * Logs in with brainkey & creates wallet
+  * @param {string} backup - parsed backup file
+  * @param {string} password - password
+  */
+  fileLogin: async ({ commit }, { backup, password }) => {
+    const restored = await API.Backup.restoreBackup({ backup, password });
+    if (!restored.success) return { success: false, error: restored.error };
+    const {
+      wallet: [wallet],
+      linked_accounts: [{ name }]
+    } = restored.wallet;
+
+    const passwordAes = Aes.fromSeed(password);
+    const encryptionPlainbuffer = passwordAes.decryptHexToBuffer(wallet.encryption_key);
+    const aesPrivate = Aes.fromSeed(encryptionPlainbuffer);
+
+    const brainkey = aesPrivate.decryptHexToText(wallet.encrypted_brainkey);
+
+    const newWallet = API.Account.utils.createWallet({ password, brainkey });
+
+    const user = await API.Account.getUser(name);
+    if (user.success) {
+      commit(types.ACCOUNT_BRAINKEY_LOGIN, {
+        userId: user.data.account.id,
+        wallet: newWallet
+      });
+      return { success: true };
+    }
+    return { success: false, error: 'No such user' };
   },
 
   /**
@@ -98,6 +143,18 @@ const actions = {
 
   logout: ({ commit }) => {
     commit(types.ACCOUNT_LOGOUT);
+  },
+
+  fetchCurrentUser: async (store) => {
+    const { commit, getters } = store;
+    const userId = getters.getAccountUserId;
+    if (!userId) return;
+    const result = await API.Account.getUser(userId);
+    if (result.success) {
+      const user = result.data;
+      result.data.balances = balancesToObject(user.balances);
+      commit(types.FETCH_CURRENT_USER, { data: user });
+    }
   }
 };
 
