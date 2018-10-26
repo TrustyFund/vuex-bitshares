@@ -51,6 +51,11 @@ class Market {
     listener.addSubscription(marketsSubscription);
   }
 
+  fetchStats(quotes) {
+    const quotePromise = quote => Apis.instance().db_api().exec('get_ticker', this.base, quote);
+    return Promise.all(quotes.map(quotePromise));
+  }
+
   getFee() {
     return this.fee;
   }
@@ -293,7 +298,7 @@ class Market {
 }
 
 const markets = {};
-config.defaultMarkets.forEach(item => {
+config.marketBases.forEach(item => {
   markets[item] = new Market(item);
 });
 

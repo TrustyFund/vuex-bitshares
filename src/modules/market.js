@@ -1,10 +1,16 @@
 import Vue from 'vue';
 import * as types from '../mutations';
 import API from '../services/api';
+import config from '../../config';
 
-const BtsMarket = API.Market['1.3.0'];
+const BtsMarket = API.Market['BTS'];
 
 const actions = {
+  async fetchMarketStats(store, base) {
+    const market = API.Market[base];
+    const quotes = config.defaultMarkets[base];
+    const stats = await market.fetchStats(quotes);
+  },
   subscribeToMarket(store, { balances }) {
     const { commit } = store;
     const assetsIds = Object.keys(balances);
@@ -57,9 +63,10 @@ const getters = {
       return state.prices[assetId] || 0;
     };
   },
+  getMarketBases: state => state.marketBases,
   isFetching: state => state.pending,
   isError: state => state.error,
-  isSubscribed: state => state.subscribed
+  isSubscribed: state => state.subscribed,
 };
 
 const initialState = {
@@ -68,7 +75,8 @@ const initialState = {
   baseAssetId: null,
   subscribed: false,
   prices: {},
-  baseId: '1.3.0'
+  baseId: '1.3.0',
+  marketBases: config.marketBases
 };
 
 const mutations = {

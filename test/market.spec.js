@@ -1,7 +1,12 @@
 /* eslint-env jest */
 import * as utils from '../src/utils';
+import API from '../src/services/api';
 
 describe('market service', () => {
+  test.only('valid markets returned ', () => {
+    const market = API.Market['bts'];
+    console.log(market);
+  })
   test('samples distribution to specified accuracy', () => {
     expect(utils.distributionSampling(
       {
